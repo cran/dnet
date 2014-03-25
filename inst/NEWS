@@ -1,0 +1,10 @@
+CHANGES IN VERSION 0.99.0
+-----------------------
+
+NEW FEATURES
+
+    o A pure R implementation of a self-organising learning algorithm as applied to the symmetric topology of the supra-hexagonal map
+
+    o Dozens of functions for post-processing the trained map with multiple purposes, including: (i) visualizations of map indexes, hits and patterns; (ii) partitioning of the map into continuous clusters (i.e. gene meta-clusters) as they are different from gene clusters in an individual map node; and (iii) reordering of sample-specific map components (i.e. sample correlation)
+
+    o Several omics datasets used to illustrate the functionalities supported in supraHex
