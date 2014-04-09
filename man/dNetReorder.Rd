@@ -1,17 +1,15 @@
 \name{dNetReorder}
 \alias{dNetReorder}
-\title{Function to reorder the multiple graph colorings within a
-sheet-shape rectangle grid}
+\title{Function to reorder the multiple graph colorings within a sheet-shape rectangle grid}
 \usage{
-dNetReorder(g, data, feature = c("node", "edge"),
-node.normalise = c("none", "degree"), xdim = NULL,
-ydim = NULL, amplifier = NULL,
+dNetReorder(g, data, feature = c("node", "edge"), node.normalise =
+c("none",
+"degree"), xdim = NULL, ydim = NULL, amplifier = NULL,
 metric = c("none", "pearson", "spearman", "kendall", "euclidean",
-"manhattan", "cos", "mi"),
-init = c("linear", "uniform", "sample"),
-algorithm = c("sequential", "batch"),
-alphaType = c("invert", "linear", "power"),
-neighKernel = c("gaussian", "bubble", "cutgaussian", "ep", "gamma"))
+"manhattan", "cos", "mi"), init = c("linear", "uniform", "sample"),
+algorithm = c("sequential", "batch"), alphaType = c("invert", "linear",
+"power"), neighKernel = c("gaussian", "bubble", "cutgaussian", "ep",
+"gamma"))
 }
 \arguments{
 \item{g}{an object of class "igraph" or "graphNEL"}
@@ -75,43 +73,42 @@ be one of "gaussian", "bubble", "cutgaussian", "ep" and
 \value{
 an object of class "sReorder", a list with following
 components: \itemize{ \item{\code{nHex}: the total number
-of rectanges in the grid} \item{\code{xdim}: x-dimension
-of the grid} \item{\code{ydim}: y-dimension of the grid}
+of rectanges in the grid} \item{\code{xdim}: x-dimension of
+the grid} \item{\code{ydim}: y-dimension of the grid}
 \item{\code{uOrder}: the unique order/placement for each
-component plane that is reordered to the "sheet"-shape
-grid with rectangular lattice} \item{\code{coord}: a
-matrix of nHex x 2, with each row corresponding to the
-coordinates of each "uOrder" rectangle in the 2D map
-grid} \item{\code{call}: the call that produced this
-result} }
+component plane that is reordered to the "sheet"-shape grid
+with rectangular lattice} \item{\code{coord}: a matrix of
+nHex x 2, with each row corresponding to the coordinates of
+each "uOrder" rectangle in the 2D map grid}
+\item{\code{call}: the call that produced this result} }
 }
 \description{
-\code{dNetReorder} is reorder the multiple graph
-colorings within a sheet-shape rectangle grid
+\code{dNetReorder} is reorder the multiple graph colorings
+within a sheet-shape rectangle grid
 }
 \note{
 According to which features are used and whether nodes
 should be penalised by degrees, the feature data are
 constructed differently from the input data and input
-graph. When the node features are used, the feature data
-is the input data (or penalised data) with the same
-dimension. When the edge featrues are used, each entry
-(i.e. given an edge and a sample) in the feature data is
-the absolute difference between its two-end nodes (or
-after being penalised). Then, the constructed feature are
-subject to sample correlation analysis by supraHex. That
-is, a map grid (with sheet shape consisting of a
-rectangular lattice) is used to train either column-wise
-vectors of the feature data matrix or the covariance
-matrix thereof. As a result, similar samples are placed
-closer to each other within this map grid. More
-precisely, to ensure the unique placement, each sample
-mapped to the "sheet"-shape grid with rectangular lattice
-is determinied iteratively in an order from the best
-matched to the next compromised one. If multiple samples
-are hit in the same rectangular lattice, the worse one is
-always sacrificed by moving to the next best one till all
-samples are placed somewhere exclusively on their own.
+graph. When the node features are used, the feature data is
+the input data (or penalised data) with the same dimension.
+When the edge featrues are used, each entry (i.e. given an
+edge and a sample) in the feature data is the absolute
+difference between its two-end nodes (or after being
+penalised). Then, the constructed feature are subject to
+sample correlation analysis by supraHex. That is, a map
+grid (with sheet shape consisting of a rectangular lattice)
+is used to train either column-wise vectors of the feature
+data matrix or the covariance matrix thereof. As a result,
+similar samples are placed closer to each other within this
+map grid. More precisely, to ensure the unique placement,
+each sample mapped to the "sheet"-shape grid with
+rectangular lattice is determinied iteratively in an order
+from the best matched to the next compromised one. If
+multiple samples are hit in the same rectangular lattice,
+the worse one is always sacrificed by moving to the next
+best one till all samples are placed somewhere exclusively
+on their own.
 }
 \examples{
 # 1) generate a random graph according to the ER model

@@ -39,7 +39,7 @@ visGSEA <- function(eTerm, which_sample=1, which_term="GO:0006281", weight=1, or
     nSet <- length(gs)
 
     ## determine which sample    
-    if(is.integer(which_sample)){
+    if(which_sample==round(which_sample)){
         if(which_sample > nSample){
             which_sample <- nSample
         }else if(which_sample < 1){

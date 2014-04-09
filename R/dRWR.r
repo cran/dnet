@@ -1,12 +1,13 @@
-#' Function to implement Random Walk with Restart (RWR) on the input graph. to pre-compute affinity matrix for the input graph
+#' Function to implement Random Walk with Restart (RWR) on the input graph
 #'
-#' \code{dRWR} is supposed to implement Random Walk with Restart (RWR) on the input graph. If the seeds (i.e. a set of starting nodes) are given, it intends to calculate the affinity score of all nodes in the graph to the given seeds. If the seeds are not give, it will pre-compute affinity matrix for nodes in the input graph with respect to each starting node (rather than a set of nodes) by looping over every node in the graph.
+#' \code{dRWR} is supposed to implement Random Walk with Restart (RWR) on the input graph. If the seeds (i.e. a set of starting nodes) are given, it intends to calculate the affinity score of all nodes in the graph to the seeds. If the seeds are not give, it will pre-compute affinity matrix for nodes in the input graph with respect to each starting node (as a seed) by looping over every node in the graph.
 #'
 #' @param g an object of class "igraph" or "graphNEL"
 #' @param normalise the way to normalise the adjacency matrix of the input graph. It can be 'laplacian' for laplacian normalisation, 'row' for row-wise normalisation, 'column' for column-wise normalisation, or 'none'
-#' @param setSeeds an input matrix used to define sets of starting seeds. One column corresponds to one set of seeds that a walker starts with. The input matrix must have row names, coming from node names of input graph, i.e. V(g)$name, since there is a mapping operation. The non-zero entries mean that the corresonding rows (i.e. the gene/row names) are used as the seeds, and non-zero values can be viewed as how to weight the relative importance of seeds. By default, this option sets to "NULL" for the codebook matrix, suggesting each node in the graph will be used as a set of the seed to pre-compute affinity matrix for the input graph. This default does not scale for large input graphs since it will loop over every node in the graph; however, the pre-computed affinity matrix can be extensively reused for obtaining affinity scores between any combinations of nodes/seeds, allows for some flexibility in the downstream use, in particular when sampling a large number of random node combinations for statistical testing
+#' @param setSeeds an input matrix used to define sets of starting seeds. One column corresponds to one set of seeds that a walker starts with. The input matrix must have row names, coming from node names of input graph, i.e. V(g)$name, since there is a mapping operation. The non-zero entries mean that the corresonding rows (i.e. the gene/row names) are used as the seeds, and non-zero values can be viewed as how to weight the relative importance of seeds. By default, this option sets to "NULL", suggesting each node in the graph will be used as a set of the seed to pre-compute affinity matrix for the input graph. This default does not scale for large input graphs since it will loop over every node in the graph; however, the pre-computed affinity matrix can be extensively reused for obtaining affinity scores between any combinations of nodes/seeds, allows for some flexibility in the downstream use, in particular when sampling a large number of random node combinations for statistical testing
 #' @param restart the restart probability used for RWR. The restart probability takes the value from 0 to 1, controlling the range from the starting nodes/seeds that the walker will explore. The higher the value, the more likely the walker is to visit the nodes centered on the starting nodes. At the extreme when the restart probability is zero, the walker moves freely to the neighbors at each step without restarting from seeds, i.e., following a random walk (RW)
-#' 
+#' @param normalise.affinity.matrix the way to normalise the output affinity matrix. It can be 'none' for no normalisation, 'quantile' for quantile normalisation to ensure that columns (if multiple) of the output affinity matrix have the same quantiles
+#' @param verbose logical to indicate whether the messages will be displayed in the screen. By default, it sets to true for display
 #' @return 
 #' When the seeds are NOT given, it returns:
 #' \itemize{
@@ -18,6 +19,7 @@
 #' }
 #' @note The input graph will treat as an unweighted graph if there is no 'weight' edge attribute associated with
 #' @export
+#' @import Matrix
 #' @seealso \code{\link{dNetInduce}}
 #' @include dRWR.r
 #' @examples
@@ -44,11 +46,18 @@
 #' PTmatrix <- dRWR(subg, normalise="laplacian", setSeeds=setSeeds, restart=0.75)
 #' PTmatrix
 
-
-dRWR <- function(g, normalise=c("laplacian","row","column","none"), setSeeds=NULL, restart=0.75)
+dRWR <- function(g, normalise=c("laplacian","row","column","none"), setSeeds=NULL, restart=0.75, normalise.affinity.matrix=c("none","quantile"), verbose=T)
 {
     
+    startT <- Sys.time()
+    if(verbose){
+        message(paste(c("Start at ",as.character(startT)), collapse=""), appendLF=T)
+        message("", appendLF=T)
+    }
+    ####################################################################################
+    
     normalise <- match.arg(normalise)
+    normalise.affinity.matrix <- match.arg(normalise.affinity.matrix)
     
     if(class(g)=="graphNEL"){
         ig <- igraph.from.graphNEL(g)
@@ -58,26 +67,42 @@ dRWR <- function(g, normalise=c("laplacian","row","column","none"), setSeeds=NUL
     if (class(ig) != "igraph"){
         stop("The function must apply to either 'igraph' or 'graphNEL' object.\n")
     }
+
+    if(verbose){
+        now <- Sys.time()
+        message(sprintf("First, get the adjacency matrix of the input graph (%s) ...", as.character(now)), appendLF=T)
+    }
     
-    if ("weight" %in% list.vertex.attributes(ig)){
-        adjM <- get.adjacency(ig, type="both", attr="weight", edges=F, names=T, sparse=F)
+    if ("weight" %in% list.edge.attributes(ig)){
+        adjM <- get.adjacency(ig, type="both", attr="weight", edges=F, names=T, sparse=getIgraphOpt("sparsematrices"))
     }else{
-        adjM <- get.adjacency(ig, type="both", attr=NULL, edges=F, names=T, sparse=F)
+        adjM <- get.adjacency(ig, type="both", attr=NULL, edges=F, names=T, sparse=getIgraphOpt("sparsematrices"))
+    }
+    
+    if(verbose){
+        now <- Sys.time()
+        message(sprintf("Then, normalise the adjacency matrix using %s normalisation (%s) ...", normalise, as.character(now)), appendLF=T)
     }
     
     A <- adjM!=0
+    ## library(Matrix) 
+    ## vignette("Intro2Matrix")
     if(normalise == "row"){
-        D <- diag(apply(A,1,sum)^(-1))
+        #D <- diag(apply(A,1,sum)^(-1))
+        D <- Matrix::Diagonal(x=(Matrix::rowSums(A))^(-1))
         nadjM <- adjM %*% D
     }else if(normalise == "column"){
-        D <- diag(apply(A,1,sum)^(-1))
+        #D <- diag(apply(A,1,sum)^(-1))
+        D <- Matrix::Diagonal(x=(Matrix::colSums(A))^(-1))
         nadjM <- D %*% adjM
     }else if(normalise == "laplacian"){
-        D <- diag(apply(A,1,sum)^(-0.5))
+        #D <- diag(apply(A,1,sum)^(-0.5))
+        D <- Matrix::Diagonal(x=(Matrix::colSums(A))^(-0.5))
         nadjM <- D %*% adjM %*% D
     }else{
         nadjM <- adjM
     }
+    #nadjM <- as.matrix(nadjM)
     
     #nig <- graph.adjacency(nadjM, mode=c("undirected"), weighted=T, diag=F, add.colnames=NULL, add.rownames=NA)
     ## update the vertex attributes
@@ -146,34 +171,121 @@ dRWR <- function(g, normalise=c("laplacian","row","column","none"), setSeeds=NUL
         colnames(P0matrix) <- cnames
     }
     
-    PTmatrix <- matrix(0, nrow=nrow(P0matrix), ncol=ncol(P0matrix))
-    for(j in 1:ncol(P0matrix)){
-        P0 <- as.matrix(P0matrix[,j],ncol=1)
-        
-        ## Initializing variables
-        step <- 0
-        delta <- 1
-        
-        PT <- P0
-        ## Iterative update till convergence (delta<=1e-10)
-        while (delta>stop_delta && step<=stop_step){
-            PX <- (1-r) * nadjM %*% PT + r * P0
-    
-            # p-norm of v: sum((abs(v).p)^(1/p))
-            delta <- sum(abs(PX-PT))
-    
-            PT <- PX
-            step <- step+1
-        }
-        PTmatrix[,j] <- PT
+    if(verbose){
+        now <- Sys.time()
+        message(sprintf("Third, RWR of %d sets of seeds using %1.1e restart probability (%s) ...", ncol(P0matrix), restart, as.character(now)), appendLF=T)
     }
     
+    PTmatrix <- matrix(0, nrow=nrow(P0matrix), ncol=ncol(P0matrix))
+    if(restart==1){
+        ## just seeds themselves
+        PTmatrix <- P0matrix
+    }else{
+    
+        for(j in 1:ncol(P0matrix)){
+            P0 <- as.matrix(P0matrix[,j],ncol=1)
+        
+            ## Initializing variables
+            step <- 0
+            delta <- 1
+        
+            PT <- P0
+            ## Iterative update till convergence (delta<=1e-10)
+            while (delta>stop_delta && step<=stop_step){
+                PX <- (1-r) * nadjM %*% PT + r * P0
+    
+                # p-norm of v: sum((abs(v).p)^(1/p))
+                delta <- sum(abs(PX-PT))
+    
+                PT <- PX
+                step <- step+1
+            }
+            PTmatrix[,j] <- matrix(PT, ncol=1)
+
+            if(verbose){
+                now <- Sys.time()
+                message(sprintf("\tUsing the seed set %d (%s) ...", j, as.character(now)), appendLF=T)
+            }
+        
+        }
+        
+    }
     ## make sure the sum of elements in each steady probability vector is one
     PTmatrix <- sapply(1:ncol(PTmatrix), function(i){
         PTmatrix[,i]/sum(PTmatrix[,i])
     })
     rownames(PTmatrix) <- rownames(P0matrix)
     colnames(PTmatrix) <- colnames(P0matrix)
-        
+    
+    ####################################################################################
+    ## a function to normalize columns of a matrix to have the same Quantiles
+    normalizeQuantiles <- function (A, ties=TRUE) {
+        n <- dim(A)
+        if(is.null(n)) return(A)
+        if(n[2] == 1) return(A)
+        O <- S <- array(, n)
+        nobs <- rep(n[1], n[2])
+        i <- (0:(n[1] - 1))/(n[1] - 1)
+        for(j in 1:n[2]){
+            Si <- sort(A[, j], method = "quick", index.return = TRUE)
+            nobsj <- length(Si$x)
+            if (nobsj < n[1]){
+                nobs[j] <- nobsj
+                isna <- is.na(A[, j])
+                S[, j] <- approx((0:(nobsj - 1))/(nobsj - 1), Si$x, 
+                    i, ties = "ordered")$y
+                O[!isna, j] <- ((1:n[1])[!isna])[Si$ix]
+            }else{
+                S[, j] <- Si$x
+                O[, j] <- Si$ix
+            }
+        }
+        m <- rowMeans(S)
+        for (j in 1:n[2]){
+            if(ties) r<-rank(A[, j])
+            if(nobs[j] < n[1]){
+                isna <- is.na(A[, j])
+                if(ties){ 
+                    A[!isna, j] <- stats::approx(i, m, (r[!isna] - 1)/(nobs[j] - 1), ties = "ordered")$y
+                }else{ 
+                    A[O[!isna, j], j] <- stats::approx(i, m, (0:(nobs[j] - 1))/(nobs[j] - 1), ties = "ordered")$y
+                }
+            }else{
+                if(ties){
+                    A[, j] <- stats::approx(i, m, (r - 1)/(n[1] - 1), ties = "ordered")$y
+                }else{
+                    A[O[, j], j] <- m
+                }
+            }
+        }
+    
+        return(A)
+    }
+    
+    ####################################################################################
+    if(ncol(PTmatrix) == 1){
+        normalise.affinity.matrix <- "none"
+    }
+    
+    if(normalise.affinity.matrix=="quantile"){
+        PTmatrix <- normalizeQuantiles(PTmatrix)
+    }
+    
+    if(verbose){
+        now <- Sys.time()
+        message(sprintf("Finally, output %d by %d affinity matrix normalised by %s (%s) ...", nrow(PTmatrix), ncol(PTmatrix), normalise.affinity.matrix, as.character(now)), appendLF=T)
+    }
+
+    ####################################################################################
+    endT <- Sys.time()
+    if(verbose){
+        message(paste(c("\nFinish at ",as.character(endT)), collapse=""), appendLF=T)
+    }
+    
+    runTime <- as.numeric(difftime(strptime(endT, "%Y-%m-%d %H:%M:%S"), strptime(startT, "%Y-%m-%d %H:%M:%S"), units="secs"))
+    message(paste(c("Runtime in total is: ",runTime," secs\n"), collapse=""), appendLF=T)
+
     invisible(PTmatrix)
 }
+
+

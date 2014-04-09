@@ -2,10 +2,10 @@
 \alias{dGSEAview}
 \title{Function to view enrichment results in a sample-specific manner}
 \usage{
-dGSEAview(eTerm, which_sample = 1, top_num = 10,
-sortBy = c("adjp", "gadjp", "ES", "nES", "pvalue", "FWER", "FDR",
-"qvalue"),
-decreasing = NULL, details = F)
+dGSEAview(eTerm, which_sample = 1, top_num = 10, sortBy = c("adjp",
+"gadjp", "ES", "nES", "pvalue", "FWER", "FDR", "qvalue"), decreasing =
+NULL,
+details = F)
 }
 \arguments{
 \item{eTerm}{an object of class "eTerm"}
@@ -43,8 +43,8 @@ when "details" is true} \item{\code{name}: term name;
 optional, it is only appended when "details" is true}
 \item{\code{namespace}: term namespace; optional, it is
 only appended when "details" is true}
-\item{\code{distance}: term distance; optional, it is
-only appended when "details" is true} }
+\item{\code{distance}: term distance; optional, it is only
+appended when "details" is true} }
 }
 \description{
 \code{dGSEAview} is supposed to view results of gene set
@@ -56,7 +56,7 @@ none
 \examples{
 \dontrun{
 dGSEAview(eTerm, which_sample=1, top_num=10, sortBy="adjp",
-decreasing=F, details=T)
+decreasing=FALSE, details=TRUE)
 }
 }
 \seealso{

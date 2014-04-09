@@ -20,11 +20,11 @@ if(!require(limma)){
 }
 
 # This multilayer omics dataset involves the information on DNA replication timing, promoter CpG classification and gene expression. It consists of digitised replication timing, promoter CpG status and expression levels of 17,292 genes in a variety of samples.
-load(url("http://dnet.r-forge.r-project.org/data/Hiratani_TableS1.RData"))
+load(url("http://dnet.r-forge.r-project.org/data/Datasets/Hiratani_TableS1.RData"))
 ls() # you should see three variables: 'RT', 'CpG' and 'EX'
 
 # Entrez Gene information for the mouse
-load(url("http://dnet.r-forge.r-project.org/data/org.Mm.eg.RData"))
+load(url("http://dnet.r-forge.r-project.org/data/Mm/org.Mm.eg.RData"))
 gene_info <- org.Mm.eg$gene_info
 gene_info[1:2,]
 
@@ -35,7 +35,7 @@ esetGene <- new("ExpressionSet", exprs=as.matrix(RT), phenoData=as(pdata,"Annota
 esetGene
 
 # An igraph object that contains a functional protein association network in mouse. The network is extracted from the STRING database (version 9.0.5). Only those associations with medium confidence (score>=0.4) are retained.
-load(url("http://dnet.r-forge.r-project.org/data/org.Mm.string.RData"))
+load(url("http://dnet.r-forge.r-project.org/data/Mm/org.Mm.string.RData"))
 org.Mm.string
 
 # extract network that only contains genes in esetGene

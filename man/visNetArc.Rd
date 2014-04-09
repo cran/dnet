@@ -2,13 +2,11 @@
 \alias{visNetArc}
 \title{Function to visualise an igraph object via arc diagram}
 \usage{
-visNetArc(g, orientation = c("vertical", "horizontal"),
-newpage = T, ordering = NULL, labels = V(g)$name,
-vertex.label.color = "black", vertex.label.cex = 1,
-vertex.color = "transparent",
-vertex.frame.color = "black",
-vertex.size = log(degree(g)) + 0.1, vertex.pch = 21,
-vertex.lwd = 1, edge.color = "grey", edge.width = 1,
+visNetArc(g, orientation = c("vertical", "horizontal"), newpage = T,
+ordering = NULL, labels = V(g)$name, vertex.label.color = "black",
+vertex.label.cex = 1, vertex.color = "transparent",
+vertex.frame.color = "black", vertex.size = log(degree(g)) + 0.1,
+vertex.pch = 21, vertex.lwd = 1, edge.color = "grey", edge.width = 1,
 edge.lty = 1, ...)
 }
 \arguments{
@@ -62,15 +60,14 @@ used as the default in plotting points. See
 invisible
 }
 \description{
-\code{visNetArc} is supposed to visualise a graph object
-of class "igraph" via arc diagram in one-dimensional
-layout. More precisely, it displays vertices (nodes)
-along an axis, with edges linked by arcs. With proper
-ordering of vertices (e.g. according to communities and
-degrees), arc diagram is able to identify clusters and
-bridges (as effective as two-dimensional layout). One
-advantage of using arc diagram is to allow for easy
-annotations along vertices.
+\code{visNetArc} is supposed to visualise a graph object of
+class "igraph" via arc diagram in one-dimensional layout.
+More precisely, it displays vertices (nodes) along an axis,
+with edges linked by arcs. With proper ordering of vertices
+(e.g. according to communities and degrees), arc diagram is
+able to identify clusters and bridges (as effective as
+two-dimensional layout). One advantage of using arc diagram
+is to allow for easy annotations along vertices.
 }
 \note{
 none

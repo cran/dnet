@@ -1,13 +1,11 @@
 \name{dSVDsignif}
 \alias{dSVDsignif}
-\title{Function to obtain SVD-based gene significance from the input
-gene-sample matrix}
+\title{Function to obtain SVD-based gene significance from the input gene-sample matrix}
 \usage{
-dSVDsignif(data, num.eigen = NULL, pval.eigen = 0.01,
-signif = c("fdr", "pval"),
-orient.permutation = c("row", "column", "both"),
-num.permutation = 100,
-fdr.procedure = c("stepup", "stepdown"), verbose = T)
+dSVDsignif(data, num.eigen = NULL, pval.eigen = 0.01, signif = c("fdr",
+"pval"), orient.permutation = c("row", "column", "both"),
+num.permutation = 100, fdr.procedure = c("stepup", "stepdown"),
+verbose = T)
 }
 \arguments{
 \item{data}{an input gene-sample data matrix used for
@@ -63,12 +61,12 @@ a vector storing gene significance
 from the given gene-sample matrix according to singular
 value decomposition (SVD)-based method. The method
 includes: 1) singular value decomposition of the input
-matrix; 2) determination of the eigens in consideration
-(if not given); 3) construction of the gene-specific
-project vector based on the considered eigens; 4)
-calculation of the distance statistic from the projection
-vector to zero point vector; and 5) based on distance
-statistic to obtain the gene significance.
+matrix; 2) determination of the eigens in consideration (if
+not given); 3) construction of the gene-specific project
+vector based on the considered eigens; 4) calculation of
+the distance statistic from the projection vector to zero
+point vector; and 5) based on distance statistic to obtain
+the gene significance.
 }
 \note{
 none

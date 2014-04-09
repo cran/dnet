@@ -30,7 +30,7 @@
 #' @include dGSEAview.r
 #' @examples
 #' \dontrun{
-#' dGSEAview(eTerm, which_sample=1, top_num=10, sortBy="adjp", decreasing=F, details=T)
+#' dGSEAview(eTerm, which_sample=1, top_num=10, sortBy="adjp", decreasing=FALSE, details=TRUE)
 #' }
 
 dGSEAview <- function(eTerm, which_sample=1, top_num=10, sortBy=c("adjp","gadjp","ES","nES","pvalue","FWER","FDR","qvalue"), decreasing=NULL, details=F) 

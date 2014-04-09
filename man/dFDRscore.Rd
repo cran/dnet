@@ -1,8 +1,6 @@
 \name{dFDRscore}
 \alias{dFDRscore}
-\title{Function to transform fdr into scores according to
-log-likelihood ratio between the true positives and the false
-positivies and/or after controlling false discovery rate}
+\title{Function to transform fdr into scores according to log-likelihood ratio between the true positives and the false positivies and/or after controlling false discovery rate}
 \usage{
 dFDRscore(fdr, fdr.threshold = NULL, scatter = F)
 }
@@ -29,11 +27,10 @@ threshold (if any)}
 fdr, which are transformed into scores according to
 according to log-likelihood ratio between the true
 positives and the false positivies. Also if the FDR
-threshold is given, it is used to make sure that fdr
-below threshold are considered significant and thus
-scored positively. Instead, those fdr above the given
-threshold are considered insigificant and thus scored
-negatively.
+threshold is given, it is used to make sure that fdr below
+threshold are considered significant and thus scored
+positively. Instead, those fdr above the given threshold
+are considered insigificant and thus scored negatively.
 }
 \note{
 none

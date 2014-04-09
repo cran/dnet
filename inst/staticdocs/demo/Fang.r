@@ -8,13 +8,12 @@
 library(dnet)
 
 # Load or install packages specifically used in this demo
-if(!require(affy)){
-    install.packages("affy",repos="http://www.stats.bris.ac.uk/R")
-    library(affy)
-}
-if(!require(limma)){
-    install.packages("limma",repos="http://www.stats.bris.ac.uk/R")
-    library(limma)
+list.pkg <- c("affy","limma")
+for(pkg in list.pkg){
+    if(!require(pkg, character.only=T)){
+        install.packages(pkg,repos="http://www.stats.bris.ac.uk/R",dependencies=TRUE)
+        lapply(pkg, library, character.only=T)
+    }
 }
 
 # import data containing three variables ('Fang', 'Fang.geneinfo' and 'Fang.sampleinfo')
@@ -60,7 +59,7 @@ esetGene <- prob2gene(eset)
 esetGene
 
 # An igraph object that contains a functional protein association network in human. The network is extracted from the STRING database (version 9.0.5). Only those associations with medium confidence (score>=0.4) are retained.
-load(url("http://dnet.r-forge.r-project.org/data/org.Hs.string.RData"))
+load(url("http://dnet.r-forge.r-project.org/data/Hs/org.Hs.string.RData"))
 org.Hs.string
 
 # extract network that only contains genes in esetGene

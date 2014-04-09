@@ -1,10 +1,8 @@
 \name{dBUMfit}
 \alias{dBUMfit}
-\title{Function to fit a p-value distribution under beta-uniform
-mixture model}
+\title{Function to fit a p-value distribution under beta-uniform mixture model}
 \usage{
-dBUMfit(x, ntry = 1, hist.bum = T, contour.bum = T,
-verbose = T)
+dBUMfit(x, ntry = 1, hist.bum = T, contour.bum = T, verbose = T)
 }
 \arguments{
 \item{x}{a vector containing input p-values}
@@ -27,31 +25,30 @@ true for display}
 }
 \value{
 an object of class "BUM", a list with following elements:
-\itemize{ \item{\code{lambda}: estimated mixture
-parameter} \item{\code{a}: estimated shape parameter}
+\itemize{ \item{\code{lambda}: estimated mixture parameter}
+\item{\code{a}: estimated shape parameter}
 \item{\code{NLL}: Negative log-likelihood}
-\item{\code{pvalues}: the input pvalues}
-\item{\code{call}: the call that produced this result} }
+\item{\code{pvalues}: the input pvalues} \item{\code{call}:
+the call that produced this result} }
 }
 \description{
 \code{dBUMfit} is supposed to take as input a vector of
-p-values for deriving their distribution under
-beta-uniform mixture model (see Note below). The density
-distribution of input p-values is expressed as a mixture
-of two components: one for the null hypothesis (the noise
-component) and the other for the alternative hypothesis
-(the signal component). The noise component is the
-uniform density, while the signal component is the
-remainder of the mixture distribution. It returns an
-object of class "BUM".
+p-values for deriving their distribution under beta-uniform
+mixture model (see Note below). The density distribution of
+input p-values is expressed as a mixture of two components:
+one for the null hypothesis (the noise component) and the
+other for the alternative hypothesis (the signal
+component). The noise component is the uniform density,
+while the signal component is the remainder of the mixture
+distribution. It returns an object of class "BUM".
 }
 \note{
 The probability density function of p-values under the
 Beta-Uniform Mixture model is formulated as:
-\eqn{f(x|\lambda,a) = \lambda + (1-\lambda)*a*x^{a-1}}.
-The model names after mixing two distributions: \itemize{
-\item{the uniform distribution with the density function
-as \eqn{\frac{1}{b-a}|_{a=0}^{b=1}=1}} \item{the beta
+\eqn{f(x|\lambda,a) = \lambda + (1-\lambda)*a*x^{a-1}}. The
+model names after mixing two distributions: \itemize{
+\item{the uniform distribution with the density function as
+\eqn{\frac{1}{b-a}|_{a=0}^{b=1}=1}} \item{the beta
 distribution with the density function as
 \eqn{\frac{\Gamma(a+b)}{\Gamma(a)+\Gamma(b)}*x^{a-1}*(1-x)^{b-1}|_{b=1}=a*x^{a-1}}}
 } Both are mixed via \eqn{\lambda}. The mixture parameter
@@ -65,10 +62,9 @@ signal): \itemize{ \item{the constant part as noise:
 \eqn{a*(x^{a-1}-1)}} } In other words, there is no signal
 at \eqn{x=1} but all being noise. It is a conservative,
 upper bound estimation of the noise. Therefore, the
-probability density function in the model can be
-decomposed into signal-noise components: \itemize{
-\item{the signal component:
-\eqn{(1-\lambda)*a*(x^{a-1}-1)}} \item{the noise
+probability density function in the model can be decomposed
+into signal-noise components: \itemize{ \item{the signal
+component: \eqn{(1-\lambda)*a*(x^{a-1}-1)}} \item{the noise
 component: \eqn{\lambda + (1-\lambda)*a}} } It is
 misleading to simply view \eqn{\lambda} as the noise
 component and \eqn{(1-\lambda)*a*x^{a-1}} as the signal

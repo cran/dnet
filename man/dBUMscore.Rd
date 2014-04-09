@@ -1,11 +1,8 @@
 \name{dBUMscore}
 \alias{dBUMscore}
-\title{Function to transform p-values into scores according to the
-fitted beta-uniform mixture model and/or after controlling false
-discovery rate}
+\title{Function to transform p-values into scores according to the fitted beta-uniform mixture model and/or after controlling false discovery rate}
 \usage{
-dBUMscore(fit, method = c("pdf", "cdf"), fdr = NULL,
-scatter.bum = T)
+dBUMscore(fit, method = c("pdf", "cdf"), fdr = NULL, scatter.bum = T)
 }
 \arguments{
 \item{fit}{an object of class "BUM"}
@@ -37,8 +34,8 @@ p-values, which are transformed into scores according to
 the fitted beta-uniform mixture model. Also if the FDR
 threshold is given, it is used to make sure that p-values
 below this are considered significant and thus scored
-positively. Instead, those p-values above the given FDR
-are considered insigificant and thus scored negatively.
+positively. Instead, those p-values above the given FDR are
+considered insigificant and thus scored negatively.
 }
 \note{
 The transformation from the input p-value \eqn{x} to the
@@ -47,20 +44,19 @@ mixture model with two parameters \eqn{\lambda} and
 \eqn{a}: \eqn{f(x|\lambda,a) = \lambda +
 (1-\lambda)*a*x^{a-1}}. Specifically, it considers the
 log-likehood ratio between the signal and noise compoment
-of the model. The probability density function (pdf) of
-the signal component and the noise component are
+of the model. The probability density function (pdf) of the
+signal component and the noise component are
 \eqn{(1-\lambda)*a*(x^{a-1}-1)} and \eqn{\lambda +
 (1-\lambda)*a}, respectively. Accordingly, the cumulative
-distribution function (cdf) of the signal component and
-the noise component are \eqn{\int_0^x
-(1-\lambda)*a*(x^{a-1}-1) \, \mathrm{d}x} and
-\eqn{\int_0^x \lambda+(1-\lambda)*a \, \mathrm{d}x}. In
-order to take into account the significance of the
-p-value, the \eqn{fdr} threshold is also used for
-down-weighting the score. According to how to measure
-both components, there are two methods implemented for
-deriving the score \eqn{S(x)}: \itemize{ \item{The method
-"pdf": \eqn{S(x) =
+distribution function (cdf) of the signal component and the
+noise component are \eqn{\int_0^x (1-\lambda)*a*(x^{a-1}-1)
+\, \mathrm{d}x} and \eqn{\int_0^x \lambda+(1-\lambda)*a \,
+\mathrm{d}x}. In order to take into account the
+significance of the p-value, the \eqn{fdr} threshold is
+also used for down-weighting the score. According to how to
+measure both components, there are two methods implemented
+for deriving the score \eqn{S(x)}: \itemize{ \item{The
+method "pdf": \eqn{S(x) =
 log_2\frac{(1-\lambda)*a*(x^{a-1}-1)}{\lambda+(1-\lambda)*a}
 -
 log_2\frac{(1-\lambda)*a*(\tau^{a-1}-1)}{\lambda+(1-\lambda)*a}
@@ -89,9 +85,9 @@ i.e. the p-value corresponding to the exact \eqn{fdr}
 threshold. It can be duduced from the definition of the
 false discovery rate: \eqn{fdr \doteq \frac{\int_0^\tau
 \lambda+(1-\lambda)*a \, \mathrm{d}x}{\int_0^\tau
-\lambda+(1-\lambda)*a*x^{a-1} \, \mathrm{d}x}}. Notably,
-if the calculated \eqn{\tau} exceeds the contraint, it
-will be reset to the maximum end of that constraint} }
+\lambda+(1-\lambda)*a*x^{a-1} \, \mathrm{d}x}}. Notably, if
+the calculated \eqn{\tau} exceeds the contraint, it will be
+reset to the maximum end of that constraint} }
 }
 \examples{
 # 1) generate an vector consisting of random values from beta distribution

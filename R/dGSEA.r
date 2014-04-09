@@ -3,16 +3,19 @@
 #' \code{dGSEA} is supposed to conduct gene set enrichment analysis given the input data and the ontology in query. It returns an object of class "eTerm". 
 #'
 #' @param data a data frame or matrix of input data. It must have row names, either Entrez Gene ID or Symbol
-#' @param identity the type of gene identity (i.e. row names of input data), either "symbol" for gene symbols (by default) or "entrez" for Entrez Gene ID. The option "symbol" is preferred as it is relatively stable from one update to another; when gene symbols cannot be matched, synonyms will be searched against
-#' @param genome the genome identity. It can be either "mm" for mouse genome or "hs" for human genome
-#' @param ontology the ontology supported currently. It can be "GOBP" for Gene Ontology Biological Process, "GOMF" for Gene Ontology Molecular Function, "GOCC" for Gene Ontology Cellular Component, "MP" for Mammalian Phenotype, "HP" for Human Phenotype, "DO" for Disease Ontology, and "PS" for phylostratific age 
+#' @param identity the type of gene identity (i.e. row names of input data), either "symbol" for gene symbols (by default) or "entrez" for Entrez Gene ID. The option "symbol" is preferred as it is relatively stable from one update to another; also it is possible to search against synonyms (see the next parameter)
+#' @param check.symbol.identity logical to indicate whether synonyms will be searched against when gene symbols cannot be matched. By default, it sets to FALSE since it may take a while to do such check using all possible synoyms
+#' @param genome the genome identity. It can be one of "Hs" for human, "Mm" for mouse, "Rn" for rat, "Gg" for chicken, "Ce" for c.elegans, "Dm" for fruitfly, "Da" for zebrafish, and "At" for arabidopsis
+#' @param ontology the ontology supported currently. It can be "GOBP" for Gene Ontology Biological Process, "GOMF" for Gene Ontology Molecular Function, "GOCC" for Gene Ontology Cellular Component, "PS" for phylostratific age information, "DO" for Disease Ontology, "HPPA" for Human Phenotype Phenotypic Abnormality, "HPMI" for Human Phenotype Mode of Inheritance, "HPON" for Human Phenotype ONset and clinical course, "MP" for Mammalian Phenotype, and the molecular signatures database (Msigdb) in human (including "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6", "MsigdbC7"). Note: These four ("GOBP", "GOMF", "GOCC" and "PS") are availble for all genomes/species; for "Hs" and "Mm", these five ("DO", "HPPA", "HPMI", "HPON" and "MP") are also supported; all "Msigdb" are only supported in "Hs". For details on the eligibility for pairs of input genome and ontology, please refer to the online Documentations at \url{http://dnet.r-forge.r-project.org/docs.html}
 #' @param sizeRange the minimum and maximum size of members of each gene set in consideration. By default, it sets to a minimum of 10 but no more than 1000
 #' @param which_distance which distance of terms in the ontology is used to restrict terms in consideration. By default, it sets to 'NULL' to consider all distances
 #' @param weight type of score weigth. It can be "0" for unweighted (an equivalent to Kolmogorov-Smirnov, only considering the rank), "1" for weighted by input gene score (by default), and "2" for over-weighted, and so on
 #' @param nperm the number of random permutations. For each permutation, gene-score associations will be permutated so that permutation of gene-term associations is realised
 #' @param fast logical to indicate whether to fast calculate expected results from permutated data. By default, it sets to true
 #' @param sigTail the tail used to calculate the statistical significance. It can be either "two-tails" for the significance based on two-tails  or "one-tail" for the significance based on one tail
+#' @param p.adjust.method the method used to adjust p-values. It can be one of "BH", "BY", "bonferroni", "holm", "hochberg" and "hommel". The first two methods "BH" (widely used) and "BY" control the false discovery rate (FDR: the expected proportion of false discoveries amongst the rejected hypotheses); the last four methods "bonferroni", "holm", "hochberg" and "hommel" are designed to give strong control of the family-wise error rate (FWER). Notes: FDR is a less stringent condition than FWER
 #' @param verbose logical to indicate whether the messages will be displayed in the screen. By default, it sets to false for no display
+#' @param RData.location the characters to tell the location of built-in RData files. By default, it remotely locates at \url{"http://dnet.r-forge.r-project.org/data"}. For the user equipped with fast internet connection, this option can be just left as default. But it is always advisable to download these files locally. Especially when the user needs to run this function many times, there is no need to ask the function to remotely download every time (also it will unnecessarily increase the runtime). For examples, these files (as a whole or part of them) can be first downloaded into your current working directory, and then set this option as: \eqn{RData.location="."}. Surely, the location can be anywhere as long as the user provides the correct path pointing to (otherwise, the script will have to remote download each time). Here is the UNIX command for downloading all RData files (preserving the directory structure): \eqn{wget -r -l2 -A "*.RData" -np -nH --cut-dirs=0 "http://dnet.r-forge.r-project.org/data"}
 #' @return 
 #' an object of class "eTerm", a list with following components:
 #' \itemize{
@@ -43,12 +46,15 @@
 #' @include dGSEA.r
 #' @examples
 #' \dontrun{
-#' load(url("http://dnet.r-forge.r-project.org/data/Hiratani_TableS1.RData"))
-#' data <- RT[,1:2]
-#' eTerm <- dGSEA(data, identity="symbol", genome="mm", ontology="MP", which_distance=c(1,2))
+#' load(url("http://dnet.r-forge.r-project.org/data/Datasets/Hiratani_TableS1.RData"))
+#' data <- RT[1:1000,1:2]
+#' eTerm <- dGSEA(data, identity="symbol", genome="Mm", ontology="MP", which_distance=c(1,2))
+#' res <- dGSEAview(eTerm, which_sample=1, top_num=5, sortBy="adjp", decreasing=FALSE, details=TRUE)
+#' visGSEA(eTerm, which_sample=1, which_term=rownames(res)[1])
+#' output <- dGSEAwrite(eTerm, which_content="gadjp", which_score="gadjp", filename="eTerm.txt")
 #' }
 
-dGSEA <- function(data, identity=c("symbol","entrez"), genome=c("mm", "hs"), ontology=c("GOBP","GOMF","GOCC","MP","DO","PS"), sizeRange=c(10,1000), which_distance=NULL, weight=1, nperm=100, fast=T, sigTail=c("two-tails","one-tail"), verbose=T)
+dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FALSE, genome=c("Hs", "Mm", "Rn", "Gg", "Ce", "Dm", "Da", "At"), ontology=c("GOBP","GOMF","GOCC","PS","DO","HPPA","HPMI","HPON","MP", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6", "MsigdbC7"), sizeRange=c(10,1000), which_distance=NULL, weight=1, nperm=100, fast=T, sigTail=c("two-tails","one-tail"), p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), verbose=T, RData.location="http://dnet.r-forge.r-project.org/data")
 {
     startT <- Sys.time()
     message(paste(c("Start at ",as.character(startT)), collapse=""), appendLF=T)
@@ -60,6 +66,7 @@ dGSEA <- function(data, identity=c("symbol","entrez"), genome=c("mm", "hs"), ont
     genome <- match.arg(genome)
     ontology <- match.arg(ontology)
     sigTail <- match.arg(sigTail)
+    p.adjust.method <- match.arg(p.adjust.method)
     
     if (is.vector(data)){
         data <- matrix(data, nrow=length(data), ncol=1)
@@ -81,82 +88,95 @@ dGSEA <- function(data, identity=c("symbol","entrez"), genome=c("mm", "hs"), ont
         message(sprintf("First, load the ontology %s and its gene associations in the genome %s (%s) ...", ontology, genome, as.character(now)), appendLF=T)
     }
     
+    ###############################
+    ## check the eligibility for pairs of input genome and ontology
+    all.ontologies <- c("GOBP","GOMF","GOCC","PS","DO","HPPA","HPMI","HPON","MP", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6", "MsigdbC7")
+    possible.ontologies <- switch(genome,
+                       Hs = all.ontologies[c(1:4, 5:9, 10:24)],
+                       Mm = all.ontologies[c(1:4, 5:9)],
+                       Rn = all.ontologies[c(1:4)],
+                       Gg = all.ontologies[c(1:4)],
+                       Ce = all.ontologies[c(1:4)],
+                       Dm = all.ontologies[c(1:4)],
+                       Da = all.ontologies[c(1:4)],
+                       At = all.ontologies[c(1:4)]
+                       )
+    if(!(ontology %in% possible.ontologies)){
+        stop(sprintf("The input pair of genome (%s) and ontology (%s) are not supported.\nThe supported ontologies in genome (%s): %s.\n", genome, ontology, genome, paste(possible.ontologies,collapse=", ")))
+    }
+
+    ###############################
+    ## make sure there is no "/" at the end
+    path_host <- gsub("/$", "", RData.location)
+    if(path_host=="" || length(path_host)==0 || is.na(path_host)){
+        path_host <- "http://dnet.r-forge.r-project.org/data"
+    }
+
+    #########
+    ## load Enterz Gene information
     EG <- list()
-    GS <- list()
-    if(genome == "mm"){
-        
-        #data("org.Mm.eg", package="dnet")
-        load(url("http://dnet.r-forge.r-project.org/data/org.Mm.eg.RData"))
-        eval(parse(text="EG <- org.Mm.eg"))
-        #do.call(assign, list("EG", org.Mm.eg))
-        
-        if(ontology == "GOBP"){
-            #data("org.Mm.egGOBP", package="dnet")
-            load(url("http://dnet.r-forge.r-project.org/data/org.Mm.egGOBP.RData"))
-            eval(parse(text="GS <- org.Mm.egGOBP"))
-        }else if(ontology == "GOMF"){
-            #data("org.Mm.egGOMF", package="dnet")
-            load(url("http://dnet.r-forge.r-project.org/data/org.Mm.egGOMF.RData"))
-            eval(parse(text="GS <- org.Mm.egGOMF"))
-        }else if(ontology == "GOCC"){
-            #data("org.Mm.egGOCC", package="dnet")
-            load(url("http://dnet.r-forge.r-project.org/data/org.Mm.egGOCC.RData"))
-            eval(parse(text="GS <- org.Mm.egGOCC"))
-        }else if(ontology == "MP"){
-            #data("org.Mm.egMP", package="dnet")
-            load(url("http://dnet.r-forge.r-project.org/data/org.Mm.egMP.RData"))
-            eval(parse(text="GS <- org.Mm.egMP"))
-        }else if(ontology == "HP"){
-            #data("org.Mm.egHP", package="dnet")
-            load(url("http://dnet.r-forge.r-project.org/data/org.Mm.egHP.RData"))
-            eval(parse(text="GS <- org.Mm.egHP"))
-        }else if(ontology == "DO"){
-            #data("org.Mm.egDO", package="dnet")
-            load(url("http://dnet.r-forge.r-project.org/data/org.Mm.egDO.RData"))
-            eval(parse(text="GS <- org.Mm.egDO"))
-        }else if(ontology == "PS"){
-            #data("org.Mm.egPS", package="dnet")
-            load(url("http://dnet.r-forge.r-project.org/data/org.Mm.egPS.RData"))
-            eval(parse(text="GS <- org.Mm.egPS"))
+    load_EG_remote <- paste(path_host, "/", genome, "/org.", genome, ".eg.RData", sep="")
+    load_EG_local1 <- file.path(path_host, paste("data/", genome, "/org.", genome, ".eg.RData", sep=""))
+    load_EG_local2 <- file.path(path_host, paste(genome, "/org.", genome, ".eg.RData", sep=""))
+    load_EG_local3 <- file.path(path_host, paste("org.", genome, "/org.", genome, ".eg.RData", sep=""))
+    ## first, load local R files
+    EG_local <- c(load_EG_local1, load_EG_local2, load_EG_local3)
+    load_flag <- sapply(EG_local, function(x){
+        if(.Platform$OS.type=="windows") x <- gsub("/", "\\\\", x)
+        ifelse(file.exists(x), TRUE, FALSE)
+    })
+    ## otherwise, load remote R files
+    if(sum(load_flag)==0){
+        if(class(try(load(url(load_EG_remote)), T))=="try-error"){
+            load_EG_remote <- paste("http://dnet.r-forge.r-project.org/data/", genome, "/org.", genome, ".eg.RData", sep="")
+            if(class(try(load(url(load_EG_remote)), T))=="try-error"){
+                stop("Built-in Rdata files cannot be loaded. Please check your internet connection or their location in your local machine.\n")
+            }
         }
-    }else if(genome == "hs"){
-        
-        #data("org.Hs.eg", package="dnet")
-        load(url("http://dnet.r-forge.r-project.org/data/org.Hs.eg.RData"))
-        eval(parse(text="EG <- org.Hs.eg"))
-        #do.call(assign, list("EG", org.Hs.eg))
-        
-        if(ontology == "GOBP"){
-            #data("org.Hs.egGOBP", package="dnet")
-            load(url("http://dnet.r-forge.r-project.org/data/org.Hs.egGOBP.RData"))
-            eval(parse(text="GS <- org.Hs.egGOBP"))
-        }else if(ontology == "GOMF"){
-            #data("org.Hs.egGOMF", package="dnet")
-            load(url("http://dnet.r-forge.r-project.org/data/org.Hs.egGOMF.RData"))
-            eval(parse(text="GS <- org.Hs.egGOMF"))
-        }else if(ontology == "GOCC"){
-            #data("org.Hs.egGOCC", package="dnet")
-            load(url("http://dnet.r-forge.r-project.org/data/org.Hs.egGOCC.RData"))
-            eval(parse(text="GS <- org.Hs.egGOCC"))
-        }else if(ontology == "MP"){
-            #data("org.Hs.egMP", package="dnet")
-            load(url("http://dnet.r-forge.r-project.org/data/org.Hs.egMP.RData"))
-            eval(parse(text="GS <- org.Hs.egMP"))
-        }else if(ontology == "HP"){
-            #data("org.Hs.egMP", package="dnet")
-            load(url("http://dnet.r-forge.r-project.org/data/org.Hs.egHP.RData"))
-            eval(parse(text="GS <- org.Hs.egHP"))
-        }else if(ontology == "DO"){
-            #data("org.Hs.egDO", package="dnet")
-            load(url("http://dnet.r-forge.r-project.org/data/org.Hs.egDO.RData"))
-            eval(parse(text="GS <- org.Hs.egDO"))
-        }else if(ontology == "PS"){
-            #data("org.Hs.egPS", package="dnet")
-            load(url("http://dnet.r-forge.r-project.org/data/org.Hs.egPS.RData"))
-            eval(parse(text="GS <- org.Hs.egPS"))
-        }
+        load_EG <- load_EG_remote
+    }else{
+        load_EG <- EG_local[load_flag]
+        load(load_EG)
+    }
+    eval(parse(text=paste("EG <- org.", genome, ".eg", sep="")))
+    
+    if(verbose){
+        message(sprintf("\tLoad Enterz Gene information from %s", load_EG), appendLF=T)
     }
     
+    #########
+    ## load annotation information
+    GS <- list()
+    load_GS_remote <- paste(path_host, "/", genome, "/org.", genome, ".eg", ontology, ".RData", sep="")
+    load_GS_local1 <- file.path(path_host, paste("data/", genome, "/org.", genome, ".eg", ontology, ".RData", sep=""))
+    load_GS_local2 <- file.path(path_host, paste(genome, "/org.", genome, ".eg", ontology, ".RData", sep=""))
+    load_GS_local3 <- file.path(path_host, paste("org.", genome, ".eg", ontology, ".RData", sep=""))
+    ## first, load local R files
+    GS_local <- c(load_GS_local1, load_GS_local2, load_GS_local3)
+    load_flag <- sapply(GS_local, function(x){
+        if(.Platform$OS.type=="windows") x <- gsub("/", "\\\\", x)
+        ifelse(file.exists(x), TRUE, FALSE)
+    })
+    ## otherwise, load remote R files
+    if(sum(load_flag)==0){
+        if(class(try(load(url(load_GS_remote)), T))=="try-error"){
+            load_GS_remote <- paste("http://dnet.r-forge.r-project.org/data/", genome, "/org.", genome, ".eg", ontology, ".RData", sep="")
+            if(class(try(load(url(load_GS_remote)), T))=="try-error"){
+                stop("Built-in Rdata files cannot be loaded. Please check your internet connection or their location in your local machine.\n")
+            }
+        }
+        load_GS <- load_GS_remote
+    }else{
+        load_GS <- GS_local[load_flag]
+        load(load_GS)
+    }
+    eval(parse(text=paste("GS <- org.", genome, ".eg", ontology, sep="")))
+    
+    if(verbose){
+        message(sprintf("\tLoad annotation information from %s", load_GS), appendLF=T)
+    }
+    
+    ###############################
     allGeneID <- EG$gene_info$GeneID
     allSymbol <- as.vector(EG$gene_info$Symbol)
     allSynonyms <- as.vector(EG$gene_info$Synonyms)
@@ -170,6 +190,7 @@ dGSEA <- function(data, identity=c("symbol","entrez"), genome=c("mm", "hs"), ont
     
         Symbol <- rownames(data)
         
+        ## correct for those symbols being shown as DATE format
         if(1){
             ## for those starting with 'Mar' in a excel-input date format
             a <- Symbol
@@ -199,39 +220,50 @@ dGSEA <- function(data, identity=c("symbol","entrez"), genome=c("mm", "hs"), ont
         ## case-insensitive
         match_flag <- match(tolower(Symbol),tolower(allSymbol))
         
-        ## match Synonyms (if not found via Symbol)
-        na_flag <- is.na(match_flag)
-        a <- Symbol[na_flag]
+        ## match vis Synonyms for those unmatchable by official gene symbols
+        if(check.symbol.identity){
+            ## match Synonyms (if not found via Symbol)
+            na_flag <- is.na(match_flag)
+            a <- Symbol[na_flag]
 
-        ###
-        tmp_flag <- is.na(match(tolower(allSymbol), tolower(Symbol)))
-        tmp_Synonyms <- allSynonyms[tmp_flag]
-        Orig.index <- seq(1,length(allSynonyms))
-        Orig.index <- Orig.index[tmp_flag]
-        ###
+            ###
+            tmp_flag <- is.na(match(tolower(allSymbol), tolower(Symbol)))
+            tmp_Synonyms <- allSynonyms[tmp_flag]
+            Orig.index <- seq(1,length(allSynonyms))
+            Orig.index <- Orig.index[tmp_flag]
+            ###
 
-        b <- sapply(1:length(a), function(x){
-            tmp_pattern1 <- paste("^",a[x],"\\|", sep="")
-            tmp_pattern2 <- paste("\\|",a[x],"\\|", sep="")
-            tmp_pattern3 <- paste("\\|",a[x],"$", sep="")
-            tmp_pattern <- paste(tmp_pattern1,"|",tmp_pattern2,"|",tmp_pattern3, sep="")
-            tmp_result <- grep(tmp_pattern, tmp_Synonyms, ignore.case=T, perl=T, value=F)
-            ifelse(length(tmp_result)==1, Orig.index[tmp_result[1]], NA)
-        })
-        match_flag[na_flag] <- b
-        GeneID <- allGeneID[match_flag]
+            b <- sapply(1:length(a), function(x){
+                tmp_pattern1 <- paste("^",a[x],"\\|", sep="")
+                tmp_pattern2 <- paste("\\|",a[x],"\\|", sep="")
+                tmp_pattern3 <- paste("\\|",a[x],"$", sep="")
+                tmp_pattern <- paste(tmp_pattern1,"|",tmp_pattern2,"|",tmp_pattern3, sep="")
+                tmp_result <- grep(tmp_pattern, tmp_Synonyms, ignore.case=T, perl=T, value=F)
+                ifelse(length(tmp_result)==1, Orig.index[tmp_result[1]], NA)
+            })
+            match_flag[na_flag] <- b
+            
+            if(verbose){
+                now <- Sys.time()
+                message(sprintf("\tAmong %d symbols of input data, there are %d mappable via official gene symbols, %d mappable via gene alias but %d left unmappable", length(Symbol), (length(Symbol)-length(a)), sum(!is.na(b)), sum(is.na(b))), appendLF=T)
+            }
+        }else{
+            if(verbose){
+                now <- Sys.time()
+                message(sprintf("\tAmong %d symbols of input data, there are %d mappable via official gene symbols but %d left unmappable", length(Symbol), (sum(!is.na(match_flag))), (sum(is.na(match_flag)))), appendLF=T)
+            }
         
-        if(verbose){
-            now <- Sys.time()
-            message(sprintf("\tAmong %d symbols of input data, there are %d mappable via official gene symbols, %d mappable via alias and %d unmappable", length(Symbol), (length(Symbol)-length(a)), sum(!is.na(b)), sum(is.na(b))), appendLF=T)
         }
+        
+        ## convert into GeneID
+        GeneID <- allGeneID[match_flag]
         
     }else{
         GeneID <- rownames(data)
         match_flag <- match(GeneID,allGeneID)
         GeneID <- allGeneID[match_flag]
     }
-       
+    
     flag <- !is.na(GeneID)
     data <- as.matrix(data[flag,])
     GeneID <- GeneID[flag]
@@ -255,6 +287,9 @@ dGSEA <- function(data, identity=c("symbol","entrez"), genome=c("mm", "hs"), ont
     nSample <- ncol(data)
     geneid <- rownames(data) ## only those genes in question are considered
     
+    if(nGene==0){
+        stop("There is no gene being used.\n")
+    }
     
     ## filter based on "which_distance"
     if(!is.null(which_distance) & sum(is.na(GS$set_info$distance))==0){
@@ -290,6 +325,10 @@ dGSEA <- function(data, identity=c("symbol","entrez"), genome=c("mm", "hs"), ont
     }
     names(gs) <- gs_names
     nSet <- length(gs)
+    
+    if(nSet==0){
+        stop("There is no gene set being used.\n")
+    }
     
     ## Enrichment score for the gene set; that is, the degree to which this gene set is overrepresented at the top or bottom of the ranked list of genes in the expression dataset
     SS.es <- matrix(0, nrow=nSet, ncol=nSample)
@@ -353,8 +392,7 @@ dGSEA <- function(data, identity=c("symbol","entrez"), genome=c("mm", "hs"), ont
             
             if(verbose){
                 if(k %% 100==0 | k==nSet){
-                    now <- Sys.time()
-                    message(sprintf("\t\t %d of %d gene sets have been processed (%s) ...", k, nSet, as.character(now)), appendLF=T)
+                    message(sprintf("\t\t %d of %d gene sets have been processed", k, nSet), appendLF=T)
                 }
             }
             
@@ -480,7 +518,7 @@ dGSEA <- function(data, identity=c("symbol","entrez"), genome=c("mm", "hs"), ont
         }
 
         ## adjusted p-value
-        adjP <- p.adjust(pES, method="BH")
+        adjP <- stats::p.adjust(pES, method=p.adjust.method)
         
         ##########        
         ## normalised ES score
@@ -587,7 +625,13 @@ dGSEA <- function(data, identity=c("symbol","entrez"), genome=c("mm", "hs"), ont
         }
         # for negative part
         if(pos.part < nSet){
-            neg.part <- pos.part + 1
+            ##############################
+            if(pos.part==0){
+                neg.part <- pos.part <- 1
+            }else{
+                neg.part <- pos.part + 1
+            }
+            ##############################
             tmp.min <- qES.sorted[pos.part]
             for (k in seq(neg.part, nSet)) {
                 if (qES.sorted[k] < tmp.min) {
@@ -620,7 +664,7 @@ dGSEA <- function(data, identity=c("symbol","entrez"), genome=c("mm", "hs"), ont
     
     ####################################################################################
     endT <- Sys.time()
-    message(paste(c("End at ",as.character(endT)), collapse=""), appendLF=T)
+    message(paste(c("\nEnd at ",as.character(endT)), collapse=""), appendLF=T)
     
     runTime <- as.numeric(difftime(strptime(endT, "%Y-%m-%d %H:%M:%S"), strptime(startT, "%Y-%m-%d %H:%M:%S"), units="secs"))
     message(paste(c("Runtime in total is: ",runTime," secs\n"), collapse=""), appendLF=T)

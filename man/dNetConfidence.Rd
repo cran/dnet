@@ -1,7 +1,6 @@
 \name{dNetConfidence}
 \alias{dNetConfidence}
-\title{Function to append the confidence information from the source
-graphs into the target graph}
+\title{Function to append the confidence information from the source graphs into the target graph}
 \usage{
 dNetConfidence(target, sources, plot = F)
 }
@@ -31,18 +30,17 @@ attribute to the nodes and the "edgeConfidence" attribute
 to the edges
 }
 \description{
-\code{eConsensusGraph} is supposed to append the
-confidence information (extracted from a list of the
-source graphs) into the target graph. The confidence
-information is about how often a node (or an edge) in the
-target graph that can be found in the input source
-graphs. The target graph is an object of class "igraph"
-or "graphNEL", and the source graphs are a list of
-objects of class "igraph" or "graphNEL". It also returns
-an object of class "igraph" or "graphNEL"; specifically,
-the same as the input target graph but appended with the
-"nodeConfidence" attribute to the nodes and the
-"edgeConfidence" attribute to the edges.
+\code{eConsensusGraph} is supposed to append the confidence
+information (extracted from a list of the source graphs)
+into the target graph. The confidence information is about
+how often a node (or an edge) in the target graph that can
+be found in the input source graphs. The target graph is an
+object of class "igraph" or "graphNEL", and the source
+graphs are a list of objects of class "igraph" or
+"graphNEL". It also returns an object of class "igraph" or
+"graphNEL"; specifically, the same as the input target
+graph but appended with the "nodeConfidence" attribute to
+the nodes and the "edgeConfidence" attribute to the edges.
 }
 \note{
 None

@@ -1,16 +1,14 @@
 \name{visNetReorder}
 \alias{visNetReorder}
-\title{Function to visualise the multiple graph colorings reorded
-within a sheet-shape rectangle grid}
+\title{Function to visualise the multiple graph colorings reorded within a sheet-shape rectangle grid}
 \usage{
-visNetReorder(g, data, sReorder, height = 7,
-margin = rep(0.1, 4), border.color = "#EEEEEE",
-colormap = c("bwr", "jet", "gbr", "wyr", "br", "yr", "rainbow", "wb"),
-ncolors = 40, zlim = NULL, colorbar = T,
+visNetReorder(g, data, sReorder, height = 7, margin = rep(0.1, 4),
+border.color = "#EEEEEE", colormap = c("bwr", "jet", "gbr", "wyr",
+"br",
+"yr", "rainbow", "wb"), ncolors = 40, zlim = NULL, colorbar = T,
 colorbar.fraction = 0.5, newpage = T,
-glayout = layout.fruchterman.reingold, mtext.side = 3,
-mtext.adj = 0, mtext.cex = 1, mtext.font = 2,
-mtext.col = "black", ...)
+glayout = layout.fruchterman.reingold, mtext.side = 3, mtext.adj = 0,
+mtext.cex = 1, mtext.font = 2, mtext.col = "black", ...)
 }
 \arguments{
 \item{g}{an object of class "igraph" or "graphNEL"}
@@ -102,9 +100,8 @@ for the complete list.}
 invisible
 }
 \description{
-\code{visNetReorder} is supposed to visualise the
-multiple graph colorings reorded within a sheet-shape
-rectangle grid
+\code{visNetReorder} is supposed to visualise the multiple
+graph colorings reorded within a sheet-shape rectangle grid
 }
 \note{
 none

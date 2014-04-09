@@ -4,7 +4,7 @@ R (http://www.r-project.org) is a language and environment for statistical compu
 
 * Quick link for `Windows` and `Mac`: [Download R for Windows](http://www.stats.bris.ac.uk/R/bin/windows/base/R-3.0.3-win.exe) and [Download R for Mac](http://www.stats.bris.ac.uk/R/bin/macosx/R-latest.pkg).
 
-* Below are `shell command lines in Terminal` (for `Linux`):
+* Below are `shell command lines in Terminal` (for both `Linux` and `Mac`):
 
 Assume you have a `ROOT (sudo)` privilege:
     
@@ -29,35 +29,19 @@ Assume you do not have a ROOT privilege and want R installation under your home 
     make install
     /home/hfang/R-3.0.3/bin/R # start R
 
-## 2. Install the packages from CRAN (Bioconductor & R-Forge)
+## 2. Install the packages from CRAN, R-Forge and github
 
 Notes: below are `R command lines (NOT shell command lines in Terminal)`.
 
-To install [stable release version](http://cran.r-project.org/package=dnet), run:
+First, install the dependent packages:
 
-    source("http://bioconductor.org/biocLite.R")
-    biocLite(pkgs=c("supraHex","graph","Rgraphviz"))
-    install.packages("dnet",repos="http://cran.r-project.org",type="source")
+    if(!require(hexbin)) install.packages("hexbin",repos="http://www.stats.bris.ac.uk/R")
+    if(!require(ape)) install.packages("ape",repos="http://www.stats.bris.ac.uk/R")
+    if(!require(supraHex)) install.packages("supraHex",repos="http://R-Forge.R-project.org", type="source")
+    if(!require(igraph)) install.packages("igraph",repos="http://www.stats.bris.ac.uk/R")
+    if(!require(devtools)) install.packages("devtools",repos="http://www.stats.bris.ac.uk/R")
+    if(!require(arcdiagram)) install_github("arcdiagram",  username="gastonstat")
 
-To install [latest development version](http://r-forge.r-project.org/projects/dnet) (`highly recommended` for benefits of latest improvements), run:
+Then, install the dnet package:
 
-    ## First, install from CRAN
-    list.pkg <- c("ape","igraph")
-    for(pkg in list.pkg){
-        if(!require(pkg, character.only=T)){
-            install.packages(pkg,repos="http://www.stats.bris.ac.uk/R",dependencies=T)
-        }
-    }
-    
-    ## Second, install from Bioconductor
-    list.pkg <- c("graph","Rgraphviz")
-    source("http://bioconductor.org/biocLite.R")
-    for(pkg in list.pkg){
-        if(!require(pkg, character.only=T)) biocLite(pkg)
-    }
-    
-    ## Last, install from R-Forge
-    list.pkg <- c("supraHex","dnet")
-    for(pkg in list.pkg){
-        install.packages(pkg,repos="http://R-Forge.R-project.org", type="source")
-    }
+    if(!require(dnet)) install.packages("dnet",repos="http://R-Forge.R-project.org", type="source")

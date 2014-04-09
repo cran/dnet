@@ -190,8 +190,7 @@ dNetPipeline <- function(g, pval, method=c("pdf","cdf","fdr"), fdr=NULL, nsize=N
     ####################################################################################
     endT <- Sys.time()
     if(verbose){
-        message("", appendLF=T)
-        message(paste(c("Finish at ",as.character(endT)), collapse=""), appendLF=T)
+        message(paste(c("\nFinish at ",as.character(endT)), collapse=""), appendLF=T)
     }
     
     runTime <- as.numeric(difftime(strptime(endT, "%Y-%m-%d %H:%M:%S"), strptime(startT, "%Y-%m-%d %H:%M:%S"), units="secs"))

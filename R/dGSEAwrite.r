@@ -27,7 +27,7 @@
 #' output <- dGSEAwrite(eTerm, which_content="gadjp", which_score="gadjp", filename="eTerm.txt")
 #' }
 
-dGSEAwrite <- function(eTerm, which_content=c("gadjp","adjp","pvalue","FWER","FDR","qvalue","nES","ES"), which_score=c("gadjp","adjp","FWER","FDR","qvalue"), cutoff=0.1, filename=NULL, keep.significance=T) 
+dGSEAwrite <- function(eTerm, which_content=c("gadjp","adjp","pvalue","FWER","FDR","qvalue","nES","ES"), which_score=c("gadjp","adjp","FWER","FDR","qvalue","nES"), cutoff=0.1, filename=NULL, keep.significance=T) 
 {
 
     if (class(eTerm) != "eTerm" ){

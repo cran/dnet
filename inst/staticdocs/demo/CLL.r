@@ -14,7 +14,7 @@ if(!require(limma)){
 }
 
 # This dataset involves 130 patients with chronic lymphocytic leukemia (CLL). When enrolled in the study, these CLL patients had not received prior therapy for CLL. Additional covariate about sampling time to first treatment (years) is available. The dataset has been normalised and log2-transformed, and provided as an "ExpressionSet" object.
-load(url("http://dnet.r-forge.r-project.org/data/CLL.RData"))
+load(url("http://dnet.r-forge.r-project.org/data/Datasets/CLL.RData"))
 CLL
 
 # Non-specific probesets filtering: the signals below log2(30) are considered as being technically unreliable (i.e. an empirically determined value of minimum sensitivity). Also, those probesets with >70% of samples having technically unriliable signals were excluded from further consideration
@@ -55,7 +55,7 @@ esetGene <- prob2gene(esetNew)
 esetGene
 
 # An igraph object that contains a functional protein association network in human. The network is extracted from the STRING database (version 9.0.5). Only those associations with medium confidence (score>=0.4) are retained.
-load(url("http://dnet.r-forge.r-project.org/data/org.Hs.string.RData"))
+load(url("http://dnet.r-forge.r-project.org/data/Hs/org.Hs.string.RData"))
 org.Hs.string
 
 # extract network that only contains genes in esetGene

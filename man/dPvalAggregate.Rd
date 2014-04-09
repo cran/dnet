@@ -2,8 +2,7 @@
 \alias{dPvalAggregate}
 \title{Function to aggregate p values}
 \usage{
-dPvalAggregate(pmatrix,
-method = c("orderStatistic", "fishers"),
+dPvalAggregate(pmatrix, method = c("orderStatistic", "fishers"),
 order = ncol(pmatrix))
 }
 \arguments{
@@ -24,19 +23,19 @@ nrow(pmatrix), containing aggregated p-values} }
 \description{
 \code{dPvalAggregate} is supposed to aggregate a input
 matrix p-values into a vector of aggregated p-values. The
-aggregate operation is applied to each row of input
-matrix, each resulting in an aggregated p-value. The
-method implemented can be based on the order statistics
-of p-values or according to Fisher's method.
+aggregate operation is applied to each row of input matrix,
+each resulting in an aggregated p-value. The method
+implemented can be based on the order statistics of
+p-values or according to Fisher's method.
 }
 \note{
 For each row of input matrix with the \eqn{c} columns,
-there are \eqn{c} p-values that are uniformly
-independently distributed over [0,1] under the null
-hypothesis (uniform distribution). According to the order
-statisitcs, they follow the Beta distribution with the
-paramters \eqn{a=order} and \eqn{b=c-order+1}. According
-to the the Fisher's method, after transformation by
+there are \eqn{c} p-values that are uniformly independently
+distributed over [0,1] under the null hypothesis (uniform
+distribution). According to the order statisitcs, they
+follow the Beta distribution with the paramters
+\eqn{a=order} and \eqn{b=c-order+1}. According to the the
+Fisher's method, after transformation by
 \eqn{-2*\sum^clog(pvalue)}, they follow Chi-Squared
 distribution.
 }

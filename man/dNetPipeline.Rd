@@ -1,10 +1,9 @@
 \name{dNetPipeline}
 \alias{dNetPipeline}
-\title{Function to setup the pipeline for finding maximum-scoring
-module from an input graph and the signficance imposed on its nodes}
+\title{Function to setup the pipeline for finding maximum-scoring module from an input graph and the signficance imposed on its nodes}
 \usage{
-dNetPipeline(g, pval, method = c("pdf", "cdf", "fdr"),
-fdr = NULL, nsize = NULL, plot = F, verbose = T)
+dNetPipeline(g, pval, method = c("pdf", "cdf", "fdr"), fdr = NULL,
+nsize = NULL, plot = F, verbose = T)
 }
 \arguments{
 \item{g}{an object of class "igraph" or "graphNEL"}
@@ -43,8 +42,8 @@ will be displayed in the screen. By default, it sets to
 true for display}
 }
 \value{
-a module with a maximum score, an object of class
-"igraph" or "graphNEL"
+a module with a maximum score, an object of class "igraph"
+or "graphNEL"
 }
 \description{
 \code{dNetPipeline} is supposed to finish ab inito
@@ -54,18 +53,17 @@ It returns an object of class "igraph" or "graphNEL".
 }
 \note{
 The pipeline sequentially consists of: \itemize{ \item{i)
-\code{\link{dBUMfit}} used to fit the p-value
-distribution under beta-uniform mixture model.} \item{ii)
-if there is the desired number of nodes constrained to
-the resulting module, a wide range of FDR (including
-rough stage with large intervals, and finetune stage with
-smaller intervals) will be scanned to find the FDR
-threshold to meet the desired number of nodes.}
-\item{iii) \code{\link{dBUMscore}} used to calculate the
-scores according to the fitted BUM and FDR threshold.}
-\item{iv) \code{\link{dNetFind}} used to find
-maximum-scoring module from the input graph and scores
-imposed on its nodes.} }
+\code{\link{dBUMfit}} used to fit the p-value distribution
+under beta-uniform mixture model.} \item{ii) if there is
+the desired number of nodes constrained to the resulting
+module, a wide range of FDR (including rough stage with
+large intervals, and finetune stage with smaller intervals)
+will be scanned to find the FDR threshold to meet the
+desired number of nodes.} \item{iii)
+\code{\link{dBUMscore}} used to calculate the scores
+according to the fitted BUM and FDR threshold.} \item{iv)
+\code{\link{dNetFind}} used to find maximum-scoring module
+from the input graph and scores imposed on its nodes.} }
 }
 \examples{
 # 1) generate an vector consisting of random values from beta distribution

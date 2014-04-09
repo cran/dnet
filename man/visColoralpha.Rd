@@ -18,8 +18,8 @@ means opaque)}
 a vector of colors (after transparent being added)
 }
 \description{
-\code{visColoralpha} is supposed to add transparent
-(alpha) into colors.
+\code{visColoralpha} is supposed to add transparent (alpha)
+into colors.
 }
 \note{
 none

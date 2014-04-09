@@ -2,15 +2,15 @@
 \alias{visHeatmap}
 \title{Function to visualise input data matrix using heatmap}
 \usage{
-visHeatmap(data, scale = c("none", "row", "column"),
-row.metric = c("none", "pearson", "spearman", "kendall", "euclidean",
-"manhattan", "cos", "mi"),
+visHeatmap(data, scale = c("none", "row", "column"), row.metric =
+c("none",
+"pearson", "spearman", "kendall", "euclidean", "manhattan", "cos",
+"mi"),
 row.method = c("ward", "single", "complete", "average", "mcquitty",
-"median", "centroid"),
-column.metric = c("none", "pearson", "spearman", "kendall",
-"euclidean", "manhattan", "cos", "mi"),
-column.method = c("ward", "single", "complete", "average", "mcquitty",
-"median", "centroid"),
+"median", "centroid"), column.metric = c("none", "pearson", "spearman",
+"kendall", "euclidean", "manhattan", "cos", "mi"), column.method =
+c("ward",
+"single", "complete", "average", "mcquitty", "median", "centroid"),
 colormap = c("bwr", "jet", "gbr", "wyr", "br", "yr", "rainbow", "wb"),
 ncolors = 64, zlim = NULL, row.cutree = NULL,
 row.colormap = c("rainbow"), column.cutree = NULL,
@@ -98,8 +98,8 @@ invisible
 }
 \description{
 \code{visHeatmap} is supposed to visualise input data
-matrix using heatmap. Note: this heatmap displays matrix
-in a bottom-to-top direction
+matrix using heatmap. Note: this heatmap displays matrix in
+a bottom-to-top direction
 }
 \note{
 The clustering methods are provided: \itemize{
@@ -107,15 +107,15 @@ The clustering methods are provided: \itemize{
 finding compact, spherical clusters} \item{"single": The
 single linkage method (which is closely related to the
 minimal spanning tree) adopts a 'friends of friends'
-clustering strategy} \item{"complete": The complete
-linkage method finds similar clusters}
+clustering strategy} \item{"complete": The complete linkage
+method finds similar clusters}
 \item{"average","mcquitty","median","centroid": These
 methods can be regarded as aiming for clusters with
 characteristics somewhere between the single and complete
 link methods. Two methods "median" and "centroid" are not
-leading to a monotone distance measure, or equivalently
-the resulting dendrograms can have so called inversions
-(which are hard to interpret)} }
+leading to a monotone distance measure, or equivalently the
+resulting dendrograms can have so called inversions (which
+are hard to interpret)} }
 }
 \examples{
 # 1) generate data with an iid matrix of 100 x 9

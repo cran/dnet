@@ -16,14 +16,14 @@ this class can be found at
 (significance)} }
 }
 \description{
-\code{dCommSignif} is supposed to test the significance
-of communities within a graph. For a community of the
-graph, it first calculates two types of degrees for each
-node: degrees based on parters only within the community
-itself, and the degrees based on its parters NOT in the
-community but in the graph. Then, it performs two-sample
-Wilcoxon tests on these two types of degrees to produce
-the signficance level (p-value)
+\code{dCommSignif} is supposed to test the significance of
+communities within a graph. For a community of the graph,
+it first calculates two types of degrees for each node:
+degrees based on parters only within the community itself,
+and the degrees based on its parters NOT in the community
+but in the graph. Then, it performs two-sample Wilcoxon
+tests on these two types of degrees to produce the
+signficance level (p-value)
 }
 \note{
 none

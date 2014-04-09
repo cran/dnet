@@ -1,10 +1,8 @@
 \name{visGSEA}
 \alias{visGSEA}
-\title{Function to visualise running enrichment score for a given
-sample and a gene set}
+\title{Function to visualise running enrichment score for a given sample and a gene set}
 \usage{
-visGSEA(eTerm, which_sample = 1,
-which_term = "GO:0006281", weight = 1,
+visGSEA(eTerm, which_sample = 1, which_term = "GO:0006281", weight = 1,
 orientation = c("vertical", "horizontal"), newpage = T)
 }
 \arguments{
@@ -31,13 +29,13 @@ page. By default, it sets to true for opening a new page}
 invisible
 }
 \description{
-\code{visGSEA} is supposed to visualise running
-enrichment score for a given sample and a gene set. To
-help understand the underlying running enrichment score,
-the input gene scores are also displayed. Positions for
-members in the given gene set are color-coded in both
-displays (red line for the positive gene scores, and
-green line for the negative).
+\code{visGSEA} is supposed to visualise running enrichment
+score for a given sample and a gene set. To help understand
+the underlying running enrichment score, the input gene
+scores are also displayed. Positions for members in the
+given gene set are color-coded in both displays (red line
+for the positive gene scores, and green line for the
+negative).
 }
 \note{
 none
