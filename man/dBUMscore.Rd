@@ -43,7 +43,7 @@ score \eqn{S(x)} is based on the fitted beta-uniform
 mixture model with two parameters \eqn{\lambda} and
 \eqn{a}: \eqn{f(x|\lambda,a) = \lambda +
 (1-\lambda)*a*x^{a-1}}. Specifically, it considers the
-log-likehood ratio between the signal and noise compoment
+log-likelyhood ratio between the signal and noise compoment
 of the model. The probability density function (pdf) of the
 signal component and the noise component are
 \eqn{(1-\lambda)*a*(x^{a-1}-1)} and \eqn{\lambda +
@@ -82,7 +82,7 @@ purpose of down-weighting scores, it must ensure
 \item{Where \eqn{\tau
 =\big[\frac{\lambda+(1-\lambda)*a-fdr*\lambda}{fdr*(1-\lambda)}\big]^{\frac{1}{a-1}}},
 i.e. the p-value corresponding to the exact \eqn{fdr}
-threshold. It can be duduced from the definition of the
+threshold. It can be deduced from the definition of the
 false discovery rate: \eqn{fdr \doteq \frac{\int_0^\tau
 \lambda+(1-\lambda)*a \, \mathrm{d}x}{\int_0^\tau
 \lambda+(1-\lambda)*a*x^{a-1} \, \mathrm{d}x}}. Notably, if

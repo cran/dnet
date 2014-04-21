@@ -5,9 +5,8 @@ list(
     
     index = list(
         sd_section("Network analysis and visualisation functions",
-            "These functions are used for network analysis and visualisation, including: identification of expression-active dynamic networks; network-based sample classifications and visualisations on 2D sample landscape; and random walk with restart (RWR) for network affinity calculation.",
+            "These functions are used for network analysis and visualisation, including: identification of gene-active dynamic networks; network-based sample classifications and visualisations on 2D sample landscape; and random walk with restart (RWR) for network affinity calculation.",
             c(
-                'dRWR',
                 'dPvalAggregate',
                 'dNetInduce',
                 'dBUMfit',
@@ -25,11 +24,8 @@ list(
                 'visNetReorder',
                 'visNetArc',
                 'visNetCircle',
-                'visColormap',
-                'visColoralpha',
-                'visHeatmap',
-                'visHeatmapAdv',
-                'visTreeBootstrap'
+                'dRWR',
+                'visBoxplotAdv'
             )
         ),
         sd_section("Enrichment analysis and visualisation functions",
@@ -75,7 +71,9 @@ list(
                 "org.Hs.egHPPA",
                 "org.Hs.egMP",
                 "org.Hs.egPS",
-                "org.Hs.string"
+                "org.Hs.egSF",                
+                "org.Hs.string",
+                "org.Hs.string900"
             )
         ),
         sd_section("Built-in genesets in human",
@@ -111,6 +109,7 @@ list(
                 "org.Mm.egHPPA",
                 "org.Mm.egMP",
                 "org.Mm.egPS",
+                "org.Mm.egSF",
                 "org.Mm.string"
             )
         ),
@@ -122,6 +121,7 @@ list(
                 "org.At.egGOCC",
                 "org.At.egGOMF",
                 "org.At.egPS",
+                "org.At.egSF",
                 "org.At.string"
             )
         ),
@@ -133,6 +133,7 @@ list(
                 "org.Ce.egGOCC",
                 "org.Ce.egGOMF",
                 "org.Ce.egPS",
+                "org.Ce.egSF",
                 "org.Ce.string"
             )
         ),
@@ -144,6 +145,7 @@ list(
                 "org.Dm.egGOCC",
                 "org.Dm.egGOMF",
                 "org.Dm.egPS",
+                "org.Dm.egSF",
                 "org.Dm.string"
             )
         ),
@@ -155,6 +157,7 @@ list(
                 "org.Da.egGOCC",
                 "org.Da.egGOMF",
                 "org.Da.egPS",
+                "org.Da.egSF",
                 "org.Da.string"
             )
         ),
@@ -166,6 +169,7 @@ list(
                 "org.Rn.egGOCC",
                 "org.Rn.egGOMF",
                 "org.Rn.egPS",
+                "org.Rn.egSF",
                 "org.Rn.string"
             )
         ),
@@ -177,6 +181,7 @@ list(
                 "org.Gg.egGOCC",
                 "org.Gg.egGOMF",
                 "org.Gg.egPS",
+                "org.Gg.egSF",
                 "org.Gg.string"
             )
         ),

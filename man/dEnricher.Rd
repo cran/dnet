@@ -4,20 +4,19 @@
 \usage{
 dEnricher(data, identity = c("symbol", "entrez"),
 check.symbol.identity = FALSE, genome = c("Hs", "Mm", "Rn", "Gg", "Ce",
-"Dm", "Da", "At"), ontology = c("GOBP", "GOMF", "GOCC", "PS", "DO",
-"HPPA",
-"HPMI", "HPON", "MP", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CP",
-"MsigdbC2KEGG",
-"MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR",
-"MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC",
-"MsigdbC6", "MsigdbC7"), sizeRange = c(10, 1000), which_distance =
-NULL,
-test = c("FisherTest", "HypergeoTest", "BinomialTest"),
-p.adjust.method = c("BH", "BY", "bonferroni", "holm", "hochberg",
-"hommel"),
-ontology.algorithm = c("none", "pc", "elim", "lea"), elim.pvalue =
-0.01,
-lea.depth = 2, verbose = T,
+"Dm", "Da", "At"), ontology = c("GOBP", "GOMF", "GOCC", "PS", "PS2",
+"SF",
+"DO", "HPPA", "HPMI", "HPON", "MP", "MsigdbC1", "MsigdbC2CGP",
+"MsigdbC2CP",
+"MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT",
+"MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF",
+"MsigdbC5CC", "MsigdbC6", "MsigdbC7"), sizeRange = c(10, 1000),
+min.overlap = 3, which_distance = NULL, test = c("HypergeoTest",
+"FisherTest", "BinomialTest"), p.adjust.method = c("BH", "BY",
+"bonferroni",
+"holm", "hochberg", "hommel"), ontology.algorithm = c("none", "pc",
+"elim",
+"lea"), elim.pvalue = 0.01, lea.depth = 2, verbose = T,
 RData.location = "http://dnet.r-forge.r-project.org/data")
 }
 \arguments{
@@ -46,11 +45,14 @@ zebrafish, and "At" for arabidopsis}
 be "GOBP" for Gene Ontology Biological Process, "GOMF"
 for Gene Ontology Molecular Function, "GOCC" for Gene
 Ontology Cellular Component, "PS" for phylostratific age
-information, "DO" for Disease Ontology, "HPPA" for Human
-Phenotype Phenotypic Abnormality, "HPMI" for Human
-Phenotype Mode of Inheritance, "HPON" for Human Phenotype
-ONset and clinical course, "MP" for Mammalian Phenotype,
-and the molecular signatures database (Msigdb) in human
+information, "PS2" for another version of "PS" (collapsed
+the inferred ancestors into one with the known taxonomy
+information), "SF" for domain superfamily assignments,
+"DO" for Disease Ontology, "HPPA" for Human Phenotype
+Phenotypic Abnormality, "HPMI" for Human Phenotype Mode
+of Inheritance, "HPON" for Human Phenotype ONset and
+clinical course, "MP" for Mammalian Phenotype, and the
+molecular signatures database (Msigdb) in human
 (including "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CP",
 "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA",
 "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN",
@@ -67,6 +69,10 @@ please refer to the online Documentations at
 \item{sizeRange}{the minimum and maximum size of members
 of each gene set in consideration. By default, it sets to
 a minimum of 10 but no more than 1000}
+
+\item{min.overlap}{the minimum number of overlaps. Only
+those gene sets that overlap with input data at least
+min.overlap (3 by default) will be processed}
 
 \item{which_distance}{which distance of terms in the
 ontology is used to restrict terms in consideration. By
@@ -157,12 +163,16 @@ identified by "setID" and gene members identified by
 "Entrez ID"} \item{\code{data}: a vector containing input
 data in consideration. It is not always the same as the
 input data as only those mappable are retained}
-\item{\code{zscore}: a vector containing z-scores}
-\item{\code{pvalue}: a vector containing p-values}
-\item{\code{adjp}: a vector containing adjusted p-values.
-It is the p value but after being adjusted for multiple
-comparisons} \item{\code{call}: the call that produced this
-result} }
+\item{\code{overlap}: a list of overlapped gene sets, each
+storing genes overlapped between a gene set and the given
+input data (i.e. the genes of interest). Always, gene sets
+are identified by "setID" and gene members identified by
+"Entrez ID"} \item{\code{zscore}: a vector containing
+z-scores} \item{\code{pvalue}: a vector containing
+p-values} \item{\code{adjp}: a vector containing adjusted
+p-values. It is the p value but after being adjusted for
+multiple comparisons} \item{\code{call}: the call that
+produced this result} }
 }
 \description{
 \code{dEnricher} is supposed to conduct enrichment analysis

@@ -140,9 +140,9 @@ named vector specifying the line style for the node:
 "solid", "dashed", "dotted", "invis" and "bold"} }
 }
 \examples{
-# 1) load GO Molelular Function as igraph object
-load(url("http://dnet.r-forge.r-project.org/data/Obo/ig.GOMF.RData"))
-g <- ig.GOMF
+# 1) load HPPA as igraph object
+data(ig.HPPA)
+g <- ig.HPPA
 
 # 2) randomly select vertices as the query nodes
 # the more common, the query nodes can be term id

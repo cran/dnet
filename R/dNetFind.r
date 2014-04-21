@@ -216,7 +216,7 @@ dNetFind <- function(g, scores)
             tmp <- unlist(strsplit(names(node.score.cluster)[which.max(node.score.cluster)], "cluster"))
             ttmp <- as.numeric(matrix(tmp, nrow=2)[2,])
             tmp_nodes <- unlist(lapply(conn.comp.graph,get.vertex.attribute,"name")[ttmp])
-            module <- dNetInduce(ig, tmp_nodes, knn=0, remove.loops=F, largest.comp=F)
+            module <- dNetInduce(ig, tmp_nodes, knn=0, remove.loops=F, largest.comp=T)
             #module <- dNetInduce(ig, tmp_nodes, knn=0, remove.loops=F, largest.comp=T)
             
         }else{
@@ -275,7 +275,7 @@ dNetFind <- function(g, scores)
             tmp_border_nodes <- V(mst.subg)[best.path]$name
             
             tmp_nodes <- c(tmp_border_nodes, tmp_meta_nodes)
-            module <- dNetInduce(ig, tmp_nodes, knn=0, remove.loops=F, largest.comp=F)
+            module <- dNetInduce(ig, tmp_nodes, knn=0, remove.loops=F, largest.comp=T)
             #module <- dNetInduce(ig, tmp_nodes, knn=0, remove.loops=F, largest.comp=T)
         }
     }

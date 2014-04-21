@@ -5,17 +5,17 @@
 dGSEA(data, identity = c("symbol", "entrez"), check.symbol.identity =
 FALSE,
 genome = c("Hs", "Mm", "Rn", "Gg", "Ce", "Dm", "Da", "At"),
-ontology = c("GOBP", "GOMF", "GOCC", "PS", "DO", "HPPA", "HPMI",
-"HPON",
-"MP", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CP", "MsigdbC2KEGG",
+ontology = c("GOBP", "GOMF", "GOCC", "PS", "PS2", "SF", "DO", "HPPA",
+"HPMI", "HPON", "MP", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CP",
+"MsigdbC2KEGG",
 "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR",
 "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC",
-"MsigdbC6", "MsigdbC7"), sizeRange = c(10, 1000), which_distance =
-NULL,
-weight = 1, nperm = 100, fast = T, sigTail = c("two-tails",
-"one-tail"), p.adjust.method = c("BH", "BY", "bonferroni", "holm",
-"hochberg", "hommel"), verbose = T,
-RData.location = "http://dnet.r-forge.r-project.org/data")
+"MsigdbC6", "MsigdbC7", "Customised"), customised.genesets = NULL,
+sizeRange = c(10, 20000), which_distance = NULL, weight = 1,
+nperm = 1000, fast = T, sigTail = c("two-tails", "one-tail"),
+p.adjust.method = c("BH", "BY", "bonferroni", "holm", "hochberg",
+"hommel"),
+verbose = T, RData.location = "http://dnet.r-forge.r-project.org/data")
 }
 \arguments{
 \item{data}{a data frame or matrix of input data. It must
@@ -43,11 +43,14 @@ zebrafish, and "At" for arabidopsis}
 be "GOBP" for Gene Ontology Biological Process, "GOMF"
 for Gene Ontology Molecular Function, "GOCC" for Gene
 Ontology Cellular Component, "PS" for phylostratific age
-information, "DO" for Disease Ontology, "HPPA" for Human
-Phenotype Phenotypic Abnormality, "HPMI" for Human
-Phenotype Mode of Inheritance, "HPON" for Human Phenotype
-ONset and clinical course, "MP" for Mammalian Phenotype,
-and the molecular signatures database (Msigdb) in human
+information, "PS2" for another version of "PS" (collapsed
+the inferred ancestors into one with the known taxonomy
+information), "SF" for domain superfamily assignments,
+"DO" for Disease Ontology, "HPPA" for Human Phenotype
+Phenotypic Abnormality, "HPMI" for Human Phenotype Mode
+of Inheritance, "HPON" for Human Phenotype ONset and
+clinical course, "MP" for Mammalian Phenotype, and the
+molecular signatures database (Msigdb) in human
 (including "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CP",
 "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA",
 "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN",
@@ -59,7 +62,15 @@ genomes/species; for "Hs" and "Mm", these five ("DO",
 "Msigdb" are only supported in "Hs". For details on the
 eligibility for pairs of input genome and ontology,
 please refer to the online Documentations at
-\url{http://dnet.r-forge.r-project.org/docs.html}}
+\url{http://dnet.r-forge.r-project.org/docs.html}. Also
+supported are the user-customised gene sets; in doing so,
+the option "Customised" should be used together with the
+input of the next parameter "customised.genesets"}
+
+\item{customised.genesets}{an input vector/matrix/list
+which only works when the user chooses "Customised" in
+the previous parameter "ontology". It contains either
+Entrez Gene ID or Symbol}
 
 \item{sizeRange}{the minimum and maximum size of members
 of each gene set in consideration. By default, it sets to
@@ -195,6 +206,11 @@ decreasing=FALSE, details=TRUE)
 visGSEA(eTerm, which_sample=1, which_term=rownames(res)[1])
 output <- dGSEAwrite(eTerm, which_content="gadjp", which_score="gadjp",
 filename="eTerm.txt")
+
+## based on customised gene sets
+eTerm <- dGSEA(data, identity="symbol", genome="Mm",
+ontology="Customised", customised.genesets=rownames(data)[1:100],
+RData.location="RData_Rd/data")
 }
 }
 \seealso{

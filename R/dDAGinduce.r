@@ -14,9 +14,9 @@
 #' @seealso \code{\link{dDAGroot}}
 #' @include dDAGinduce.r
 #' @examples
-#' # 1) load GO Molelular Function as igraph object
-#' load(url("http://dnet.r-forge.r-project.org/data/Obo/ig.GOMF.RData"))
-#' g <- ig.GOMF
+#' # 1) load HPPA as igraph object
+#' data(ig.HPPA)
+#' g <- ig.HPPA
 #'
 #' # 2) randomly select vertices as the query nodes
 #' # the query nodes can be igraph vertex sequences
@@ -97,7 +97,11 @@ dDAGinduce <- function (g, nodes_query, path.mode=c("all_paths","shortest_paths"
         nodeInduced <- unique(unlist(aspaths$res))
     }else if(path.mode=="shortest_paths"){
         root <- dDAGroot(ig)
-        vpaths <- get.shortest.paths(ig, from=root, to=nodes_query)$vpath
+        vpaths <- get.shortest.paths(ig, from=root, to=nodes_query, output="vpath")
+        if(length(vpaths)!=length(nodes_query)){
+            vpaths <- vpaths$vpath
+        }
+        
         nodeInduced <- unique(unlist(vpaths))
     }
     

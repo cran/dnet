@@ -15,13 +15,13 @@
 #' @seealso \code{\link{dDAGinduce}}, \code{\link{dDAGlevel}}
 #' @include dDAGannotate.r
 #' @examples
-#' # 1) load GO Molelular Function as igraph object
-#' load(url("http://dnet.r-forge.r-project.org/data/Obo/ig.GOMF.RData"))
-#' g <- ig.GOMF
+#' # 1) load HPPA as igraph object
+#' data(ig.HPPA)
+#' g <- ig.HPPA
 #'
-#' # 2) load human genes annotated by GO Molelular Function terms
-#' load(url("http://dnet.r-forge.r-project.org/data/Hs/org.Hs.egGOMF.RData"))
-#' GS <- org.Hs.egGOMF # as 'GS' object
+#' # 2) load human genes annotated by HPPA
+#' data(org.Hs.egHPPA)
+#' GS <- org.Hs.egHPPA # as 'GS' object
 #'
 #' # 3) prepare for annotation data
 #' # randomly select vertices with annotation data

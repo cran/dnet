@@ -6,7 +6,8 @@
 #' @param identity the type of gene identity (i.e. row names of input data), either "symbol" for gene symbols (by default) or "entrez" for Entrez Gene ID. The option "symbol" is preferred as it is relatively stable from one update to another; also it is possible to search against synonyms (see the next parameter)
 #' @param check.symbol.identity logical to indicate whether synonyms will be searched against when gene symbols cannot be matched. By default, it sets to FALSE since it may take a while to do such check using all possible synoyms
 #' @param genome the genome identity. It can be one of "Hs" for human, "Mm" for mouse, "Rn" for rat, "Gg" for chicken, "Ce" for c.elegans, "Dm" for fruitfly, "Da" for zebrafish, and "At" for arabidopsis
-#' @param ontology the ontology supported currently. It can be "GOBP" for Gene Ontology Biological Process, "GOMF" for Gene Ontology Molecular Function, "GOCC" for Gene Ontology Cellular Component, "PS" for phylostratific age information, "DO" for Disease Ontology, "HPPA" for Human Phenotype Phenotypic Abnormality, "HPMI" for Human Phenotype Mode of Inheritance, "HPON" for Human Phenotype ONset and clinical course, "MP" for Mammalian Phenotype, and the molecular signatures database (Msigdb) in human (including "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6", "MsigdbC7"). Note: These four ("GOBP", "GOMF", "GOCC" and "PS") are availble for all genomes/species; for "Hs" and "Mm", these five ("DO", "HPPA", "HPMI", "HPON" and "MP") are also supported; all "Msigdb" are only supported in "Hs". For details on the eligibility for pairs of input genome and ontology, please refer to the online Documentations at \url{http://dnet.r-forge.r-project.org/docs.html}
+#' @param ontology the ontology supported currently. It can be "GOBP" for Gene Ontology Biological Process, "GOMF" for Gene Ontology Molecular Function, "GOCC" for Gene Ontology Cellular Component, "PS" for phylostratific age information, "PS2" for another version of "PS" (collapsed the inferred ancestors into one with the known taxonomy information), "SF" for domain superfamily assignments, "DO" for Disease Ontology, "HPPA" for Human Phenotype Phenotypic Abnormality, "HPMI" for Human Phenotype Mode of Inheritance, "HPON" for Human Phenotype ONset and clinical course, "MP" for Mammalian Phenotype, and the molecular signatures database (Msigdb) in human (including "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6", "MsigdbC7"). Note: These four ("GOBP", "GOMF", "GOCC" and "PS") are availble for all genomes/species; for "Hs" and "Mm", these five ("DO", "HPPA", "HPMI", "HPON" and "MP") are also supported; all "Msigdb" are only supported in "Hs". For details on the eligibility for pairs of input genome and ontology, please refer to the online Documentations at \url{http://dnet.r-forge.r-project.org/docs.html}. Also supported are the user-customised gene sets; in doing so, the option "Customised" should be used together with the input of the next parameter "customised.genesets"
+#' @param customised.genesets an input vector/matrix/list which only works when the user chooses "Customised" in the previous parameter "ontology". It contains either Entrez Gene ID or Symbol
 #' @param sizeRange the minimum and maximum size of members of each gene set in consideration. By default, it sets to a minimum of 10 but no more than 1000
 #' @param which_distance which distance of terms in the ontology is used to restrict terms in consideration. By default, it sets to 'NULL' to consider all distances
 #' @param weight type of score weigth. It can be "0" for unweighted (an equivalent to Kolmogorov-Smirnov, only considering the rank), "1" for weighted by input gene score (by default), and "2" for over-weighted, and so on
@@ -52,9 +53,12 @@
 #' res <- dGSEAview(eTerm, which_sample=1, top_num=5, sortBy="adjp", decreasing=FALSE, details=TRUE)
 #' visGSEA(eTerm, which_sample=1, which_term=rownames(res)[1])
 #' output <- dGSEAwrite(eTerm, which_content="gadjp", which_score="gadjp", filename="eTerm.txt")
+#'
+#' ## based on customised gene sets
+#' eTerm <- dGSEA(data, identity="symbol", genome="Mm", ontology="Customised", customised.genesets=rownames(data)[1:100], RData.location="RData_Rd/data")
 #' }
 
-dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FALSE, genome=c("Hs", "Mm", "Rn", "Gg", "Ce", "Dm", "Da", "At"), ontology=c("GOBP","GOMF","GOCC","PS","DO","HPPA","HPMI","HPON","MP", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6", "MsigdbC7"), sizeRange=c(10,1000), which_distance=NULL, weight=1, nperm=100, fast=T, sigTail=c("two-tails","one-tail"), p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), verbose=T, RData.location="http://dnet.r-forge.r-project.org/data")
+dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FALSE, genome=c("Hs", "Mm", "Rn", "Gg", "Ce", "Dm", "Da", "At"), ontology=c("GOBP","GOMF","GOCC","PS","PS2","SF","DO","HPPA","HPMI","HPON","MP", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6", "MsigdbC7", "Customised"), customised.genesets=NULL, sizeRange=c(10,20000), which_distance=NULL, weight=1, nperm=1000, fast=T, sigTail=c("two-tails","one-tail"), p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), verbose=T, RData.location="http://dnet.r-forge.r-project.org/data")
 {
     startT <- Sys.time()
     message(paste(c("Start at ",as.character(startT)), collapse=""), appendLF=T)
@@ -90,16 +94,16 @@ dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FAL
     
     ###############################
     ## check the eligibility for pairs of input genome and ontology
-    all.ontologies <- c("GOBP","GOMF","GOCC","PS","DO","HPPA","HPMI","HPON","MP", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6", "MsigdbC7")
+    all.ontologies <- c("GOBP","GOMF","GOCC","PS","PS2","SF","DO","HPPA","HPMI","HPON","MP", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6", "MsigdbC7","Customised")
     possible.ontologies <- switch(genome,
-                       Hs = all.ontologies[c(1:4, 5:9, 10:24)],
-                       Mm = all.ontologies[c(1:4, 5:9)],
-                       Rn = all.ontologies[c(1:4)],
-                       Gg = all.ontologies[c(1:4)],
-                       Ce = all.ontologies[c(1:4)],
-                       Dm = all.ontologies[c(1:4)],
-                       Da = all.ontologies[c(1:4)],
-                       At = all.ontologies[c(1:4)]
+                       Hs = all.ontologies[c(1:6, 7:11, 12:27)],
+                       Mm = all.ontologies[c(1:6, 7:11, 27)],
+                       Rn = all.ontologies[c(1:6), 27],
+                       Gg = all.ontologies[c(1:6), 27],
+                       Ce = all.ontologies[c(1:6), 27],
+                       Dm = all.ontologies[c(1:6), 27],
+                       Da = all.ontologies[c(1:6), 27],
+                       At = all.ontologies[c(1:6), 27]
                        )
     if(!(ontology %in% possible.ontologies)){
         stop(sprintf("The input pair of genome (%s) and ontology (%s) are not supported.\nThe supported ontologies in genome (%s): %s.\n", genome, ontology, genome, paste(possible.ontologies,collapse=", ")))
@@ -144,52 +148,15 @@ dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FAL
         message(sprintf("\tLoad Enterz Gene information from %s", load_EG), appendLF=T)
     }
     
-    #########
-    ## load annotation information
-    GS <- list()
-    load_GS_remote <- paste(path_host, "/", genome, "/org.", genome, ".eg", ontology, ".RData", sep="")
-    load_GS_local1 <- file.path(path_host, paste("data/", genome, "/org.", genome, ".eg", ontology, ".RData", sep=""))
-    load_GS_local2 <- file.path(path_host, paste(genome, "/org.", genome, ".eg", ontology, ".RData", sep=""))
-    load_GS_local3 <- file.path(path_host, paste("org.", genome, ".eg", ontology, ".RData", sep=""))
-    ## first, load local R files
-    GS_local <- c(load_GS_local1, load_GS_local2, load_GS_local3)
-    load_flag <- sapply(GS_local, function(x){
-        if(.Platform$OS.type=="windows") x <- gsub("/", "\\\\", x)
-        ifelse(file.exists(x), TRUE, FALSE)
-    })
-    ## otherwise, load remote R files
-    if(sum(load_flag)==0){
-        if(class(try(load(url(load_GS_remote)), T))=="try-error"){
-            load_GS_remote <- paste("http://dnet.r-forge.r-project.org/data/", genome, "/org.", genome, ".eg", ontology, ".RData", sep="")
-            if(class(try(load(url(load_GS_remote)), T))=="try-error"){
-                stop("Built-in Rdata files cannot be loaded. Please check your internet connection or their location in your local machine.\n")
-            }
-        }
-        load_GS <- load_GS_remote
-    }else{
-        load_GS <- GS_local[load_flag]
-        load(load_GS)
-    }
-    eval(parse(text=paste("GS <- org.", genome, ".eg", ontology, sep="")))
-    
-    if(verbose){
-        message(sprintf("\tLoad annotation information from %s", load_GS), appendLF=T)
-    }
     
     ###############################
     allGeneID <- EG$gene_info$GeneID
     allSymbol <- as.vector(EG$gene_info$Symbol)
     allSynonyms <- as.vector(EG$gene_info$Synonyms)
     
-    if(verbose){
-        now <- Sys.time()
-        message(sprintf("Then, do mapping based on %s (%s) ...", identity, as.character(now)), appendLF=T)
-    }
+    # A function converting from symbol to entrezgene
+    symbol2entrezgene <- function(Symbol, check.symbol.identity, allGeneID, allSymbol, allSynonyms, verbose){
     
-    if(identity == "symbol"){
-    
-        Symbol <- rownames(data)
-        
         ## correct for those symbols being shown as DATE format
         if(1){
             ## for those starting with 'Mar' in a excel-input date format
@@ -258,15 +225,149 @@ dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FAL
         ## convert into GeneID
         GeneID <- allGeneID[match_flag]
         
+        return(GeneID)
+    }
+    ###############################
+    
+    if(ontology!="Customised"){
+        #########
+        ## load annotation information
+        genome_location <- genome
+        if(length(grep("Msigdb",ontology))>0){
+            genome_location <- "Msigdb"
+        }
+
+        ## flag the simplified version of PS
+        flag_PS2 <- FALSE
+        if(ontology=="PS2"){
+            flag_PS2 <- TRUE
+            ontology <- "PS"
+        }
+
+        GS <- list()
+        load_GS_remote <- paste(path_host, "/", genome_location, "/org.", genome, ".eg", ontology, ".RData", sep="")
+        load_GS_local1 <- file.path(path_host, paste("data/", genome_location, "/org.", genome, ".eg", ontology, ".RData", sep=""))
+        load_GS_local2 <- file.path(path_host, paste(genome_location, "/org.", genome, ".eg", ontology, ".RData", sep=""))
+        load_GS_local3 <- file.path(path_host, paste("org.", genome, ".eg", ontology, ".RData", sep=""))
+        ## first, load local R files
+        GS_local <- c(load_GS_local1, load_GS_local2, load_GS_local3)
+        load_flag <- sapply(GS_local, function(x){
+            if(.Platform$OS.type=="windows") x <- gsub("/", "\\\\", x)
+            ifelse(file.exists(x), TRUE, FALSE)
+        })
+        ## otherwise, load remote R files
+        if(sum(load_flag)==0){
+            if(class(try(load(url(load_GS_remote)), T))=="try-error"){
+                load_GS_remote <- paste("http://dnet.r-forge.r-project.org/data/", genome_location, "/org.", genome, ".eg", ontology, ".RData", sep="")
+                if(class(try(load(url(load_GS_remote)), T))=="try-error"){
+                    stop("Built-in Rdata files cannot be loaded. Please check your internet connection or their location in your local machine.\n")
+                }
+            }
+            load_GS <- load_GS_remote
+        }else{
+            load_GS <- GS_local[load_flag]
+            load(load_GS)
+        }
+        eval(parse(text=paste("GS <- org.", genome, ".eg", ontology, sep="")))
+    
+        if(verbose){
+            message(sprintf("\tLoad annotation information from %s", load_GS), appendLF=T)
+        }
+        
+        ################
+        if(flag_PS2){
+            tmp <- as.character(unique(GS$set_info$name))
+            inds <- sapply(tmp,function(x) which(GS$set_info$name==x))
+        
+            ## new set_info
+            set_info <- data.frame()
+            for(i in 1:length(inds)){
+                set_info<- rbind(set_info,as.matrix(GS$set_info[max(inds[[i]]),]))
+            }
+            ## new gs
+            gs <- list()
+            for(i in 1:length(inds)){
+                gs[[i]] <- unlist(GS$gs[inds[[i]]], use.names=F)
+            }
+            names(gs) <- rownames(set_info)
+        
+            GS <- list(gs = gs,
+                       set_info = set_info
+                      )
+            class(GS) <- "GS"
+        }
+    
+        ################
+        
+    }else if(!is.null(customised.genesets)){
+        if(is.list(customised.genesets)){
+            if(is.null(names(customised.genesets))){
+                names(customised.genesets) <- paste("C", 1:length(customised.genesets), sep="")
+            }
+        }else{
+            if (is.vector(customised.genesets)){
+                customised.genesets <- as.matrix(customised.genesets, ncol=1)
+            }else if(is.matrix(customised.genesets) || is.data.frame(customised.genesets)){
+                customised.genesets <- as.matrix(customised.genesets)
+            }else{
+                stop("The input data must be a vector.\n")
+            }
+            
+            if(is.null(colnames(customised.genesets))){
+                colnames(customised.genesets) <- paste("C", 1:ncol(customised.genesets), sep="")
+            }
+            tmp <- colnames(customised.genesets)
+            customised.genesets <- lapply(1:ncol(customised.genesets), function(j){
+                customised.genesets[,j]
+            })
+            names(customised.genesets) <- tmp
+        }
+        
+        ## construct GS given the customised genesets
+        set_info <- data.frame(setID=names(customised.genesets), name=names(customised.genesets), namespace=names(customised.genesets), distance=rep(1, length(customised.genesets)))
+        rownames(set_info) <- names(customised.genesets)
+        gs <- lapply(customised.genesets, function(x){
+            if(identity == "symbol"){
+                Symbol <- x
+                GeneID <- symbol2entrezgene(Symbol=Symbol, check.symbol.identity=check.symbol.identity, allGeneID=allGeneID, allSymbol=allSymbol, allSynonyms=allSynonyms, verbose=verbose)
+        
+            }else{
+                GeneID <- x
+                match_flag <- match(GeneID,allGeneID)
+                GeneID <- allGeneID[match_flag]
+            }
+            GeneID <- GeneID[!is.na(GeneID)]
+            
+            return(GeneID)
+        })
+        names(gs) <- names(customised.genesets)
+        ## new GS
+        GS <- list(gs = gs,
+                   set_info = set_info
+                  )
+        class(GS) <- "GS"
+    }
+    
+    ###############################
+    
+    if(verbose){
+        now <- Sys.time()
+        message(sprintf("Then, do mapping based on %s (%s) ...", identity, as.character(now)), appendLF=T)
+    }
+    
+    if(identity == "symbol"){
+        Symbol <- rownames(data)
+        GeneID <- symbol2entrezgene(Symbol=Symbol, check.symbol.identity=check.symbol.identity, allGeneID=allGeneID, allSymbol=allSymbol, allSynonyms=allSynonyms, verbose=verbose)
+        
     }else{
         GeneID <- rownames(data)
         match_flag <- match(GeneID,allGeneID)
         GeneID <- allGeneID[match_flag]
     }
-    
     flag <- !is.na(GeneID)
     data <- as.matrix(data[flag,])
     GeneID <- GeneID[flag]
+    
     
     ## Take average for those identical rows
     GeneID_uni <- sort(unique(GeneID))
@@ -487,10 +588,21 @@ dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FAL
                     max.ES <- max(peak.res.vector)
                     min.ES <- min(valley.res.vector)
                     es.expected[k,r] <- signif(ifelse(max.ES>abs(min.ES), max.ES, min.ES), digits=5)
+
                 }
 
             }
+            
+            #############################################################
+            ## for those hits (all being zeros when using weight scheme)
+            ## thus all is NA
+            ## replace those NA with the mean of no-NA entries
+            tmp <- is.na(es.expected[k,])
+            es.expected[k,tmp] <- mean(es.expected[k,!tmp])
+            #############################################################
+
         }
+        
         
         ##########
         ## P-value

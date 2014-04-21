@@ -20,12 +20,13 @@ direct acyclic graph (DAG; an ontology). It return the name
 none
 }
 \examples{
-# 1) load GO Molelular Function as igraph object
-load(url("http://dnet.r-forge.r-project.org/data/Obo/ig.GOMF.RData"))
-g <- ig.GOMF
+# 1) load HPPA as igraph object
+data(ig.HPPA)
+g <- ig.HPPA
 
 # 2) find the root
 root <- dDAGroot(g)
+root
 }
 \seealso{
 \code{\link{dDAGroot}}

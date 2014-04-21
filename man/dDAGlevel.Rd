@@ -48,9 +48,9 @@ can be useful in deriving nodes according to their
 closeness to the root.
 }
 \examples{
-# 1) load GO Molelular Function as igraph object
-load(url("http://dnet.r-forge.r-project.org/data/Obo/ig.GOMF.RData"))
-g <- ig.GOMF
+# 1) load HPPA as igraph object
+data(ig.HPPA)
+g <- ig.HPPA
 
 # 2) randomly select vertices as the query nodes
 nodes_query <- sample(V(g),5)$name
@@ -63,7 +63,7 @@ subg <- dDAGinduce(g, nodes_query)
 dDAGlevel(subg, level.mode="longest_path")
 # 4b) definition based on the shortest path
 dDAGlevel(subg, level.mode="shortest_path")
-# 4b) definition based on the longest path, and return nodes for each level
+# 4c) definition based on the longest path, and return nodes for each level
 dDAGlevel(subg, level.mode="longest_path", return.mode="level2node")
 }
 \seealso{
