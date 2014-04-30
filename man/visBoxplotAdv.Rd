@@ -10,7 +10,7 @@ xlim = NULL, ylim = NULL, xlab = NULL, ylab = NULL,
 pch = c("circles", "thermometers", "pies")[1], col = par("col"),
 bg = NA, pwpch = NULL, pwcol = NULL, pwbg = NULL, pwpie = NULL,
 do.plot = TRUE, do.boxplot = TRUE, boxplot.notch = FALSE,
-boxplot.border = "#888888C0", boxplot.col = NULL, ...)
+boxplot.border = "#888888C0", boxplot.col = "transparent", ...)
 }
 \arguments{
 \item{formula}{a formula, such as 'y ~ grp', where 'y' is

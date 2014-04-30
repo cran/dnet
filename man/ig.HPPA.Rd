@@ -39,7 +39,7 @@ Genet}, 83:610-615.
 \keyword{datasets}
 
 \examples{
-#load(url("http://dnet.r-forge.r-project.org/data/Obo/ig.HPPA.RData"))
+#ig.HPPA <- dRDataLoader(RData='ig.HPPA')
 data(ig.HPPA)
 ig.HPPA
 }

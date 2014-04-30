@@ -5,7 +5,7 @@
 visDAG(g, data = NULL, height = 7, width = 7, margin = rep(0.1, 4),
 colormap = c("lightyellow-orange", "yr", "bwr", "jet", "gbr", "wyr",
 "br",
-"rainbow", "wb"), ncolors = 40, zlim = NULL, colorbar = T,
+"rainbow", "wb")[1], ncolors = 40, zlim = NULL, colorbar = T,
 colorbar.fraction = 0.1, newpage = T,
 layout.orientation = c("left_right", "top_bottom", "bottom_top",
 "right_left"), node.info = c("none", "term_id", "term_name", "both",

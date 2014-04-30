@@ -10,7 +10,8 @@ check.symbol.identity = FALSE, genome = c("Hs", "Mm", "Rn", "Gg", "Ce",
 "MsigdbC2CP",
 "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT",
 "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF",
-"MsigdbC5CC", "MsigdbC6", "MsigdbC7"), sizeRange = c(10, 1000),
+"MsigdbC5CC", "MsigdbC6", "MsigdbC7", "DGIdb"), sizeRange = c(10,
+1000),
 min.overlap = 3, which_distance = NULL, test = c("HypergeoTest",
 "FisherTest", "BinomialTest"), p.adjust.method = c("BH", "BY",
 "bonferroni",
@@ -45,14 +46,15 @@ zebrafish, and "At" for arabidopsis}
 be "GOBP" for Gene Ontology Biological Process, "GOMF"
 for Gene Ontology Molecular Function, "GOCC" for Gene
 Ontology Cellular Component, "PS" for phylostratific age
-information, "PS2" for another version of "PS" (collapsed
-the inferred ancestors into one with the known taxonomy
-information), "SF" for domain superfamily assignments,
-"DO" for Disease Ontology, "HPPA" for Human Phenotype
-Phenotypic Abnormality, "HPMI" for Human Phenotype Mode
-of Inheritance, "HPON" for Human Phenotype ONset and
-clinical course, "MP" for Mammalian Phenotype, and the
-molecular signatures database (Msigdb) in human
+information, "PS2" for the collapsed PS version (inferred
+ancestors being collapsed into one with the known
+taxonomy information), "SF" for domain superfamily
+assignments, "DO" for Disease Ontology, "HPPA" for Human
+Phenotype Phenotypic Abnormality, "HPMI" for Human
+Phenotype Mode of Inheritance, "HPON" for Human Phenotype
+ONset and clinical course, "MP" for Mammalian Phenotype,
+and Drug-Gene Interaction database (DGIdb) and the
+molecular signatures database (Msigdb) only in human
 (including "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CP",
 "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA",
 "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN",
@@ -145,7 +147,7 @@ of them) can be first downloaded into your current
 working directory, and then set this option as:
 \eqn{RData.location="."}. Surely, the location can be
 anywhere as long as the user provides the correct path
-pointing to (otherwise, the script will have to remote
+pointing to (otherwise, the script will have to remotely
 download each time). Here is the UNIX command for
 downloading all RData files (preserving the directory
 structure): \eqn{wget -r -l2 -A "*.RData" -np -nH
@@ -207,24 +209,19 @@ is: "none" > "lea" > "elim" > "pc".} }
 }
 \examples{
 \dontrun{
-load(url("http://dnet.r-forge.r-project.org/data/Datasets/Hiratani_TableS1.RData"))
-data <- rownames(RT)[1:1000]
-# fisher's exact test (witout accounting for ontology hierarchy)
-eTerm <- dEnricher(data, identity="symbol", genome="Mm", ontology="MP",
-RData.location="./RData_Rd")
-# fisher's exact test (using 'pc' algorithm to account for ontology hierarchy)
-eTerm <- dEnricher(data, identity="symbol", genome="Mm", ontology="MP",
-ontology.algorithm="pc", RData.location="./RData_Rd")
-# fisher's exact test (using 'elim' algorithm to account for ontology hierarchy)
-eTerm <- dEnricher(data, identity="symbol", genome="Mm", ontology="MP",
-ontology.algorithm="elim", RData.location="./RData_Rd")
-# fisher's exact test (using 'lea' algorithm to account for ontology hierarchy)
-eTerm <- dEnricher(data, identity="symbol", genome="Mm", ontology="MP",
-ontology.algorithm="lea", RData.location="./RData_Rd")
+# load data
+data(Fang)
+data <- as.character(Fang.geneinfo$Symbol[1:50])
+data
+
+# enrichment analysis
+eTerm <- dEnricher(data, identity="symbol", genome="Hs", ontology="DO")
+dEnricherView(eTerm, top_num=10, sortBy="adjp", decreasing=FALSE,
+details=TRUE)
 
 # visualise the top significant terms in the ontology heirarchy
-load(url("http://dnet.r-forge.r-project.org/data/Obo/ig.MP.RData"))
-g <- ig.MP
+ig.DO <- dRDataLoader(RData='ig.DO')
+g <- ig.DO
 nodes_query <- names(sort(eTerm$adjp)[1:5])
 nodes.highlight <- rep("red", length(nodes_query))
 names(nodes.highlight) <- nodes_query

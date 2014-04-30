@@ -164,7 +164,7 @@ visNetReorder <- function (g, data, sReorder, height=7, margin=rep(0.1,4), borde
     }
     for(k in 1:length(cnames)){
         visNet(ig, glayout=glayout_fix, pattern=data[,k], colormap=colormap, ncolors=ncolors, zlim=zlim, colorbar=F, newpage=F, ...)
-        mtext(sprintf("%s",cnames[k]), line=-1.5, side=mtext.side, adj=mtext.adj, cex=mtext.cex, font=mtext.font, col=mtext.col)
+        mtext(sprintf("%s",cnames[k]), line=-1, side=mtext.side, adj=mtext.adj, cex=mtext.cex, font=mtext.font, col=mtext.col)
         box("figure",col=border.color)
     }
     #box("outer", col="black", lwd=4)

@@ -48,7 +48,7 @@ major cancer types. \emph{Nature}, 502(7471):333-9.
 
 \keyword{datasets}
 \examples{
-#load(url("http://dnet.r-forge.r-project.org/data/Datasets/TCGA_mutations.RData"))
+#TCGA_mutations <- dRDataLoader(RData='TCGA_mutations')
 data(TCGA_mutations)
 TCGA_mutations
 library(Biobase)

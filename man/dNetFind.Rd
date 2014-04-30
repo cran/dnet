@@ -1,6 +1,6 @@
 \name{dNetFind}
 \alias{dNetFind}
-\title{Function to find heuristically maximum scoring module}
+\title{Function to find heuristically maximum scoring subgraph}
 \usage{
 dNetFind(g, scores)
 }
@@ -14,23 +14,23 @@ all those in the input graph "g", but the reverse is not
 necessary}
 }
 \value{
-a module with a maximum score, an object of class "igraph"
-or "graphNEL"
+a subgraph with a maximum score, an object of class
+"igraph" or "graphNEL"
 }
 \description{
 \code{dNetFind} is supposed to find the maximum scoring
-module from an input graph and scores imposed on its nodes.
-The input graph and the output module are both of "igraph"
-or "graphNET" object. The input scores imposed on the nodes
-in the input graph can be divided into two parts: the
-positve nodes and the negative nodes. The searching for
-maximum scoring module is deduced to find the connected
+subgraph from an input graph and scores imposed on its
+nodes. The input graph and the output subgraph are both of
+"igraph" or "graphNET" object. The input scores imposed on
+the nodes in the input graph can be divided into two parts:
+the positve nodes and the negative nodes. The searching for
+maximum scoring subgraph is deduced to find the connected
 subgraph containing the positive nodes as many as possible,
 but the negative nodes as few as possible. To this end, a
 heuristic search is used (see Note below).
 }
 \note{
-The search procedure is heuristic to find the module with
+The search procedure is heuristic to find the subgraph with
 the maximum score: \itemize{ \item{i) transform the input
 graph into a new graph by collapsing connected positive
 nodes into a meta-node. As such, meta-nodes are isolated to
@@ -51,7 +51,7 @@ in the weighted transformed graph using Prim's greedy
 algorithm. A spanning tree of the weighted graph is a
 subgraph that is tree and connects all the node together.
 The MST is a spanning tree with the sum of its edge weights
-minimised among all possible spanning trees.} \item{iv)
+minimised amongst all possible spanning trees.} \item{iv)
 find all shortest paths between any pair of meta-nodes in
 the MST. Within the weighted transformed graph in ii), a
 subgraph is induced containing nodes (only occuring in
@@ -71,12 +71,12 @@ MST plus its attached meta-nodes, find the optimal path
 that has the sum of scores of its nodes and attached
 meta-nodes maximised amongest all possible paths. Nodes
 along this optimal path plus their attached meta-nodes are
-called 'module nodes'.} \item{viii) finally, from the input
-graph extract a subgraph (called 'module') that only
-contains module nodes and edges betwen them. This module is
-the maximum scoring module containing the positive nodes as
-many as possible, but the negative nodes as few as
-possible.} }
+called 'subgraph nodes'.} \item{viii) finally, from the
+input graph extract a subgraph (called 'subgraph') that
+only contains subgraph nodes and edges betwen them. This
+subgraph is the maximum scoring subgraph containing the
+positive nodes as many as possible, but the negative nodes
+as few as possible.} }
 }
 \examples{
 # 1) generate an vector consisting of random values from beta distribution
@@ -96,8 +96,8 @@ g <- erdos.renyi.game(1000, 1/100)
 # 5) produce the induced subgraph only based on the nodes in query
 subg <- dNetInduce(g, V(g), knn=0)
 
-# 6) find the module with the maximum score
-module <- dNetFind(subg, scores)
+# 6) find the subgraph with the maximum score
+subgraph <- dNetFind(subg, scores)
 }
 \seealso{
 \code{\link{dNetFind}}

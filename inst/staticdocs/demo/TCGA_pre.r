@@ -128,6 +128,7 @@ V(network)$name <- V(network)$symbol
 #E(network)$weight <- E(network)$combined_score
 network
 
+
 # Identification of gene-active subnetwork
 # 2) identification of gene-active subnetwork
 #pvals <- pvals[V(network)$symbol]
@@ -135,6 +136,196 @@ network
 #g <- dNetPipeline(g=network, pval=pvals, method="fdr", nsize=40)
 g <- dNetPipeline(g=network, pval=pvals, method="fdr", fdr=3e-02)
 g
+
+
+############################################################################
+# comparisons with jActiveModule
+
+load("a.RData")
+# output the whole network and pvals on nodes
+## Write the subnetwork into a SIF-formatted file (Simple Interaction File)
+sif <- data.frame(source=get.edgelist(network)[,1], type="gga", target=get.edgelist(network)[,2])
+write.table(sif, file=paste("Survival_TCGA.sif", sep=""), quote=F, row.names=F,col.names=F,sep="\t")
+## Output the corresponding mutation frequency data
+nodeAttrs <- data.frame(Symbol=names(pvals), pvals)
+write.table(nodeAttrs, file=paste("Survival_TCGA.nodeAttrs", sep=""), quote=F, row.names=F,col.names=T,sep="\t")
+
+relations <- read.table("Module2_H.sif",sep="\t",quote="",header=F)
+relations <- relations[,c(1,3)]
+colnames(relations) <- c("from","to")
+Module2_H <- graph.data.frame(d=relations, directed=F)
+
+relations <- read.table("Module2_Q.sif",sep="\t",quote="",header=F)
+relations <- relations[,c(1,3)]
+colnames(relations) <- c("from","to")
+Module2_Q <- graph.data.frame(d=relations, directed=F)
+
+relations <- read.table("Module2_QH.sif",sep="\t",quote="",header=F)
+relations <- relations[,c(1,3)]
+colnames(relations) <- c("from","to")
+Module2_QH <- graph.data.frame(d=relations, directed=F)
+
+relations <- read.table("Module2_None.sif",sep="\t",quote="",header=F)
+relations <- relations[,c(1,3)]
+colnames(relations) <- c("from","to")
+Module2_None <- graph.data.frame(d=relations, directed=F)
+
+# median: 0.61, 6.2 66.1
+bp.LR.list <- list(All=LR[sample(length(cg_names))], Neti=LR[cg_names], Netc=cg_signif[2:nrow(cg_signif),1], M_none=LR[V(Module2_None)$name], M_H=LR[V(Module2_H)$name], M_Q=LR[V(Module2_Q)$name], M_QH=LR[V(Module2_QH)$name])
+par(las=1, mar=c(5,8,4,2)) # all axis labels horizontal
+boxplot(bp.LR.list, outline=F, horizontal=F, border=par("fg"), ylab="Cox hazard ratio (HR)", log="y", ylim=c(0.1,100), yaxt="n",xaxt="n")
+axis(2, at=c(0.1,1,10,100), labels=c(0.1,1,10,100), las=2)
+axis(1, at=1:length(bp.LR.list), labels=c("naive", "dnet", "dnet (combined)", "Module2_None", "Module2_H", "Module2_Q", "Module2_QH"), las=2)
+
+bp.LR.list <- list(Neti=LR[cg_names], M_none=LR[V(Module2_None)$name], M_H=LR[V(Module2_H)$name], M_Q=LR[V(Module2_Q)$name], M_QH=LR[V(Module2_QH)$name])
+par(las=1, mar=c(5,8,4,2)) # all axis labels horizontal
+boxplot(bp.LR.list, outline=F, horizontal=F, border=par("fg"), ylab="Cox hazard ratio (HR)", log="", ylim=c(0,12), yaxt="n",xaxt="n")
+axis(2, at=seq(0,12,by=4), labels=seq(0,12,by=4), las=2)
+axis(1, at=1:length(bp.LR.list), labels=c("Individual genes\n in the network", "Module2_None", "Module2_H", "Module2_Q", "Module2_QH"), las=2)
+
+
+m <- matrix(0, nrow=length(LR), ncol=6)
+rownames(m) <- names(LR)
+colnames(m) <- c("dnet", "Module2", "Module2_H", "Module2_Q", "Module2_QH", "jActiveModules")
+a <- cg_names
+b <- V(Module2_None)$name
+c <- V(Module2_Q)$name
+d <- V(Module2_H)$name
+e <- V(Module2_QH)$name
+aa <- match(a,names(LR))
+bb <- match(b,names(LR))
+cc <- match(c,names(LR))
+dd <- match(d,names(LR))
+ee <- match(e,names(LR))
+m[aa,1] <- 1
+m[bb,2] <- 1
+m[cc,3] <- 1
+m[dd,4] <- 1
+m[ee,5] <- 1
+ind <- which(apply(m[,2:5],1,sum)==4)
+m[ind,6] <- 1
+
+gene_info <- org.Hs.eg$gene_info
+tmp <- gene_info[match(names(LR), gene_info$Symbol),c(1,2,3,4,5)]
+write.table(data.frame(Symbol=rownames(m), tmp, m, HR=LR, pval=pvals), file=paste("dnet_jActiveModules.txt", sep=""), quote=F, row.names=F,col.names=T,sep="\t")
+
+
+vennDiagram(m[,c(1,6)],cex=c(1,1,0.7))
+vennDiagram(m[,c(2,3,4,5)],cex=c(1,1,0.7))
+
+bp.LR.list <- list(Neti=LR[cg_names], M_none=LR[V(Module2_None)$name], M_H=LR[V(Module2_H)$name], M_Q=LR[V(Module2_Q)$name], M_QH=LR[V(Module2_QH)$name], M=LR[ind])
+par(las=1, mar=c(10,8,4,2)) # all axis labels horizontal
+boxplot(bp.LR.list, outline=F, horizontal=F, border=par("fg"), ylab="Cox hazard ratio (HR)", log="", ylim=c(0,12), yaxt="n",xaxt="n")
+axis(2, at=seq(0,12,by=4), labels=seq(0,12,by=4), las=2)
+labels <- c("dnet", "Module2_None", "Module2_H", "Module2_Q", "Module2_QH", "jActiveModule (consensus)")
+labels <- paste(labels, "_", sapply(bp.LR.list,length), sep="")
+axis(1, at=1:length(bp.LR.list), labels=labels, las=2)
+
+# median: 6.30 6.12 3.64
+bp.LR.list <- list(Neti=LR[cg_names], M=LR[ind])
+par(las=1, mar=c(10,8,4,2)) # all axis labels horizontal
+boxplot(bp.LR.list, outline=F, horizontal=F, border=par("fg"), ylab="Cox hazard ratio (HR)", log="", ylim=c(0,12), yaxt="n",xaxt="n")
+axis(2, at=seq(0,12,by=4), labels=seq(0,12,by=4), las=2)
+labels <- c("dnet", "jActiveModule (consensus)")
+labels <- paste(labels, "_", sapply(bp.LR.list,length), sep="")
+axis(1, at=1:length(bp.LR.list), labels=labels, las=2)
+
+tmp <- intersect(cg_names, names(LR[ind]))
+both <- LR[tmp]
+tmp <- setdiff(cg_names, names(LR[ind]))
+d_only <- LR[tmp]
+tmp <- setdiff(names(LR[ind]), cg_names)
+j_only <- LR[tmp]
+
+bp.LR.list <- list(d=d_only, both=both, j=j_only)
+par(las=1, mar=c(10,8,4,2)) # all axis labels horizontal
+boxplot(bp.LR.list, outline=F, horizontal=F, border=par("fg"), ylab="Cox hazard ratio (HR)", log="", ylim=c(0,15), yaxt="n",xaxt="n")
+axis(2, at=seq(0,15,by=5), labels=seq(0,15,by=5), las=2)
+labels <- c("dnet only", "both", "jActiveModule (consensus) only")
+labels <- paste(labels, "_", sapply(bp.LR.list,length), sep="")
+axis(1, at=1:length(bp.LR.list), labels=labels, las=2)
+
+## Two-sample Kolmogorov-Smirnov test
+# p-value = 2.161e-05
+stats::ks.test(x=LR[cg_names], y=LR[V(Module2_None)$name], alternative=c("two.sided","less", "greater")[1], exact=NULL)
+# p-value = 0.0007342
+stats::ks.test(x=LR[cg_names], y=LR[ind], alternative=c("two.sided","less", "greater")[1], exact=NULL)
+# p-value = 0.5079
+stats::ks.test(x=d_only, y=both, alternative=c("two.sided","less", "greater")[1], exact=NULL)
+# p-value = 3.897e-06
+stats::ks.test(x=d_only, y=j_only, alternative=c("two.sided","less", "greater")[1], exact=NULL)
+# p-value = 0.00015
+stats::ks.test(x=j_only, y=both, alternative=c("two.sided","less", "greater")[1], exact=NULL)
+
+
+# GSEA using the network as a gene set against the preranked LR
+data <- matrix(LR, ncol=1)
+rownames(data) <- names(LR)
+## for dnet
+eTerm <- dGSEA(data=data, identity="symbol", genome="Hs", ontology="Customised", customised.genesets=V(net)$name, weight=0, nperm=5000, RData.location="RData_Rd/data")
+visGSEA(eTerm)
+## for jActiveModule
+eTerm <- dGSEA(data=data, identity="symbol", genome="Hs", ontology="Customised", customised.genesets=names(LR)[ind], weight=0, nperm=5000, RData.location="RData_Rd/data")
+visGSEA(eTerm)
+
+
+############################################################################
+## for dnet
+data <- names(c(d_only, both))
+eTerm <- dEnricher(data, identity="symbol", genome="Hs", ontology="DGIdb", sizeRange=c(10,5000), min.overlap=2, RData.location="RData_Rd/data")
+nodes_query <- names(sort(eTerm$pvalue)[1:10])
+cbind(eTerm$set_info[nodes_query,2:3], cbind(nSet=sapply(eTerm$gs,length), nOverlap=sapply(eTerm$overlap,length), zscore=eTerm$zscore, pvalue=eTerm$pvalue, adjp=eTerm$adjp)[nodes_query,])
+
+genes <- sapply(eTerm$overlap, function(x){
+    a_ind <- match(gene_info$GeneID, x)
+    a <- gene_info[!is.na(a_ind), ]$Symbol
+    paste(sort(as.character(a)), collapse=",")
+})
+
+out <- as.data.frame(cbind(eTerm$set_info[nodes_query,2:3], cbind(nSet=sapply(eTerm$gs,length), nOverlap=sapply(eTerm$overlap,length), zscore=eTerm$zscore, pvalue=eTerm$pvalue, adjp=eTerm$adjp, genes=genes)[nodes_query,]))
+write.table(out, file=paste("xx.txt", sep=""), quote=F, row.names=F,col.names=T,sep="\t")
+
+
+
+
+
+
+## for jActiveModules
+data <- names(c(j_only, both))
+eTerm <- dEnricher(data, identity="symbol", genome="Hs", ontology="DGIdb", sizeRange=c(10,5000), min.overlap=2, RData.location="RData_Rd/data")
+nodes_query <- names(sort(eTerm$pvalue)[1:10])
+cbind(eTerm$set_info[nodes_query,2:3], cbind(nSet=sapply(eTerm$gs,length), nOverlap=sapply(eTerm$overlap,length), zscore=eTerm$zscore, pvalue=eTerm$pvalue, adjp=eTerm$adjp)[nodes_query,])
+
+## for both
+data <- names(both)
+eTerm <- dEnricher(data, identity="symbol", genome="Hs", ontology="DGIdb", sizeRange=c(10,5000), min.overlap=2, RData.location="RData_Rd/data")
+nodes_query <- names(sort(eTerm$pvalue)[1:10])
+cbind(eTerm$set_info[nodes_query,2:3], cbind(nSet=sapply(eTerm$gs,length), nOverlap=sapply(eTerm$overlap,length), zscore=eTerm$zscore, pvalue=eTerm$pvalue, adjp=eTerm$adjp)[nodes_query,])
+
+## for d_only
+data <- names(d_only)
+eTerm <- dEnricher(data, identity="symbol", genome="Hs", ontology="DGIdb", sizeRange=c(10,5000), min.overlap=2, RData.location="RData_Rd/data")
+nodes_query <- names(sort(eTerm$pvalue)[1:5])
+cbind(eTerm$set_info[nodes_query,2:3], cbind(nSet=sapply(eTerm$gs,length), nOverlap=sapply(eTerm$overlap,length), zscore=eTerm$zscore, pvalue=eTerm$pvalue, adjp=eTerm$adjp)[nodes_query,])
+
+## for j_only
+data <- names(j_only)
+eTerm <- dEnricher(data, identity="symbol", genome="Hs", ontology="DGIdb", sizeRange=c(10,5000), min.overlap=2, RData.location="RData_Rd/data")
+nodes_query <- names(sort(eTerm$pvalue)[1:10])
+cbind(eTerm$set_info[nodes_query,2:3], cbind(nSet=sapply(eTerm$gs,length), nOverlap=sapply(eTerm$overlap,length), zscore=eTerm$zscore, pvalue=eTerm$pvalue, adjp=eTerm$adjp)[nodes_query,])
+
+
+
+
+
+############################################################################
+bionet <- dNetPipeline(g=network, pval=pvals, method="cdf", nsize=42)
+bionet
+
+## Two-sample Kolmogorov-Smirnov test
+# p-value = 2.161e-05
+stats::ks.test(x=LR[cg_names], y=LR[V(bionet)$name], alternative=c("two.sided","less", "greater")[1], exact=NULL)
+
 
 
 ############################################################################
@@ -241,7 +432,7 @@ edge.color <- visColoralpha(edge.color, alpha=0.5)
 #visNet(g, glayout=glayout, vertex.label=V(g)$geneSymbol, vertex.color=vcolors, vertex.frame.color=vcolors, vertex.shape="sphere", mark.groups=mark.groups, mark.col=mark.col, mark.border=mark.border, mark.shape=1, mark.expand=10, edge.color=edge.color, vertex.label.color="darkblue", vertex.label.dist=0, vertex.label.font=2)
 
 wth <- 3600
-png("a.png", width=wth, height=wth, res=wth*72/480)
+png("net.png", width=wth, height=wth, res=wth*72/480)
 visNet(g, glayout=glayout, vertex.label=V(g)$geneSymbol, vertex.color=vcolors, vertex.frame.color=vcolors, vertex.shape="sphere", mark.groups=mark.groups, mark.col=mark.col, mark.border=mark.border, mark.shape=1, mark.expand=10, edge.color=edge.color, newpage=F, vertex.label.color="blue", vertex.label.dist=0.4, vertex.label.font=2, edge.width=E(cmodule)$edgeConfidence/10)
 legend_name <- paste("C",1:length(mcolors)," (n=",com$csize,", pval=",signif(com$significance,digits=2),")",sep='')
 legend("topleft", legend=legend_name, fill=mcolors, bty="n", cex=0.6)
@@ -295,20 +486,21 @@ for(i in 1:length(cg_names)){
 }
 cg_signif[cg_signif[,2]==0,2] <- min(cg_signif[cg_signif[,2]!=0,2])
 
-# median: 0.61, 6.2 66.1
-bp.LR.list <- list(All=LR, Neti=LR[cg_names], Netc=cg_signif[2:nrow(cg_signif),1])
+# median: 0.61 (0.56), 6.18 66.12
+naive <- LR[sample(length(cg_names))]
+bp.LR.list <- list(Naive=naive, Neti=LR[cg_names], Netc=cg_signif[2:nrow(cg_signif),1])
 par(las=1, mar=c(5,8,4,2)) # all axis labels horizontal
-boxplot(bp.LR.list, outline=F, horizontal=F, names=c("All genes", "Individual genes\n in the network", "Combined genes\n in the network"), col=c("red","green","blue"), border=par("fg"), ylab="Hazard ratio", log="y", ylim=c(0.1,100), yaxt="n",xaxt="n")
+boxplot(bp.LR.list, outline=F, horizontal=F, names=c("All genes", "Individual genes\n in the network", "Combined genes\n in the network"), col=c("red","green","blue"), border=par("fg"), ylab="Cox hazard ratio (HR)", log="y", ylim=c(0.1,100), yaxt="n",xaxt="n")
 axis(2, at=c(0.1,1,10,100), labels=c(0.1,1,10,100), las=2)
-axis(1, at=1:3, labels=c("All genes", "Individual genes\n in the network", "Combined genes\n in the network"), las=2)
+axis(1, at=1:3, labels=c("naive\n(using genes in random)", "dnet\n(using genes individually)", "dnet\n(using genes in combination"), las=2)
 
 ## Two-sample Kolmogorov-Smirnov test
-# p-value = p-value < 2.2e-16
-stats::ks.test(x=LR, y=LR[cg_names], alternative=c("two.sided","less", "greater")[1], exact=NULL)
-# p-value = p-value < 2.2e-16
+# p-value = 7.938e-14
+stats::ks.test(x=naive, y=LR[cg_names], alternative=c("two.sided","less", "greater")[1], exact=NULL)
+# p-value = 2.2e-16
 stats::ks.test(x=LR[cg_names], y=cg_signif[2:nrow(cg_signif),1], alternative=c("two.sided","less", "greater")[1], exact=NULL)
-# p-value = p-value < 2.2e-16
-stats::ks.test(x=LR, y=cg_signif[2:nrow(cg_signif),1], alternative=c("two.sided","less", "greater")[1], exact=NULL)
+# p-value = 2.2e-16
+stats::ks.test(x=naive, y=cg_signif[2:nrow(cg_signif),1], alternative=c("two.sided","less", "greater")[1], exact=NULL)
 
 
 plot(cg_signif[,1])
@@ -337,17 +529,37 @@ lines(newx, preds[ ,2], lty = 'dashed', col = 'red')
 
 # 4) visualisation of the gene-active subnetwork overlaid by the node/gene score
 max_colorbar <- ceiling(quantile(abs(V(g)$score),0.5))
-visNet(g, glayout=glayout, pattern=V(g)$score, zlim=c(-1*max_colorbar,max_colorbar), vertex.shape="sphere", mark.groups=mark.groups, mark.col=mark.col, mark.border=mark.border, mark.shape=1, mark.expand=10, edge.color=edge.color)
+data <- V(g)$score
+wth <- 3600
+png("visNet_score.png", width=wth, height=wth, res=wth*72/480)
+visNet(g, glayout=glayout, pattern=data, colormap=colormap, vertex.label=V(g)$geneSymbol, vertex.shape="sphere", zlim=c(-1*max_colorbar,max_colorbar), mark.groups=mark.groups, mark.col=mark.col, mark.border=mark.border, mark.shape=1, mark.expand=10, edge.color=edge.color, newpage=F, vertex.label.color="blue", vertex.label.dist=0.4, vertex.label.font=2, edge.width=E(cmodule)$edgeConfidence/10)
+dev.off()
 
 # 5) visualisation of the gene-active subnetwork overlaid by p-values
 colormap <- "darkgreen-lightgreen-lightpink-darkred"
-logFC <- -1*log10(pvals[V(g)$name])
-visNet(g, glayout=glayout, pattern=logFC, colormap=colormap, vertex.shape="sphere", zlim=c(0,2), mark.groups=mark.groups, mark.col=mark.col, mark.border=mark.border, mark.shape=1, mark.expand=10, edge.color=edge.color)
+data <- -1*log10(pvals[V(g)$name])
+wth <- 3600
+png("visNet_pvalue.png", width=wth, height=wth, res=wth*72/480)
+visNet(g, glayout=glayout, pattern=data, colormap=colormap, vertex.label=V(g)$geneSymbol, vertex.shape="sphere", zlim=c(0,2), mark.groups=mark.groups, mark.col=mark.col, mark.border=mark.border, mark.shape=1, mark.expand=10, edge.color=edge.color, newpage=F, vertex.label.color="blue", vertex.label.dist=0.4, vertex.label.font=2, edge.width=E(cmodule)$edgeConfidence/10)
+dev.off()
 
 # 6) visualisation of the gene-active subnetwork overlaid by log-LR
 colormap <- "darkgreen-lightgreen-lightpink-darkred"
-logFC <- log2(LR[V(g)$name])
-visNet(g, glayout=glayout, pattern=logFC, colormap=colormap, vertex.shape="sphere", zlim=c(-2,2), mark.groups=mark.groups, mark.col=mark.col, mark.border=mark.border, mark.shape=1, mark.expand=10, edge.color=edge.color)
+data <- log2(LR[V(g)$name])
+wth <- 3600
+png("visNet_HR.png", width=wth, height=wth, res=wth*72/480)
+visNet(g, glayout=glayout, pattern=data, colormap=colormap, vertex.label=V(g)$geneSymbol, vertex.shape="sphere", zlim=c(-3,3), mark.groups=mark.groups, mark.col=mark.col, mark.border=mark.border, mark.shape=1, mark.expand=10, edge.color=edge.color, newpage=F, vertex.label.color="blue", vertex.label.dist=0.4, vertex.label.font=2, edge.width=E(cmodule)$edgeConfidence/10)
+dev.off()
+
+# 6) visualisation of the gene-active subnetwork overlaid by log-LR
+colormap <- "darkgreen-lightgreen-lightpink-darkred"
+ind <- match(V(g)$name, rownames(denseness))
+data <- denseness[ind]
+wth <- 3600
+png("visNet_ubiquity.png", width=wth, height=wth, res=wth*72/480)
+visNet(g, glayout=glayout, pattern=data, colormap=colormap, vertex.label=V(g)$geneSymbol, vertex.shape="sphere", zlim=c(0,0.8), mark.groups=mark.groups, mark.col=mark.col, mark.border=mark.border, mark.shape=1, mark.expand=10, edge.color=edge.color, newpage=F, vertex.label.color="blue", vertex.label.dist=0.4, vertex.label.font=2, edge.width=E(cmodule)$edgeConfidence/10)
+dev.off()
+
 
 # 7) Network-based sample classifications and visualisations on 2D sample landscape
 # it uses the gene-active subnetwork overlaid by all replication timing data
@@ -361,6 +573,21 @@ frac_mutated[1:10,]
 data <- frac_mutated[V(g)$name,]
 sReorder <- dNetReorder(g, data, feature="edge", node.normalise="degree", amplifier=3, metric="none")
 visNetReorder(g=g, data=data, sReorder=sReorder, height=ceiling(sqrt(ncol(data)))*3, newpage=T, glayout=glayout, colormap=colormap, vertex.label=NA,vertex.shape="sphere", vertex.size=16,mtext.cex=0.8,border.color="888888", zlim=c(0,0.10), mark.groups=mark.groups, mark.col=mark.col, mark.border=mark.border, mark.shape=1, mark.expand=10, edge.color=edge.color)
+
+## for all
+wth <- 3600
+png("visNetReorder_all2.png", width=wth, height=wth, res=wth*72/480)
+visNetReorder(g=g, data=data, sReorder=sReorder, margin=rep(0.1, 4), height=ceiling(sqrt(ncol(data)))*3, newpage=F, glayout=glayout, colormap=colormap, vertex.label=NA,vertex.shape="sphere", vertex.size=16,mtext.cex=0.6,mtext.side=3,mtext.adj=0, mtext.font=2,mtext.col="black",  border.color="888888", zlim=c(0,0.10), mark.groups=mark.groups, mark.col=mark.col, mark.border=mark.border, mark.shape=1, mark.expand=10, edge.color=edge.color, vertex.label.color="blue", vertex.label.dist=0.4, vertex.label.font=2, edge.width=E(cmodule)$edgeConfidence/10)
+dev.off()
+
+## for each
+for(j in 1:ncol(data)){
+    wth <- 3600
+    file <- paste("visNet_", colnames(data)[j], ".png", sep="")
+    png(file, width=wth, height=wth, res=wth*72/480)
+    visNet(g, glayout=glayout, pattern=data[,j], colormap=colormap, vertex.label=V(g)$geneSymbol, vertex.shape="sphere", zlim=c(0,0.10), mark.groups=mark.groups, mark.col=mark.col, mark.border=mark.border, mark.shape=1, mark.expand=10, edge.color=edge.color, newpage=F, vertex.label.color="blue", vertex.label.dist=0.4, vertex.label.font=2, edge.width=E(cmodule)$edgeConfidence/10)
+    dev.off()
+}
 
 # 8) heatmap of replication timing data in the subnetwork
 visHeatmapAdv(data, colormap=colormap, zlim=c(0,0.15), KeyValueName="Fraction of mutations")
@@ -523,22 +750,58 @@ visHeatmapAdv(data=data[ordering,flag], Rowv=F, Colv=F, colormap="lightyellow-or
 
 
 # Cross-tumor mutational ubiquity
-ind <- match(V(g)$name, rownames(denseness))
-net_denseness <- denseness[ind]
-net_denseness <- net_denseness[ordering]
-names(net_denseness) <- rownames(data)[ordering]
-library(beeswarm)
+ubiquity <- denseness
+g <- net
+ind <- match(V(g)$name, rownames(ubiquity))
+net_ubiquity <- ubiquity[ind]
+net_ubiquity <- net_ubiquity[ordering]
+names(net_ubiquity) <- rownames(data)[ordering]
+p <- pvals[match(V(g)$name, names(pvals))]
+df <- data.frame(net_ubiquity, base_order1, pvalue=p[ordering])
 par(las=2, mar=c(12,8,4,2)) # all axis labels horizontal
-beeswarm(net_denseness ~ base_order1, col=4, pch=16, horizontal=F, "ylab"="Cross-tumor mutational ubiquity", "xlab"="", labels="", ylim=c(0,1))
 lbls <- eTerm$set_info$name[unique(base_order1)]
 lbls <- gsub(".*:","",lbls)
-boxplot(net_denseness ~ base_order1, add=T, horizontal=F, names=lbls)
+pwcol <- ifelse(df$pvalue>5e-2, "gray", "black")
+visBoxplotAdv(formula=net_ubiquity ~ base_order1, data=df, method=c("center","hex","square","swarm")[4], pch=19, pwcol=pwcol, xlab="", ylab="Cross-tumor mutation ubiquity", ylim=c(0,1), labels=lbls)
+graphics::legend("bottomright", legend=c("Cox P-value<0.05", "Cox P-value>0.05"), pch=19, col=unique(pwcol), box.col="transparent", border="transparent", cex=0.7)
 # p-value = 0.05472
 stats::ks.test(x=net_denseness[base_order1==6], y=net_denseness, alternative=c("two.sided","less", "greater")[1], exact=NULL)
 # p-value = 0.006488
 stats::ks.test(x=net_denseness[base_order1==6], y=net_denseness[base_order1<6], alternative=c("two.sided","less", "greater")[1], exact=NULL)
 # p-value = 0.2121
 stats::ks.test(x=net_denseness[base_order1==6], y=net_denseness[base_order1>6], alternative=c("two.sided","less", "greater")[1], exact=NULL)
+
+## The degree of a vertex is its most basic structural property, the number of its adjacent edges
+dg <- igraph::degree(net)
+## betweenness centrality: defined by the number of geodesics (shortest paths) going through a vertex
+bn <- igraph::betweenness(net)
+## Closeness centrality measures how many steps is required to access every other vertex from a given vertex
+cn <- igraph::closeness(net)
+## combine
+centrality <- data.frame(degree=dg, betweenness=bn, closeness=cn)
+
+deu <- rownames(df)[base_order1==6]
+oth <- rownames(df)[base_order1!=6]
+ind_deu <- match(deu, rownames(centrality))
+ind_oth <- match(oth, rownames(centrality))
+# p-value = 0.0457
+stats::ks.test(x=centrality$degree[ind_deu], y=centrality$degree[ind_oth], alternative=c("two.sided","less", "greater")[2], exact=NULL)
+# p-value = 0.7277
+stats::ks.test(x=centrality$betweenness[ind_deu], y=centrality$betweenness[ind_oth], alternative=c("two.sided","less", "greater")[1], exact=NULL)
+x <- centrality$betweenness[ind_deu]
+y <- centrality$betweenness[ind_oth]
+stats::ks.test(x=x[x!=0], y=y[y!=0], alternative=c("two.sided","less", "greater")[1], exact=NULL)
+# p-value = 0.3082
+stats::ks.test(x=centrality$closeness[ind_deu], y=centrality$closeness[ind_oth], alternative=c("two.sided","less", "greater")[1], exact=NULL)
+
+bp.degree.list <- list(Deu=centrality$degree[ind_deu], Oth=centrality$degree[ind_oth])
+par(las=1, mar=c(10,8,4,2)) # all axis labels horizontal
+boxplot(bp.degree.list, outline=F, horizontal=F, border=par("fg"), ylab="Node degree", log="", ylim=c(0,8), yaxt="n",xaxt="n")
+axis(2, at=seq(0,8,by=4), labels=seq(0,8,by=4), las=2)
+labels <- c("Deuterostomia", "Others")
+labels <- paste(labels, "_", sapply(bp.degree.list,length), sep="")
+axis(1, at=1:length(bp.degree.list), labels=labels, las=2)
+
 
 
 ###############
@@ -685,15 +948,15 @@ sample_es <- as.vector(eTerm$es)
 names(sample_pvalue) <- names(sample_fdr) <- names(sample_nes) <- names(sample_es) <- colnames(eTerm$pvalue)
 df <- data.frame(pData(eset[ind[!is.na(ind)],]), pvalue=sample_pvalue, fdr=sample_fdr, nes=sample_nes, es=sample_es)
 
-## for beeswarm
-library(beeswarm)
+load("GSEA_each_sample_noweight.RData")
+## for visBoxplotAdv
 wth <- 3600
-png("GSEA_samples_nes.png", width=wth*2.2, height=wth, res=wth*72/480)
+png("GSEA_samples_nes1.png", width=wth*2.2, height=wth, res=wth*72/480)
 par(las=2, mar=c(9,4,1,1)) # all axis labels horizontal
-lbls <- paste(names(table(df$TCGA_tumor_type)), " (n=", table(df$TCGA_tumor_type), ")",  sep="")
-beeswarm(nes ~ TCGA_tumor_type, data=df, corral= c("none", "gutter", "wrap", "random", "omit")[1], pch=16, pwcol=2+as.numeric(df$pvalue>5e-2), cex=0.6, horizontal=F, ylab="Normalized enrichment score (NES)", xlab="", labels=lbls, ylim=c(0.6,1.6))
-legend("topright", legend = c("pvalue<0.05", "pvalue>0.05"), pch=16, col=2:3, box.col="transparent", border="transparent", cex=0.8)
-boxplot(nes ~ TCGA_tumor_type, data=df, add=T, outline=F, horizontal=F, names=lbls, col=c("transparent"),border=par("fg"))
+labels <- paste(names(table(df$TCGA_tumor_type)), " (n=", table(df$TCGA_tumor_type), ")",  sep="")
+pwcol <- as.numeric(df$pvalue>5e-2) + 2
+visBoxplotAdv(formula=nes ~ TCGA_tumor_type, data=df, method=c("center", "hex", "square", "swarm")[2], pch=16, pwcol=pwcol, cex=0.6, ylab="Normalized enrichment score (NES)", xlab="", labels=labels, ylim=c(0.6,1.6), boxplot.border="black")
+#graphics::legend("top", legend=c("pvalue<0.05", "pvalue>0.05"), pch=16, col=unique(pwcol), box.col="transparent", border="transparent", cex=0.8)
 dev.off()
 
 ## for pie
@@ -708,11 +971,9 @@ wth <- 3600
 png("GSEA_samples_nes_pie.png", width=wth*3, height=wth, res=wth*72/480)
 par(mfrow=c(1,11), mar=c(2,2,2,2))
 for(i in 1:length(tmp)){
-    pie(tmp_df[i,1:2], col=c("red","green"), labels=paste(c("",""), tmp_df[i,1:2], sep=""), main=rownames(tmp_df)[i], cex=1.5)
+    pie(tmp_df[i,1:2], col=c("red","green"), labels=paste(c("",""), tmp_df[i,1:2], sep=""), main=rownames(tmp_df)[i], cex=3)
 }
 dev.off()
-
-
 
 
 require(grDevices)

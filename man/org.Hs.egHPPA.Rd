@@ -40,7 +40,7 @@ Genet}, 83:610-615.
 
 
 \examples{
-#load(url("http://dnet.r-forge.r-project.org/data/Hs/org.Hs.egHPPA.RData"))
+#org.Hs.egHPPA <- dRDataLoader(RData='org.Hs.egHPPA')
 data(org.Hs.egHPPA)
 names(org.Hs.egHPPA)
 }

@@ -15,14 +15,15 @@ ls() # you should see three variables: 'RT', 'CpG' and 'EX'
 # Load the package 'dnet'
 library(dnet)
 
-# Load or/and install packages "affy" and "limma" that are specifically used in this demo
-list.pkg <- c("affy","limma")
-for(pkg in list.pkg){
+# Load or/and install packages "Biobase" and "limma" that are specifically used in this demo
+for(pkg in c("Biobase","limma")){
     if(!require(pkg, character.only=T)){
-        install.packages(pkg,repos="http://www.stats.bris.ac.uk/R",dependencies=TRUE)
+        source("http://bioconductor.org/biocLite.R")
+        biocLite(pkg)
         lapply(pkg, library, character.only=T)
     }
 }
+
 
 # Here, we are interested to analyse replication timing data and their difference between different sample groups
 # To this end, it is better to create the 'eset' object including sample grouping indication information
@@ -36,8 +37,8 @@ pData(esetGene)
 
 # Now, load the gene network in mouse
 # As part of dnet package, this network has been prepared and stored as an igraph object
-# The network is extracted from the STRING database (version 9.1). Only those associations with medium confidence (score>=0.4) are retained.
-load(url("http://dnet.r-forge.r-project.org/data/Mm/org.Mm.string.RData"))
+# The network is extracted from the STRING database (version 9.1). Only those associations with medium confidence (score>=400) are retained.
+org.Mm.string <- dRDataLoader(RData='org.Mm.string')
 org.Mm.string
 
 # Look at the first node information (gene symbols)
@@ -89,7 +90,9 @@ hist(pval)
 
 # 2) identification of gene-active subnetwork
 ## restrict the identified subnetwork to have the node size of 40 or so
-g <- dNetPipeline(g=network, pval=pval, nsize=40)
+#g <- dNetPipeline(g=network, pval=pval, nsize=40)
+## corresponding to fdr=5.50e-07
+g <- dNetPipeline(g=network, pval=pval, significance.threshold=5.50e-07)
 g
 
 # 3) visualisation of the gene-active subnetwork itself
@@ -149,7 +152,7 @@ data
 eTerm <- dEnricher(data, identity="symbol", genome="Mm", ontology="GOBP")
 ## visualise the top significant terms in the GOBP heirarchy
 ## first, load the GOBP ontology
-load(url("http://dnet.r-forge.r-project.org/data/Obo/ig.GOBP.RData"))
+ig.GOBP <- dRDataLoader(RData='ig.GOBP')
 g <- ig.GOBP
 ## select the top most significant 10 terms
 nodes_query <- names(sort(eTerm$adjp)[1:10])
@@ -165,7 +168,7 @@ visDAG(g=subg, data=-1*log10(eTerm$adjp[V(subg)$name]), node.info="both", node.a
 eTerm <- dEnricher(data, identity="symbol", genome="Mm", ontology="GOMF")
 ## visualise the top significant terms in the GOMF heirarchy
 ## first, load the GOMF ontology
-load(url("http://dnet.r-forge.r-project.org/data/Obo/ig.GOMF.RData"))
+ig.GOMF <- dRDataLoader(RData='ig.GOMF')
 g <- ig.GOMF
 ## select the top most significant 10 terms
 nodes_query <- names(sort(eTerm$adjp)[1:10])
@@ -181,7 +184,7 @@ visDAG(g=subg, data=-1*log10(eTerm$adjp[V(subg)$name]), node.info="both", node.a
 eTerm <- dEnricher(data, identity="symbol", genome="Mm", ontology="MP")
 ## visualise the top significant terms in the MP heirarchy
 ## first, load the MP ontology
-load(url("http://dnet.r-forge.r-project.org/data/Obo/ig.MP.RData"))
+ig.MP <- dRDataLoader(RData='ig.MP')
 g <- ig.MP
 ## select the top most significant 10 terms
 nodes_query <- names(sort(eTerm$adjp)[1:10])
@@ -197,7 +200,7 @@ visDAG(g=subg, data=-1*log10(eTerm$adjp[V(subg)$name]), node.info=c("none","term
 eTerm <- dEnricher(data, identity="symbol", genome="Mm", ontology="DO")
 ## visualise the top significant terms in the DO heirarchy
 ## first, load the DO ontology
-load(url("http://dnet.r-forge.r-project.org/data/Obo/ig.DO.RData"))
+ig.DO <- dRDataLoader(RData='ig.DO')
 g <- ig.DO
 ## select the top most significant 10 terms
 nodes_query <- names(sort(eTerm$adjp)[1:10])
@@ -210,7 +213,11 @@ subg <- dDAGinduce(g, nodes_query)
 visDAG(g=subg, data=-1*log10(eTerm$adjp[V(subg)$name]), node.info="both", zlim=c(0,4), node.attrs=list(color=nodes.highlight))
 
 ## 9e) PS enrichment analysis
-eTerm <- dEnricher(data, identity="symbol", genome="Mm", ontology="PS")
-## Loot at the evolution relevance along the path to the eukaryotic common ancestor
+## use all common ancestors
+eTerm <- dEnricher(data, identity="symbol", genome="Mm", ontology="PS", sizeRange=c(10,20000), min.overlap=0)
+## Look at the evolution relevance along the path to the eukaryotic common ancestor
 cbind(eTerm$set_info[,2:3], nSet=sapply(eTerm$gs,length), zscore=eTerm$zscore, pvalue=eTerm$pvalue, adjp=eTerm$adjp)
-
+## use common ancestors collapsed onto the known NCBI taxonomy
+eTerm <- dEnricher(data, identity="symbol", genome="Mm", ontology="PS2", sizeRange=c(10,20000), min.overlap=0)
+## Look at the evolution relevance along the path to the eukaryotic common ancestor
+cbind(eTerm$set_info[,2:3], nSet=sapply(eTerm$gs,length), zscore=eTerm$zscore, pvalue=eTerm$pvalue, adjp=eTerm$adjp)

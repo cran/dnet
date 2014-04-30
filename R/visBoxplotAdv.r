@@ -52,7 +52,7 @@
 #' out <- visBoxplotAdv(formula=time ~ TCGA_tumor_type, data=data, pch="pies", pwcol=pwcol, pwpie=pwpie)
 #' legend("topright", legend=levels(data$Gender), box.col="transparent", pch=19, col=unique(pwcol))
 
-visBoxplotAdv <- function(formula, data, orientation=c("vertical","horizontal"), method=c("center","hex","square","swarm"), corral=c("none","gutter","wrap","random","omit"), corralWidth, cex=1, spacing=1, breaks=NULL, labels, at=NULL, add=FALSE, log=FALSE, xlim=NULL, ylim=NULL, xlab=NULL, ylab=NULL, pch=c("circles","thermometers","pies")[1], col=par("col"), bg=NA, pwpch=NULL, pwcol=NULL, pwbg=NULL, pwpie=NULL, do.plot=TRUE, do.boxplot=TRUE, boxplot.notch=FALSE, boxplot.border="#888888C0", boxplot.col=NULL, ...)
+visBoxplotAdv <- function(formula, data, orientation=c("vertical","horizontal"), method=c("center","hex","square","swarm"), corral=c("none","gutter","wrap","random","omit"), corralWidth, cex=1, spacing=1, breaks=NULL, labels, at=NULL, add=FALSE, log=FALSE, xlim=NULL, ylim=NULL, xlab=NULL, ylab=NULL, pch=c("circles","thermometers","pies")[1], col=par("col"), bg=NA, pwpch=NULL, pwcol=NULL, pwbg=NULL, pwpie=NULL, do.plot=TRUE, do.boxplot=TRUE, boxplot.notch=FALSE, boxplot.border="#888888C0", boxplot.col="transparent", ...)
 {
 
     if(missing(formula) || (length(formula)!=3)){

@@ -1,18 +1,18 @@
 \name{dNetPipeline}
 \alias{dNetPipeline}
-\title{Function to setup the pipeline for finding maximum-scoring module from an input graph and the signficance imposed on its nodes}
+\title{Function to setup the pipeline for finding maximum-scoring subgraph from an input graph and the signficance imposed on its nodes}
 \usage{
-dNetPipeline(g, pval, method = c("pdf", "cdf", "fdr"), fdr = NULL,
-nsize = NULL, plot = F, verbose = T)
+dNetPipeline(g, pval, method = c("pdf", "cdf", "customised"),
+significance.threshold = NULL, nsize = NULL, plot = F, verbose = T)
 }
 \arguments{
 \item{g}{an object of class "igraph" or "graphNEL"}
 
-\item{pval}{a vector containing input p-values. For each
-element, it must have the name that could be mapped onto
-the input graph. Also, the names in input "pval" should
-contain all those in the input graph "g", but the reverse
-is not necessary}
+\item{pval}{a vector containing input p-values (or fdr).
+For each element, it must have the name that could be
+mapped onto the input graph. Also, the names in input
+"pval" should contain all those in the input graph "g",
+but the reverse is not necessary}
 
 \item{method}{the method used for the transformation. It
 can be either "pdf" for the method based on the
@@ -20,18 +20,21 @@ probability density function of the fitted model, or
 "cdf" for the method based on the cumulative distribution
 function of the fitted model}
 
-\item{fdr}{the given FDR threshold. By default, it is set
-to NULL, meaning there is no constraint. If given, those
-p-values with the FDR below this are considered
-significant and thus scored positively. Instead, those
-p-values with the FDR above this given FDR are considered
-insigificant and thus scored negatively}
+\item{significance.threshold}{the given significance
+threshold. By default, it is set to NULL, meaning there
+is no constraint. If given, those p-values below this are
+considered significant and thus scored positively.
+Instead, those p-values above this given significance
+threshold are considered insigificant and thus scored
+negatively}
 
 \item{nsize}{the desired number of nodes constrained to
-the resulting module. It is not nulll, a wide range of
-FDR will be scanned to find the FDR threshold leading to
-the desired number of nodes in the resulting module.
-Notably, the given FDR threshold will be overwritten.}
+the resulting subgraph. It is not nulll, a wide range of
+significance thresholds will be scanned to find the
+optimal significance threshold leading to the desired
+number of nodes in the resulting subgraph. Notably, the
+given significance threshold will be overwritten by this
+option.}
 
 \item{plot}{logical to indicate whether the histogram
 plot, contour plot and scatter plot should be drawn. By
@@ -42,28 +45,34 @@ will be displayed in the screen. By default, it sets to
 true for display}
 }
 \value{
-a module with a maximum score, an object of class "igraph"
-or "graphNEL"
+a subgraph with a maximum score, an object of class
+"igraph" or "graphNEL"
 }
 \description{
 \code{dNetPipeline} is supposed to finish ab inito
-maximum-scoring module identification for the input graph
-with the node information on the significance (p-values).
-It returns an object of class "igraph" or "graphNEL".
+maximum-scoring subgraph identification for the input graph
+with the node information on the significance (p-value or
+fdr). It returns an object of class "igraph" or "graphNEL".
 }
 \note{
-The pipeline sequentially consists of: \itemize{ \item{i)
+The pipeline sequentially consists of: \itemize{ \item{ia)
+if the method is either "pdf" or "cdf",
 \code{\link{dBUMfit}} used to fit the p-value distribution
-under beta-uniform mixture model.} \item{ii) if there is
-the desired number of nodes constrained to the resulting
-module, a wide range of FDR (including rough stage with
-large intervals, and finetune stage with smaller intervals)
-will be scanned to find the FDR threshold to meet the
-desired number of nodes.} \item{iii)
+under beta-uniform mixture model, and
 \code{\link{dBUMscore}} used to calculate the scores
-according to the fitted BUM and FDR threshold.} \item{iv)
-\code{\link{dNetFind}} used to find maximum-scoring module
-from the input graph and scores imposed on its nodes.} }
+according to the fitted BUM and the significance
+threshold.} \item{ib) if the method is either "customised",
+then the user input list of fdr (or p-values) and the
+significance threshold will be directly used for score
+transformation by \code{dFDRscore}.} \item{ii) if there is
+the desired number of nodes constrained to the resulting
+subgraph, a wide range of significance thresholds
+(including rough stage with large intervals, and finetune
+stage with smaller intervals) will be scanned to find the
+significance threshold to meet the desired number of
+nodes.} \item{iii) \code{\link{dNetFind}} used to find
+maximum-scoring subgraph from the input graph and scores
+imposed on its nodes.} }
 }
 \examples{
 # 1) generate an vector consisting of random values from beta distribution
@@ -76,16 +85,20 @@ g <- erdos.renyi.game(1000, 1/100)
 # 3) produce the induced subgraph only based on the nodes in query
 subg <- dNetInduce(g, V(g), knn=0)
 
-# 4) find maximum-scoring module based on fdr=0.1 threshold
-module <- dNetPipeline(g=subg, pval=x, fdr=0.1)
+# 4) find maximum-scoring subgraph based on the given significance threshold
+# 4a) assume the input is a list of p-values (controlling fdr=0.1)
+subgraph <- dNetPipeline(g=subg, pval=x, significance.threshold=0.1)
+# 4b) assume the input is a list of customised significance (eg FDR directly)
+subgraph <- dNetPipeline(g=subg, pval=x, method="customised",
+significance.threshold=0.1)
 
 \dontrun{
-# 5) find maximum-scoring module with the desired node number nsize=20
-# module <- dNetPipeline(g=subg, pval=x, nsize=20)
+# 5) find maximum-scoring subgraph with the desired node number nsize=20
+subgraph <- dNetPipeline(g=subg, pval=x, nsize=20)
 }
 }
 \seealso{
 \code{\link{dBUMfit}}, \code{\link{dBUMscore}},
-\code{\link{dNetFind}}
+\code{\link{dFDRscore}}, \code{\link{dNetFind}}
 }
 

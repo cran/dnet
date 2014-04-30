@@ -12,6 +12,6 @@
 * Identification of gene-active networks from digitised data (eg [expression](http://dnet.r-forge.r-project.org/demo-Fang.html), [mutation](http://dnet.r-forge.r-project.org/demo-TCGA.html) and [replication timing](http://dnet.r-forge.r-project.org/demo-Hiratani.html))
 * Network-based sample classifications and visualisations on 2D sample landscape
 * Random walk with restart for network affinity calculation
-* Enrichment analysis using a variety of ontologies (their annotations) and using gene evolutionary age information
-* A wide variety of built-in [RData](http://dnet.r-forge.r-project.org/rdata.html): ontologies (including `Gene Ontology`, `Disease Ontology`, `Human Phenotype` and `Mammalian Phenotype`), phylostratific age information and gene association networks in well-studied organisms, including human, mouse, rat, chicken, c.elegans, fruitfly, zebrafish and arabidopsis.
+* Enrichment analysis using a variety of built-in databases
+* A wide variety of built-in [RData](http://dnet.r-forge.r-project.org/rdata.html): ontologies (including `Gene Ontology`, `Disease Ontology`, `Human Phenotype` and `Mammalian Phenotype`), gene evolutionary age information and gene association networks in well-studied organisms, including human, mouse, rat, chicken, c.elegans, fruitfly, zebrafish and arabidopsis.
 * A tool with rich visuals but less inputs, which can run on `Windows`, `Mac` and `Linux`

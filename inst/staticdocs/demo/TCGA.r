@@ -10,9 +10,10 @@ library(dnet)
 # Load or install packages specifically used in this demo
 for(pkg in c("Biobase","survival")){
     if(!require(pkg, character.only=T)){
-        install.packages(pkg,repos="http://www.stats.bris.ac.uk/R",dependencies=TRUE)
+        source("http://bioconductor.org/biocLite.R")
+        biocLite(pkg)
+        lapply(pkg, library, character.only=T)
     }
-    lapply(pkg, library, character.only=T)
 }
 
 # load an "ExpressionSet" object
@@ -57,7 +58,7 @@ HR <- gene_signif[,1]
 pvals <- gene_signif[,2]
 
 # An igraph object that contains a functional protein association network in human. The network is extracted from the STRING database (version 9.1). Only those associations with medium confidence (score>=400) are retained.
-load(url("http://dnet.r-forge.r-project.org/data/Hs/org.Hs.string.RData"))
+org.Hs.string <- dRDataLoader(RData='org.Hs.string')
 # restrict to those edges with high confidence (score>=700)
 network <- subgraph.edges(org.Hs.string, eids=E(org.Hs.string)[combined_score>=700])
 network
@@ -71,7 +72,7 @@ V(network)$name <- V(network)$symbol
 network
 
 # Identification of gene-active network
-net <- dNetPipeline(g=network, pval=pvals, method="fdr", fdr=3e-02)
+net <- dNetPipeline(g=network, pval=pvals, method="customised", significance.threshold=3e-02)
 net
 
 # visualisation of the gene-active network itself
@@ -129,9 +130,9 @@ for(i in 1:length(cg_names)){
 cg_signif[cg_signif[,2]==0,2] <- min(cg_signif[cg_signif[,2]!=0,2])
 bp.HR.list <- list(All=HR, Neti=HR[cg_names], Netc=cg_signif[2:nrow(cg_signif),1])
 par(las=2, mar=c(10,8,4,2)) # all axis labels horizontal
-boxplot(bp.HR.list, outline=F, horizontal=F, names=c("All genes", "Genes in the network\n(used individually)", "Genes in the network\n(used in combination)"), col=c("red","green","blue"), ylab="Hazard ratio", log="y", ylim=c(0.1,100))
+boxplot(bp.HR.list, outline=F, horizontal=F, names=c("naive\n(genes in random)", "dnet\n(genes individually)", "dnet \n(genes in combination)"), col=c("red","green","blue"), ylab="Cox hazard ratio (HR)", log="y", ylim=c(0.1,100))
 # Two-sample Kolmogorov-Smirnov test
-## All genes versus genes in the network (used individually)
+## Genes randomly choosen versus genes in the network (used individually)
 stats::ks.test(x=HR, y=HR[cg_names], alternative="two.sided", exact=NULL)
 ## Genes in the network (used individually) versuse genes in the network (used in combination)
 stats::ks.test(x=HR[cg_names], y=cg_signif[2:nrow(cg_signif),1], alternative="two.sided", exact=NULL)
@@ -194,7 +195,7 @@ eTerm <- dEnricher(data, identity="symbol", genome="Hs", ontology="PS2", sizeRan
 ## Look at the evolution relevance along the path to the eukaryotic common ancestor
 cbind(eTerm$set_info[,2:3], nSet=sapply(eTerm$gs,length), nOverlap=sapply(eTerm$overlap,length), zscore=eTerm$zscore, pvalue=eTerm$pvalue, adjp=eTerm$adjp)
 ## load Entrezgene info
-load(url("http://dnet.r-forge.r-project.org/data/Hs/org.Hs.eg.RData"))
+org.Hs.eg <- dRDataLoader(RData='org.Hs.eg')
 gene_info <- org.Hs.eg$gene_info
 entrez <- unlist(eTerm$overlap[6], use.names=F)
 ## build neighbor-joining tree
@@ -251,7 +252,7 @@ labRow <- sapply(pvals[match(V(g)$name, names(pvals))], function(x){
     }
 })
 labRow <- paste(rownames(data), labRow, sep="")
-visHeatmapAdv(data=data[ordering,flag], Rowv=F, Colv=F, colormap="lightyellow-orange", zlim=c(0,0.12), keysize=1.5, RowSideColors=RowSideColors, RowSideWidth=2, RowSideLabelLocation="top", add.expr=abline(h=(basesep_index-0.5), lty=2,lwd=1,col="black"), offsetRow=-0.5, labRow=labRow[ordering], KeyValueName="Frequency", margins = c(6,6))
+visHeatmapAdv(data=data[ordering,flag], Rowv=F, Colv=F, colormap="lightyellow-orange", zlim=c(0,0.12), keysize=1.5, RowSideColors=RowSideColors, RowSideWidth=2, RowSideLabelLocation="top", add.expr=abline(h=(basesep_index-0.5), lty=2,lwd=1,col="black"), offsetRow=-0.5, labRow=labRow[ordering], KeyValueName="Frequency", margins=c(6,6))
 
 # Cross-tumor mutation ubiquity versus common ancestors
 g <- net
@@ -263,7 +264,7 @@ data <- cbind(net_ubiquity, base_order1)
 par(las=2, mar=c(12,8,4,2)) # all axis labels horizontal
 lbls <- eTerm$set_info$name[unique(base_order1)]
 lbls <- gsub(".*:","",lbls)
-visBoxplotAdv(formula=net_ubiquity ~ base_order1, data=data, pch=19, xlab="", ylab="Cross-tumor mutation ubiquity", ylim=c(0,1), labels=lbls)
+visBoxplotAdv(formula=net_ubiquity ~ base_order1, data=data, method=c("center","hex","square","swarm")[4], pch=19, xlab="", ylab="Cross-tumor mutation ubiquity", ylim=c(0,1), labels=lbls)
 ## Deuterostomia versus all ancestors
 stats::ks.test(x=net_ubiquity[base_order1==6], y=net_ubiquity, alternative="two.sided", exact=NULL)
 ## Deuterostomia versus ancestors before Deuterostomia
@@ -276,7 +277,7 @@ data <- V(net)$name
 eTerm <- dEnricher(data, identity="symbol", genome="Hs", ontology="GOBP")
 ## visualise the top significant terms in the GOBP heirarchy
 ## first, load the GOBP ontology
-load(url("http://dnet.r-forge.r-project.org/data/Obo/ig.GOBP.RData"))
+ig.GOBP <- dRDataLoader(RData='ig.GOBP')
 g <- ig.GOBP
 ## select the top most significant 10 terms
 nodes_query <- names(sort(eTerm$adjp)[1:10])
@@ -292,7 +293,7 @@ data <- V(net)$name
 eTerm <- dEnricher(data, identity="symbol", genome="Hs", ontology="GOMF")
 ## visualise the top significant terms in the GOMF heirarchy
 ## first, load the GOMF ontology
-load(url("http://dnet.r-forge.r-project.org/data/Obo/ig.GOMF.RData"))
+ig.GOMF <- dRDataLoader(RData='ig.GOMF')
 g <- ig.GOMF
 ## select the top most significant 10 terms
 nodes_query <- names(sort(eTerm$adjp)[1:10])
@@ -308,7 +309,7 @@ data <- V(net)$name
 eTerm <- dEnricher(data, identity="symbol", genome="Hs", ontology="MP", ontology.algorithm="elim")
 ## visualise the top significant terms in the MP heirarchy
 ## first, load the MP ontology
-load(url("http://dnet.r-forge.r-project.org/data/Obo/ig.MP.RData"))
+ig.MP <- dRDataLoader(RData='ig.MP')
 g <- ig.MP
 ## select the top most significant 10 terms
 nodes_query <- names(sort(eTerm$pvalue)[1:10])
@@ -324,7 +325,7 @@ data <- V(net)$name
 eTerm <- dEnricher(data, identity="symbol", genome="Hs", ontology="DO", ontology.algorithm="pc")
 ## visualise the top significant terms in the DO heirarchy
 ## first, load the DO ontology
-load(url("http://dnet.r-forge.r-project.org/data/Obo/ig.DO.RData"))
+ig.DO <- dRDataLoader(RData='ig.DO')
 g <- ig.DO
 ## select the top most significant 10 terms
 nodes_query <- names(sort(eTerm$adjp)[1:10])
@@ -357,6 +358,12 @@ cbind(eTerm$set_info[nodes_query,2:3], cbind(nSet=sapply(eTerm$gs,length), nOver
 # SCOP superfamily domain enrichment analysis
 data <- V(net)$name
 eTerm <- dEnricher(data, identity="symbol", genome="Hs", ontology="SF")
+nodes_query <- names(sort(eTerm$pvalue)[1:10])
+cbind(eTerm$set_info[nodes_query,2:3], cbind(nSet=sapply(eTerm$gs,length), nOverlap=sapply(eTerm$overlap,length), zscore=eTerm$zscore, pvalue=eTerm$pvalue, adjp=eTerm$adjp)[nodes_query,])
+
+# DGIdb druggable gene category enrichment analysis
+data <- V(net)$name
+eTerm <- dEnricher(data, identity="symbol", genome="Hs", ontology="DGIdb", sizeRange=c(10,5000), min.overlap=2)
 nodes_query <- names(sort(eTerm$pvalue)[1:10])
 cbind(eTerm$set_info[nodes_query,2:3], cbind(nSet=sapply(eTerm$gs,length), nOverlap=sapply(eTerm$overlap,length), zscore=eTerm$zscore, pvalue=eTerm$pvalue, adjp=eTerm$adjp)[nodes_query,])
 

@@ -7,6 +7,9 @@ list(
         sd_section("Network analysis and visualisation functions",
             "These functions are used for network analysis and visualisation, including: identification of gene-active dynamic networks; network-based sample classifications and visualisations on 2D sample landscape; and random walk with restart (RWR) for network affinity calculation.",
             c(
+                'dNetPipeline',
+                'dNetReorder',
+                'dNetConfidence',
                 'dPvalAggregate',
                 'dNetInduce',
                 'dBUMfit',
@@ -14,24 +17,23 @@ list(
                 'dSVDsignif',
                 'dFDRscore',
                 'dNetFind',
-                'dNetPipeline',
-                'dNetReorder',
                 'dCommSignif',
-                'dNetConfidence',
                 'dContrast',
+                'dRWR',
                 'visNet',
                 'visNetMul',
                 'visNetReorder',
                 'visNetArc',
                 'visNetCircle',
-                'dRWR',
-                'visBoxplotAdv'
+                'visBoxplotAdv',
+                'dRDataLoader'
             )
         ),
         sd_section("Enrichment analysis and visualisation functions",
             "These functions are used for enrichment analysis and visualisation, including: enrichment analysis (Fisher's exact test, Hypergeometric test or Binomial test) that can account for the hierarchy of the ontology; and gene set enrichment analysis (GSEA).",
             c(
                 'dEnricher',
+                'dEnricherView',
                 'dGSEA',
                 'dGSEAview',
                 'dGSEAwrite',
@@ -71,7 +73,8 @@ list(
                 "org.Hs.egHPPA",
                 "org.Hs.egMP",
                 "org.Hs.egPS",
-                "org.Hs.egSF",                
+                "org.Hs.egSF",  
+                "org.Hs.egDGIdb",              
                 "org.Hs.string",
                 "org.Hs.string900"
             )
