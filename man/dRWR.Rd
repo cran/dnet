@@ -4,7 +4,7 @@
 \usage{
 dRWR(g, normalise = c("laplacian", "row", "column", "none"),
 setSeeds = NULL, restart = 0.75, normalise.affinity.matrix = c("none",
-"quantile"), verbose = T)
+"quantile"), parallel = TRUE, multicores = NULL, verbose = T)
 }
 \arguments{
 \item{g}{an object of class "igraph" or "graphNEL"}
@@ -51,28 +51,45 @@ normalisation, 'quantile' for quantile normalisation to
 ensure that columns (if multiple) of the output affinity
 matrix have the same quantiles}
 
+\item{parallel}{logical to indicate whether parallel
+computation with multicores is used. By default, it sets
+to true, but not necessarily does so. Partly because
+parallel backends available will be system-specific (now
+only Linux or Mac OS). Also, it will depend on whether
+these two packages "foreach" and "doMC" have been
+installed. It can be installed via:
+\code{source("http://bioconductor.org/biocLite.R");
+biocLite(c("foreach","doMC"))}. If not yet installed,
+this option will be disabled}
+
+\item{multicores}{an integer to specify how many cores
+will be registered as the multicore parallel backend to
+the 'foreach' package. If NULL, it will use a half of
+cores available in a user's computer. This option only
+works when parallel computation is enabled}
+
 \item{verbose}{logical to indicate whether the messages
 will be displayed in the screen. By default, it sets to
 true for display}
 }
 \value{
-When the seeds are NOT given, it returns: \itemize{
-\item{\code{PTmatrix}: pre-computated affinity matrix with
-the dimension of n X n, where n is the number of nodes in
-the input graph. Columns stand for starting nodes walking
-from, and rows for ending nodes walking to. Therefore, a
-column for a starting node represents a steady-state
-affinity vector that the starting node will visit all the
-ending nodes in the graph} } When the seeds are given, it
-returns: \itemize{ \item{\code{PTmatrix}: affinity matrix
-with the dimension of n X nset, where n is the number of
-nodes in the input graph, and nset for the number of the
-sets of seeds (i.e. the number of columns in setSeeds).
-Each column stands for the steady probability vector,
-storing the affinity score of all nodes in the graph to the
-starting nodes/seeds. This steady probability vector can be
-viewed as the "influential impact" over the graph imposed
-by the starting nodes/seeds.} }
+It returns a sparse matrix, called 'PTmatrix': \itemize{
+\item{When the seeds are NOT given: a pre-computated
+affinity matrix with the dimension of n X n, where n is the
+number of nodes in the input graph. Columns stand for
+starting nodes walking from, and rows for ending nodes
+walking to. Therefore, a column for a starting node
+represents a steady-state affinity vector that the starting
+node will visit all the ending nodes in the graph}
+\item{When the seeds are given: an affinity matrix with the
+dimension of n X nset, where n is the number of nodes in
+the input graph, and nset for the number of the sets of
+seeds (i.e. the number of columns in setSeeds). Each column
+stands for the steady probability vector, storing the
+affinity score of all nodes in the graph to the starting
+nodes/seeds. This steady probability vector can be viewed
+as the "influential impact" over the graph imposed by the
+starting nodes/seeds.} }
 }
 \description{
 \code{dRWR} is supposed to implement Random Walk with
@@ -82,12 +99,15 @@ affinity score of all nodes in the graph to the seeds. If
 the seeds are not give, it will pre-compute affinity matrix
 for nodes in the input graph with respect to each starting
 node (as a seed) by looping over every node in the graph.
+Parallel computing is also supported for Linux or Mac
+operating systems.
 }
 \note{
 The input graph will treat as an unweighted graph if there
 is no 'weight' edge attribute associated with
 }
 \examples{
+\dontrun{
 # 1) generate a random graph according to the ER model
 g <- erdos.renyi.game(100, 1/100)
 
@@ -96,7 +116,8 @@ subg <- dNetInduce(g, V(g), knn=0)
 V(subg)$name <- 1:vcount(subg)
 
 # 3) obtain the pre-computated affinity matrix
-PTmatrix <- dRWR(subg, normalise="laplacian", restart=0.75)
+PTmatrix <- dRWR(g=subg, normalise="laplacian", restart=0.75,
+parallel=FALSE)
 # visualise affinity matrix
 visHeatmapAdv(PTmatrix, Rowv=FALSE, Colv=FALSE, colormap="wyr",
 KeyValueName="Affinity")
@@ -109,11 +130,13 @@ bSeeds <- c(0,0,1,0,1)
 setSeeds <- data.frame(aSeeds,bSeeds)
 rownames(setSeeds) <- 1:5
 # calcualte affinity matrix
-PTmatrix <- dRWR(subg, normalise="laplacian", setSeeds=setSeeds,
-restart=0.75)
+PTmatrix <- dRWR(g=subg, normalise="laplacian", setSeeds=setSeeds,
+restart=0.75, parallel=FALSE)
 PTmatrix
 }
+}
 \seealso{
-\code{\link{dNetInduce}}
+\code{\link{dRWRcontact}}, \code{\link{dRWRpipeline}},
+\code{\link{dCheckParallel}}
 }
 

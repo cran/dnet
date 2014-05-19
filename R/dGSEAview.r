@@ -42,7 +42,10 @@ dGSEAview <- function(eTerm, which_sample=1, top_num=10, sortBy=c("adjp","gadjp"
     
     sortBy <- match.arg(sortBy)
     
-    if( is.null(top_num) | length(top_num > length(eTerm$set_info$setID))==0 ){
+    if( is.null(top_num) ){
+        top_num <- length(eTerm$set_info$setID)
+    }
+    if( top_num > length(eTerm$set_info$setID) ){
         top_num <- length(eTerm$set_info$setID)
     }
     

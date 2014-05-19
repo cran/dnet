@@ -131,15 +131,20 @@ dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FAL
     })
     ## otherwise, load remote R files
     if(sum(load_flag)==0){
-        if(class(try(load(url(load_EG_remote)), T))=="try-error"){
+        con <- url(load_EG_remote)
+        if(class(try(load(con), T))=="try-error"){
             load_EG_remote <- paste("http://dnet.r-forge.r-project.org/data/", genome, "/org.", genome, ".eg.RData", sep="")
-            if(class(try(load(url(load_EG_remote)), T))=="try-error"){
+            con <- url(load_EG_remote)
+            if(class(try(load(con), T))=="try-error"){
                 load_EG_remote <- paste("http://supfam.org/dnet/data/", genome, "/org.", genome, ".eg.RData", sep="")
-                if(class(try(load(url(load_EG_remote)), T))=="try-error"){
+                con <- url(load_EG_remote)
+                if(class(try(load(con), T))=="try-error"){
                     stop("Built-in Rdata files cannot be loaded. Please check your internet connection or their location in your local machine.\n")
                 }
             }
         }
+        close(con)
+        
         load_EG <- load_EG_remote
     }else{
         load_EG <- EG_local[load_flag]
@@ -260,15 +265,20 @@ dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FAL
         })
         ## otherwise, load remote R files
         if(sum(load_flag)==0){
-            if(class(try(load(url(load_GS_remote)), T))=="try-error"){
+            con <- url(load_GS_remote)
+            if(class(try(load(con), T))=="try-error"){
                 load_GS_remote <- paste("http://dnet.r-forge.r-project.org/data/", genome_location, "/org.", genome, ".eg", ontology, ".RData", sep="")
-                if(class(try(load(url(load_GS_remote)), T))=="try-error"){
+                con <- url(load_GS_remote)
+                if(class(try(load(con), T))=="try-error"){
                     load_GS_remote <- paste("http://supfam.org/dnet/data/", genome_location, "/org.", genome, ".eg", ontology, ".RData", sep="")
-                    if(class(try(load(url(load_GS_remote)), T))=="try-error"){
+                    con <- url(load_GS_remote)
+                    if(class(try(load(con), T))=="try-error"){
                         stop("Built-in Rdata files cannot be loaded. Please check your internet connection or their location in your local machine.\n")
                     }
                 }
             }
+            close(con)
+            
             load_GS <- load_GS_remote
         }else{
             load_GS <- GS_local[load_flag]

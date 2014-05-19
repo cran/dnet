@@ -1,6 +1,6 @@
 <a href="index.html"><IMG src="dnet_logo1.png" height="100px" id="logo"></a>
 
-<B><h4>An open-source R package for integrative analysis of high-throughput digitised data in terms of `network`, `ontology` and `evolution`</h4></B>
+<B><h4>An open-source R package for omics data integrative analysis in terms of `network`, `evolution` and `ontology`</h4></B>
 
 ## User I/O
 
@@ -9,9 +9,11 @@
 
 ## Features
 
-* Identification of gene-active networks from digitised data (eg [expression](http://dnet.r-forge.r-project.org/demo-Fang.html), [mutation](http://dnet.r-forge.r-project.org/demo-TCGA.html) and [replication timing](http://dnet.r-forge.r-project.org/demo-Hiratani.html))
+* Identification of gene-active networks from high-throughput omics data (eg [expression](http://dnet.r-forge.r-project.org/demo-Fang.html), [mutation](http://dnet.r-forge.r-project.org/demo-TCGA.html) and [replication timing](http://dnet.r-forge.r-project.org/demo-Hiratani.html))
 * Network-based sample classifications and visualisations on 2D sample landscape
-* Random walk with restart for network affinity calculation
+* Random Walk with Restart for network affinity calculation
+* Semantic similarity between ontology terms (and between their annotated genes)
 * Enrichment analysis using a variety of built-in databases
 * A wide variety of built-in [RData](http://dnet.r-forge.r-project.org/rdata.html): ontologies (including `Gene Ontology`, `Disease Ontology`, `Human Phenotype` and `Mammalian Phenotype`), gene evolutionary age information and gene association networks in well-studied organisms, including human, mouse, rat, chicken, c.elegans, fruitfly, zebrafish and arabidopsis.
+* Support for high-performance parallel computing
 * A tool with rich visuals but less inputs, which can run on `Windows`, `Mac` and `Linux`

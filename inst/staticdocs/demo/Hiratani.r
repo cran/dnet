@@ -41,7 +41,7 @@ pData(esetGene)
 org.Mm.string <- dRDataLoader(RData='org.Mm.string')
 org.Mm.string
 
-# Look at the first node information (gene symbols)
+# Look at the first 5 node information (gene symbols)
 V(org.Mm.string)$symbol[1:5]
 
 # Focus on the part of 'org.Mm.string' that only contains genes in 'esetGene'
@@ -150,15 +150,19 @@ data
 
 ## 9a) GOBP enrichment analysis
 eTerm <- dEnricher(data, identity="symbol", genome="Mm", ontology="GOBP")
+## write into the file called 'enrichment_GOBP.txt'
+output <- dEnricherView(eTerm, top_num=NULL, sortBy="adjp", details=TRUE)
+write.table(output, file="enrichment_GOBP.txt", quote=F, row.names=F,col.names=T,sep="\t")
 ## visualise the top significant terms in the GOBP heirarchy
 ## first, load the GOBP ontology
 ig.GOBP <- dRDataLoader(RData='ig.GOBP')
 g <- ig.GOBP
 ## select the top most significant 10 terms
-nodes_query <- names(sort(eTerm$adjp)[1:10])
+top <- dEnricherView(eTerm, top_num=10, details=TRUE)
+top
+nodes_query <- rownames(top)
 nodes.highlight <- rep("red", length(nodes_query))
 names(nodes.highlight) <- nodes_query
-V(g)[nodes_query]$term_name
 ## induce the shortest paths (one for each significant term) to the ontology root
 subg <- dDAGinduce(g, nodes_query, path.mode="shortest_paths")
 ## color-code terms according to the adjust p-values (taking the form of 10-based negative logarithm)
@@ -166,15 +170,19 @@ visDAG(g=subg, data=-1*log10(eTerm$adjp[V(subg)$name]), node.info="both", node.a
 
 ## 9b) GOMF enrichment analysis
 eTerm <- dEnricher(data, identity="symbol", genome="Mm", ontology="GOMF")
+## write into the file called 'enrichment_GOMF.txt'
+output <- dEnricherView(eTerm, top_num=NULL, sortBy="adjp", details=TRUE)
+write.table(output, file="enrichment_GOMF.txt", quote=F, row.names=F,col.names=T,sep="\t")
 ## visualise the top significant terms in the GOMF heirarchy
 ## first, load the GOMF ontology
 ig.GOMF <- dRDataLoader(RData='ig.GOMF')
 g <- ig.GOMF
 ## select the top most significant 10 terms
-nodes_query <- names(sort(eTerm$adjp)[1:10])
+top <- dEnricherView(eTerm, top_num=10, details=TRUE)
+top
+nodes_query <- rownames(top)
 nodes.highlight <- rep("red", length(nodes_query))
 names(nodes.highlight) <- nodes_query
-V(g)[nodes_query]$term_name
 ## induce the shortest paths (one for each significant term) to the ontology root
 subg <- dDAGinduce(g, nodes_query, path.mode="shortest_paths")
 ## color-code terms according to the adjust p-values (taking the form of 10-based negative logarithm)
@@ -182,15 +190,19 @@ visDAG(g=subg, data=-1*log10(eTerm$adjp[V(subg)$name]), node.info="both", node.a
 
 ## 9c) MP enrichment analysis
 eTerm <- dEnricher(data, identity="symbol", genome="Mm", ontology="MP")
+## write into the file called 'enrichment_MP.txt'
+output <- dEnricherView(eTerm, top_num=NULL, sortBy="adjp", details=TRUE)
+write.table(output, file="enrichment_MP.txt", quote=F, row.names=F,col.names=T,sep="\t")
 ## visualise the top significant terms in the MP heirarchy
 ## first, load the MP ontology
 ig.MP <- dRDataLoader(RData='ig.MP')
 g <- ig.MP
 ## select the top most significant 10 terms
-nodes_query <- names(sort(eTerm$adjp)[1:10])
+top <- dEnricherView(eTerm, top_num=10, details=TRUE)
+top
+nodes_query <- rownames(top)
 nodes.highlight <- rep("red", length(nodes_query))
 names(nodes.highlight) <- nodes_query
-V(g)[nodes_query]$term_name
 ## induce all possible paths to the ontology root
 subg <- dDAGinduce(g, nodes_query)
 ## color-code terms according to the adjust p-values (taking the form of 10-based negative logarithm)
@@ -198,15 +210,18 @@ visDAG(g=subg, data=-1*log10(eTerm$adjp[V(subg)$name]), node.info=c("none","term
 
 ## 9d) DO enrichment analysis
 eTerm <- dEnricher(data, identity="symbol", genome="Mm", ontology="DO")
+## write into the file called 'enrichment_DO.txt'
+output <- dEnricherView(eTerm, top_num=NULL, sortBy="adjp", details=TRUE)
+write.table(output, file="enrichment_DO.txt", quote=F, row.names=F,col.names=T,sep="\t")
 ## visualise the top significant terms in the DO heirarchy
 ## first, load the DO ontology
 ig.DO <- dRDataLoader(RData='ig.DO')
 g <- ig.DO
 ## select the top most significant 10 terms
-nodes_query <- names(sort(eTerm$adjp)[1:10])
+top <- dEnricherView(eTerm, top_num=10, details=TRUE)
+top
+nodes_query <- rownames(top)
 nodes.highlight <- rep("red", length(nodes_query))
-names(nodes.highlight) <- nodes_query
-V(g)[nodes_query]$term_name
 ## induce all possible shortest paths to the ontology root
 subg <- dDAGinduce(g, nodes_query)
 ## color-code terms according to the adjust p-values (taking the form of 10-based negative logarithm)
@@ -215,9 +230,11 @@ visDAG(g=subg, data=-1*log10(eTerm$adjp[V(subg)$name]), node.info="both", zlim=c
 ## 9e) PS enrichment analysis
 ## use all common ancestors
 eTerm <- dEnricher(data, identity="symbol", genome="Mm", ontology="PS", sizeRange=c(10,20000), min.overlap=0)
-## Look at the evolution relevance along the path to the eukaryotic common ancestor
-cbind(eTerm$set_info[,2:3], nSet=sapply(eTerm$gs,length), zscore=eTerm$zscore, pvalue=eTerm$pvalue, adjp=eTerm$adjp)
+output <- dEnricherView(eTerm, top_num=NULL, sortBy="none", details=TRUE)
+write.table(output, file="enrichment_PS.txt", quote=F, row.names=F,col.names=T,sep="\t")
+output
 ## use common ancestors collapsed onto the known NCBI taxonomy
 eTerm <- dEnricher(data, identity="symbol", genome="Mm", ontology="PS2", sizeRange=c(10,20000), min.overlap=0)
-## Look at the evolution relevance along the path to the eukaryotic common ancestor
-cbind(eTerm$set_info[,2:3], nSet=sapply(eTerm$gs,length), zscore=eTerm$zscore, pvalue=eTerm$pvalue, adjp=eTerm$adjp)
+output <- dEnricherView(eTerm, top_num=NULL, sortBy="none", details=TRUE)
+write.table(output, file="enrichment_PS2.txt", quote=F, row.names=F,col.names=T,sep="\t")
+output

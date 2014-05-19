@@ -39,7 +39,10 @@ dEnricherView <- function(eTerm, top_num=10, sortBy=c("adjp","pvalue","zscore","
     
     sortBy <- match.arg(sortBy)
     
-    if( is.null(top_num) | length(top_num > length(eTerm$set_info$setID))==0 ){
+    if( is.null(top_num) ){
+        top_num <- length(eTerm$set_info$setID)
+    }
+    if ( top_num > length(eTerm$set_info$setID) ){
         top_num <- length(eTerm$set_info$setID)
     }
     

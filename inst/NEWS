@@ -1,3 +1,13 @@
+CHANGES IN VERSION 1.0.3
+-----------------------
+
+NEW FEATURES
+
+    o Add functionalities for calculating semantic similarity between ontology terms (and between their annotated genes)
+    
+    o Support for high-performance parallel computing
+    
+
 CHANGES IN VERSION 1.0.2
 -----------------------
 

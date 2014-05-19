@@ -42,7 +42,7 @@ reachable (i.e. in the same path), while the level based on
 the shortest path will not be necessary. The "longest path"
 based level can be useful in visiting nodes from the
 tipmost level to the root: 1) for the current node, all
-chilren have been visited; 2) nodes at the same level can
+children have been visited; 2) nodes at the same level can
 be looked at independantly. The "shortest path" based level
 can be useful in deriving nodes according to their
 closeness to the root.

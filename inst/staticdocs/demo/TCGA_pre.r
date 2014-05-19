@@ -8,7 +8,7 @@
 library(dnet)
 
 # Load or install packages specifically used in this demo
-list.pkg <- c("affy", "survival")
+list.pkg <- c("Biobase", "survival")
 source("http://bioconductor.org/biocLite.R")
 for(pkg in list.pkg){
     if(!require(pkg, character.only=T)){
@@ -18,8 +18,7 @@ for(pkg in list.pkg){
 }
 
 # load an "ExpressionSet" object
-load(url("http://dnet.r-forge.r-project.org/data/Datasets/TCGA_mutations.RData"))
-#load("RData_Rd/data/Datasets/TCGA_mutations.RData")
+data(TCGA_mutations)
 eset <- TCGA_mutations
 # extract information about phenotype data
 pd <- pData(eset)
@@ -487,7 +486,7 @@ for(i in 1:length(cg_names)){
 cg_signif[cg_signif[,2]==0,2] <- min(cg_signif[cg_signif[,2]!=0,2])
 
 # median: 0.61 (0.56), 6.18 66.12
-naive <- LR[sample(length(cg_names))]
+naive <- sample(LR, length(cg_names))
 bp.LR.list <- list(Naive=naive, Neti=LR[cg_names], Netc=cg_signif[2:nrow(cg_signif),1])
 par(las=1, mar=c(5,8,4,2)) # all axis labels horizontal
 boxplot(bp.LR.list, outline=F, horizontal=F, names=c("All genes", "Individual genes\n in the network", "Combined genes\n in the network"), col=c("red","green","blue"), border=par("fg"), ylab="Cox hazard ratio (HR)", log="y", ylim=c(0.1,100), yaxt="n",xaxt="n")
@@ -971,7 +970,7 @@ wth <- 3600
 png("GSEA_samples_nes_pie.png", width=wth*3, height=wth, res=wth*72/480)
 par(mfrow=c(1,11), mar=c(2,2,2,2))
 for(i in 1:length(tmp)){
-    pie(tmp_df[i,1:2], col=c("red","green"), labels=paste(c("",""), tmp_df[i,1:2], sep=""), main=rownames(tmp_df)[i], cex=3)
+    pie(tmp_df[i,1:2], col=c("red","green"), labels=paste(c("",""), tmp_df[i,1:2], sep=""), main=rownames(tmp_df)[i], cex=2)
 }
 dev.off()
 
@@ -1051,3 +1050,227 @@ rownames(data) <- paste(output$setID,output$setSize,output$name, sep="_")
 visHeatmapAdv(data, Rowv=F, Colv=T, colormap="darkgreen-lightgreen-lightpink-darkred", zlim=c(0,2), margins = c(7,14),cexRow=1,cexCol=1)
 
 
+
+
+
+############################################################################
+############################################################################
+
+# Network dating-based sample relationship and visualisations
+# it uses the gene-active subnetwork overlaid by all replication timing data
+frac_mutated <- sapply(tumor_type, function(x) {
+    e <- eset[, which(pData(eset)$TCGA_tumor_type==x)]
+    apply(exprs(e)!=0,1,sum)/ncol(e)
+})
+rownames(frac_mutated) <- fData(eset)$Symbol
+frac_mutated[1:10,]
+
+# An igraph object that contains a functional protein association network in human. The network is extracted from the STRING database (version 9.1). Only those associations with medium confidence (score>=400) are retained.
+org.Hs.string <- dRDataLoader(RData='org.Hs.string')
+# restrict to those edges with high confidence (score>=700)
+network <- subgraph.edges(org.Hs.string, eids=E(org.Hs.string)[combined_score>=700])
+network
+
+data(org.Hs.string900)
+network <- org.Hs.string900
+network <- subgraph.edges(org.Hs.string900, eids=E(org.Hs.string900)[combined_score>=990])
+
+# extract network that only contains genes in frac_mutated
+ind <- match(V(network)$symbol, rownames(frac_mutated))
+## for extracted graph
+nodes_mapped <- V(network)$name[!is.na(ind)]
+network <- dNetInduce(g=network, nodes_query=nodes_mapped, knn=0, remove.loops=F, largest.comp=T)
+V(network)$name <- V(network)$symbol
+network
+
+normalise <- c("laplacian","row","column","none")[1]
+restart <- 0.75
+normalise.affinity.matrix <- c("none","quantile")[1]
+Amatrix <- dRWR(g=network, normalise=normalise, restart=restart, normalise.affinity.matrix=normalise.affinity.matrix)
+save(list=c("Amatrix","network"), file="Amatrix_string700_r75.RData")
+
+
+data <- frac_mutated
+g <- network
+
+dContact <- dRWRcontact(data=data, g=network, Amatrix=Amatrix, permutation=c("degree","none"), num.permutation=100, p.adjust.method=c("BH","BY","bonferroni","holm","hochberg","hommel"), adjp.cutoff=0.05, verbose=T)
+
+
+type <- 'LAML'
+ind <- match(pData(eset)$TCGA_tumor_type, type)
+data <- md[, !is.na(ind)]
+g <- network
+
+
+
+
+
+dContact <- dRWRdating(data, g, method=c("direct","indirect")[1], normalise=c("laplacian","row","column","none"), restart=0.5, normalise.affinity.matrix=c("none","quantile"), permutation=c("degree","none"), num.permutation=100, p.adjust.method=c("BH","BY","bonferroni","holm","hochberg","hommel"), adjp.cutoff=0.05, verbose=T)
+
+cgraph <- dContact$cgraph
+cgraph <- dNetInduce(g=cgraph, nodes_query=V(cgraph)$name, knn=0, remove.loops=F, largest.comp=T)
+visNet(cgraph, edge.width=E(cgraph)$weight*2)
+
+
+
+
+
+##########################################################################################
+
+# org.Hs.egPS <- dRDataLoader(RData='org.Hs.egPS', RData.location="RData_Rd/data")
+org.Hs.egPS <- dRDataLoader(RData='org.Hs.egPS')
+GS <- org.Hs.egPS
+
+org.Mm.egPS <- dRDataLoader(RData='org.Mm.egPS')
+GS <- org.Mm.egPS
+
+flag_PS2 <- T
+    if(flag_PS2){
+        tmp <- as.character(unique(GS$set_info$name))
+        inds <- sapply(tmp,function(x) which(GS$set_info$name==x))
+        
+        ## new set_info
+        set_info <- data.frame()
+        for(i in 1:length(inds)){
+            set_info<- rbind(set_info,as.matrix(GS$set_info[max(inds[[i]]),]))
+        }
+        ## new gs
+        gs <- list()
+        for(i in 1:length(inds)){
+            gs[[i]] <- unlist(GS$gs[inds[[i]]], use.names=F)
+        }
+        names(gs) <- rownames(set_info)
+        
+        ## new GS
+        GS$set_info <- set_info
+        GS$gs <- gs
+    }
+
+genes_in_PS <- unlist(GS$gs)
+
+
+####################################
+# 1) load MP as igraph object
+ig.MP <- dRDataLoader(RData='ig.MP')
+g <- ig.MP
+
+# 2) load mouse genes annotated by MP
+org.Mm.egMP <- dRDataLoader(RData='org.Mm.egMP')
+
+# 3) prepare for ontology and its annotation information
+dag <- dDAGannotate(g, annotations=org.Mm.egMP, path.mode="all_paths", verbose=TRUE)
+
+####################################
+# 1) load DO as igraph object
+ig.DO <- dRDataLoader(RData='ig.DO')
+g <- ig.DO
+
+# 2) load human genes annotated by DO
+org.Hs.egDO <- dRDataLoader(RData='org.Hs.egDO')
+
+# 3) prepare for ontology and its annotation information
+dag <- dDAGannotate(g, annotations=org.Hs.egDO, path.mode="all_paths", verbose=TRUE)
+
+
+####################################
+# 1) load HPPA as igraph object
+data(ig.HPPA)
+g <- ig.HPPA
+
+# 2) load human genes annotated by HPPA
+data(org.Hs.egHPPA)
+
+# 3) prepare for ontology and its annotation information
+dag <- dDAGannotate(g, annotations=org.Hs.egHPPA, path.mode="all_paths", verbose=TRUE)
+
+####################################
+
+# 4) calculate pair-wise semantic similarity between genes having PS
+allgenes <- unique(unlist(V(dag)$annotations))
+genes <- intersect(allgenes, genes_in_PS)
+sim <- dDAGgeneSim(g=dag, genes=genes, method.gene="BM.average", method.term="Resnik", verbose=TRUE)
+
+save(list=c("sim","genes","GS","dag"),file="sim.HPPA.RData")
+load("sim.HPPA.RData")
+
+a <- sapply(GS$gs, function(x){
+    ind <- match(x,genes)
+    flag <- ind[!is.na(ind)]
+    if(length(flag)>0){
+        mean(matrix(sim[flag, flag], nrow=length(flag)) )
+    }else{
+        NA
+    }
+})
+
+b <- sapply(GS$gs, function(x){
+    ind <- match(x,genes)
+    flag <- ind[!is.na(ind)]
+    length(flag)
+})
+
+a <- rep(NA, length(GS$gs))
+for(i in 1:length(GS$gs)){
+    x <- unlist(GS$gs[i:length(GS$gs)])
+    ind <- match(x,genes)
+    flag <- ind[!is.na(ind)]
+    if(length(flag)>0){
+        tmp <- matrix(sim[flag, flag], nrow=length(flag)) 
+        a[i] <- mean(tmp[lower.tri(tmp)])
+    }
+}
+
+
+a <- rep(NA, length(GS$gs))
+for(i in 1:length(GS$gs)){
+    x <- unlist(GS$gs[1:i])
+    ind <- match(x,genes)
+    flag <- ind[!is.na(ind)]
+    if(length(flag)>0){
+        tmp <- matrix(sim[flag, flag], nrow=length(flag)) 
+        a[i] <- mean(tmp[lower.tri(tmp)])
+    }
+}
+
+
+dev.new()
+plot(a, type='b')
+
+
+a <- rep(NA, length(GS$gs))
+a <- list()
+for(i in 2:length(GS$gs)){
+    x <- unlist(GS$gs[i])
+    y <- unlist(GS$gs[1:(i-1)])
+    
+    ind_x <- match(x,genes)
+    flag_x <- ind_x[!is.na(ind_x)]
+    
+    ind_y <- match(y,genes)
+    flag_y <- ind_y[!is.na(ind_y)]
+    
+    if(length(flag_x)>0){
+        tmp <- matrix(sim[flag_x, flag_y], nrow=length(flag_x))        
+        #a[i] <- mean(apply(tmp,1,max))
+        #a[[i]] <- apply(tmp,1,max)
+        a[[i]] <- apply(tmp,1,mean)
+    }
+}
+
+bb <- rep(1:length(a), sapply(a, length))
+data <- data.frame(id=bb, value=unlist(a))
+id <- data$id
+num <- sapply(split(id,id),length)
+set_info <- as.character(GS$set_info$name[sort(unique(id))])
+labels <- paste(set_info,' (n=', num, ')', sep='')
+par(las=2, mar=c(5,15,2,2)) # all axis labels horizontal
+visBoxplotAdv(formula=value ~ id, data=data, orientation="horizontal", spacing=0.5, labels=labels, ylab=NA, xlab="Average of HP-based semantic similarity to ancestors", boxplot.border = "#0000FF", boxplot.col = "transparent")
+
+
+source("http://bioconductor.org/biocLite.R")
+biocLite(c("foreach","doMC"))
+library(foreach)
+library(doMC)
+registerDoMC(2)
+
+# Parallel computation depends upon a _parallel backend_ that must be registered before performing the computation. The parallel backends available will be system-specific, but include 'doParallel', which uses R's built-in 'parallel' package, 'doMC' which uses the 'multicore' package, and 'doSNOW'. Each parallel backend has a specific registration function, such as 'registerDoParallel' or 'registerDoSNOW'

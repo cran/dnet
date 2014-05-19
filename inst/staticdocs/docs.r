@@ -5,7 +5,7 @@ list(
     
     index = list(
         sd_section("Network analysis and visualisation functions",
-            "These functions are used for network analysis and visualisation, including: identification of gene-active dynamic networks; network-based sample classifications and visualisations on 2D sample landscape; and random walk with restart (RWR) for network affinity calculation.",
+            "These functions are used for network analysis and visualisation, including: identification of gene-active networks, and network-based sample classifications and visualisations on 2D sample landscape.",
             c(
                 'dNetPipeline',
                 'dNetReorder',
@@ -19,7 +19,6 @@ list(
                 'dNetFind',
                 'dCommSignif',
                 'dContrast',
-                'dRWR',
                 'visNet',
                 'visNetMul',
                 'visNetReorder',
@@ -27,6 +26,15 @@ list(
                 'visNetCircle',
                 'visBoxplotAdv',
                 'dRDataLoader'
+            )
+        ),
+        sd_section("Random Walk with Restart (RWR)",
+            "These functions are used for RWR-based analysis, including: calculation of network affinity and estimation of contact strength between samples.",
+            c(
+                'dRWR',
+                'dRWRcontact',
+                'dRWRpipeline',
+                'dCheckParallel'
             )
         ),
         sd_section("Enrichment analysis and visualisation functions",
@@ -40,7 +48,7 @@ list(
                 'visGSEA'
             )
         ),
-        sd_section("Built-in ontologies, and analysis and visualisation functions",
+        sd_section("Built-in ontologies, and supporting functions for analysis and visualisation",
             "These ontologies each are represented as a direct acyclic graph (DAG). DAG is stored as an object of the class 'igraph', which can be processed by various analysis and visualisation functions.",
             c(
                 "ig.GOMF",
@@ -57,6 +65,9 @@ list(
                 'dDAGtip',
                 'dDAGlevel',
                 'dDAGannotate',
+                'dDAGancestor',
+                'dDAGtermSim',
+                'dDAGgeneSim',
                 "visDAG"
             )
         ),

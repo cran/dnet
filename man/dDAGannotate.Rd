@@ -27,10 +27,12 @@ true for display}
 \value{
 \itemize{ \item{\code{subg}: an induced subgraph, an object
 of class "igraph". In addition to the original attributes
-to nodes and edges, the return subgraph is also appended a
-new node attribute called "annotations", which contains a
-list of genes either as original annotations or inherited
-annotations} }
+to nodes and edges, the return subgraph is also appended by
+new node attributes: "annotations", which contains a list
+of genes either as original annotations or inherited
+annotations; "IC", which stands for information content
+defined as negative 10-based log-transformed frequency of
+genes annotated to that term.} }
 }
 \description{
 \code{dDAGannotate} is supposed to produce a subgraph

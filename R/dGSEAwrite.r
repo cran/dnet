@@ -142,7 +142,9 @@ dGSEAwrite <- function(eTerm, which_content=c("gadjp","adjp","pvalue","FWER","FD
     }
     
     ## convert into a data frame called 'output'
-    output <- cbind(tab[flag,], cMatrix[flag,])
+    output <- cbind(tab, cMatrix)
+    output <- output[flag,]
+    #output <- cbind(tab[flag,], cMatrix[flag,])
     rownames(output) <- output[,1]
     
     ## If the filename is given, output data is written into a tab-delimited text file

@@ -8,7 +8,7 @@
 #' @param verbose logical to indicate whether the messages will be displayed in the screen. By default, it sets to true for display
 #' @return 
 #' \itemize{
-#'  \item{\code{subg}: an induced subgraph, an object of class "igraph". In addition to the original attributes to nodes and edges, the return subgraph is also appended a new node attribute called "annotations", which contains a list of genes either as original annotations or inherited annotations}
+#'  \item{\code{subg}: an induced subgraph, an object of class "igraph". In addition to the original attributes to nodes and edges, the return subgraph is also appended by new node attributes: "annotations", which contains a list of genes either as original annotations or inherited annotations; "IC", which stands for information content defined as negative 10-based log-transformed frequency of genes annotated to that term.}
 #' }
 #' @note For the mode "shortest_paths", the induced subgraph is the most concise, and thus informative for visualisation when there are many nodes in query, while the mode "all_paths" results in the complete subgraph.
 #' @export
@@ -126,14 +126,18 @@ dDAGannotate <- function (g, annotations, path.mode=c("all_paths","shortest_path
         
     }
 
-    ## append 'gene_annotations' attributes to the graph
+    ## append 'annotations' attributes to the graph
     node2genes <- as.list(node2gene.HoH)[allNodes]
     gene_annotations <- sapply(node2genes, function(node){
         #unlist(as.list(node))
         names(unlist(as.list(node)))
     })
-    
     V(dag)$annotations <- gene_annotations
 
+    ## append 'IC' attributes to the graph
+    counts <- sapply(gene_annotations, length)
+    IC <- -1*log10(counts/max(counts))
+    V(dag)$IC <- IC
+    
     return(dag)
 }

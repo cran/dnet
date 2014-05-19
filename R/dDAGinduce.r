@@ -61,35 +61,42 @@ dDAGinduce <- function (g, nodes_query, path.mode=c("all_paths","shortest_paths"
     if(path.mode=="all_paths"){
         #edgelist <- get.data.frame(ig, what="edges")
         
-        ## create a new (empty) hash environment: key (node), value (TRUE)
-        node.Hash <- new.env(hash=T, parent=emptyenv())
-        ## A function to iterate to the root, given a node
-        buildInducedGraph <- function(node) {
-            ## exists: true if and only if an object of the correct name and mode is found
-            if (exists(node, envir=node.Hash, mode="logical", inherits=FALSE)){
-                ## for node already visited
-                return(1)
-            }else{
-                ## assign the node (with the value 'TRUE') into node.Hash
-                assign(node, TRUE, envir=node.Hash)
-                ## get its direct parents
+        fast <- T
+        if(fast){
+            ## find all ancestors for any node
+            neighs.in <- igraph::neighborhood(ig, order=vcount(ig), nodes=nodes_query$name, mode="in")
+            nodeInduced <- V(ig)[unique(unlist(neighs.in))]$name
+        }else{
+            ## create a new (empty) hash environment: key (node), value (TRUE)
+            node.Hash <- new.env(hash=T, parent=emptyenv())
+            ## A function to iterate to the root, given a node
+            buildInducedGraph <- function(node) {
+                ## exists: true if and only if an object of the correct name and mode is found
+                if (exists(node, envir=node.Hash, mode="logical", inherits=FALSE)){
+                    ## for node already visited
+                    return(1)
+                }else{
+                    ## assign the node (with the value 'TRUE') into node.Hash
+                    assign(node, TRUE, envir=node.Hash)
+                    ## get its direct parents
                 
-                ## get the incoming neighbors (including self) that are reachable
-                neighs.in <- igraph::neighborhood(ig, order=1, nodes=node, mode="in")
-                adjNodes <- setdiff(V(ig)[unlist(neighs.in)]$name, node)
-                #adjNodes <- edgelist[edgelist[,2]==node, 1]
-                ## iterate until there are no direct parents
-                if (length(adjNodes)>0){
-                    for (i in 1:length(adjNodes)){
-                        buildInducedGraph(adjNodes[i])
+                    ## get the incoming neighbors (including self) that are reachable
+                    neighs.in <- igraph::neighborhood(ig, order=1, nodes=node, mode="in")
+                    adjNodes <- setdiff(V(ig)[unlist(neighs.in)]$name, node)
+                    #adjNodes <- edgelist[edgelist[,2]==node, 1]
+                    ## iterate until there are no direct parents
+                    if (length(adjNodes)>0){
+                        for (i in 1:length(adjNodes)){
+                            buildInducedGraph(adjNodes[i])
+                        }
                     }
+                    ## finish lookup/loop
+                    return(0)
                 }
-                ## finish lookup/loop
-                return(0)
             }
+            tmp <- lapply(nodes_query$name, buildInducedGraph)
+            nodeInduced <- ls(node.Hash)
         }
-        tmp <- lapply(nodes_query$name, buildInducedGraph)
-        nodeInduced <- ls(node.Hash)
             
     }else if(path.mode=="all_shortest_paths"){
         root <- dDAGroot(ig)
