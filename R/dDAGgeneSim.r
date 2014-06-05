@@ -159,7 +159,7 @@ dDAGgeneSim <- function (g, genes=NULL, method.gene=c("BM.average","BM.max","BM.
                         sim12 <- matrix(sim.term[ind1, unlist(ind_js)], nrow=length(ind1))
                         new_ind_js <- rep(1:length(ind_js), sapply(ind_js,length))
                         res <- sapply(1:length(ind_js), function(k){
-            mean(sim12[,which(new_ind_js==k)])
+                            mean(sim12[,which(new_ind_js==k)])
                         })
                         x <- rep(0, num_genes)
                         x[js] <- res
@@ -177,7 +177,7 @@ dDAGgeneSim <- function (g, genes=NULL, method.gene=c("BM.average","BM.max","BM.
                         sim12 <- matrix(sim.term[ind1, unlist(ind_js)], nrow=length(ind1))
                         new_ind_js <- rep(1:length(ind_js), sapply(ind_js,length))
                         res <- sapply(1:length(ind_js), function(k){
-            max(sim12[,which(new_ind_js==k)])
+                            max(sim12[,which(new_ind_js==k)])
                         })
                         x <- rep(0, num_genes)
                         x[js] <- res
@@ -195,8 +195,8 @@ dDAGgeneSim <- function (g, genes=NULL, method.gene=c("BM.average","BM.max","BM.
                         sim12 <- matrix(sim.term[ind1, unlist(ind_js)], nrow=length(ind1))
                         new_ind_js <- rep(1:length(ind_js), sapply(ind_js,length))
                         res <- sapply(1:length(ind_js), function(k){
-            x <- as.matrix(sim12[,which(new_ind_js==k)])
-            0.5*(mean(apply(x,1,max)) + mean(apply(x,2,max)))
+                            x <- as.matrix(sim12[,which(new_ind_js==k)])
+                            0.5*(mean(apply(x,1,max)) + mean(apply(x,2,max)))
                         })
                         x <- rep(0, num_genes)
                         x[js] <- res
@@ -214,8 +214,8 @@ dDAGgeneSim <- function (g, genes=NULL, method.gene=c("BM.average","BM.max","BM.
                         sim12 <- matrix(sim.term[ind1, unlist(ind_js)], nrow=length(ind1))
                         new_ind_js <- rep(1:length(ind_js), sapply(ind_js,length))
                         res <- sapply(1:length(ind_js), function(k){
-            x <- as.matrix(sim12[,which(new_ind_js==k)])
-            max(mean(apply(x,1,max)), mean(apply(x,2,max)))
+                            x <- as.matrix(sim12[,which(new_ind_js==k)])
+                            max(mean(apply(x,1,max)), mean(apply(x,2,max)))
                         })
                         x <- rep(0, num_genes)
                         x[js] <- res
@@ -233,8 +233,8 @@ dDAGgeneSim <- function (g, genes=NULL, method.gene=c("BM.average","BM.max","BM.
                         sim12 <- matrix(sim.term[ind1, unlist(ind_js)], nrow=length(ind1))
                         new_ind_js <- rep(1:length(ind_js), sapply(ind_js,length))
                         res <- sapply(1:length(ind_js), function(k){
-            x <- as.matrix(sim12[,which(new_ind_js==k)])
-            min(c(apply(x,1,max),apply(x,2,max)))
+                            x <- as.matrix(sim12[,which(new_ind_js==k)])
+                            min(c(apply(x,1,max),apply(x,2,max)))
                         })
                         x <- rep(0, num_genes)
                         x[js] <- res

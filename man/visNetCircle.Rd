@@ -16,7 +16,7 @@ mark.shape = 1, mark.expand = 10, ...)
 \item{g}{an object of class "igraph"}
 
 \item{com}{an object of class "communities" (see
-\url{http://igraph.sourceforge.net/doc/R/communities.html})}
+\url{http://igraph.org/r/doc/communities.html})}
 
 \item{circles}{how circles are drawn in the plot. It can
 be either "single" for all communities being drawn in a
@@ -63,7 +63,7 @@ displayed beside the vertex.}
 \item{vertex.shape}{the shape of each vertex. It can be
 one of "circle", "square", "csquare", "rectangle",
 "crectangle", "vrectangle", "pie"
-(\url{http://igraph.sourceforge.net/doc/R/vertex.shape.pie.html}),
+(\url{http://igraph.org/r/doc/vertex.shape.pie.html}),
 "sphere", and "none". If it sets to NULL, these vertices
 with negative will be "csquare" and the rest "circle".}
 
@@ -86,8 +86,8 @@ possible values are between -1 (fully polygons) and 1
 of the border around the marked vertex groups}
 
 \item{...}{additional graphic parameters. See
-\url{http://igraph.sourceforge.net/doc/R/plot.graph.html}
-for the complete list.}
+\url{http://igraph.org/r/doc/plot.common.html} for the
+complete list.}
 }
 \value{
 invisible
@@ -124,13 +124,11 @@ ordering <- tmp[order(vgroups,vdegrees),]$ind
 
 # 6) visualise graph using circle diagram
 # 6a) drawn into a single circle
-visNetCircle(g=g, colormap="bwr", com=com, ordering=ordering,
-vertex.label=V(g)$name)
+visNetCircle(g=g, colormap="bwr", com=com, ordering=ordering)
 
 # 6b) drawn into multlpe circles (one circle per community)
 visNetCircle(g=g, colormap="bwr", com=com, circles="multiple",
-ordering=ordering,
-vertex.label=V(g)$name)
+ordering=ordering)
 
 # 7) as comparison, also visualise graph on 2-dimensional layout
 mark.groups <- communities(com)

@@ -3,7 +3,7 @@
 \title{Function to setup a pipeine to estimate RWR-based contact strength between samples from an input gene-sample data matrix and an input graph}
 \usage{
 dRWRpipeline(data, g, method = c("direct", "indirect"),
-normalise = c("laplacian", "row", "column", "none"), restart = 0.5,
+normalise = c("laplacian", "row", "column", "none"), restart = 0.75,
 normalise.affinity.matrix = c("none", "quantile"),
 permutation = c("random", "degree"), num.permutation = 10,
 p.adjust.method = c("BH", "BY", "bonferroni", "holm", "hochberg",
@@ -12,7 +12,10 @@ adjp.cutoff = 0.05, parallel = TRUE, multicores = NULL, verbose = T)
 }
 \arguments{
 \item{data}{an input gene-sample data matrix used for
-seeds}
+seeds. Each value in input gene-sample matrix does not
+necessarily have to be binary (non-zeros will be used as
+a weight, but should be non-negative for easy
+interpretation).}
 
 \item{g}{an object of class "igraph" or "graphNEL"}
 

@@ -2,7 +2,7 @@
 #'
 #' \code{dRWRcontact} is supposed to estimate sample relationships (ie. contact strength between samples) from an input gene-sample matrix, an input graph and its affinity matrix pre-computed according to random walk restart (RWR) of the input graph. It includes: 1) RWR-smoothed columns of input gene-sample matrix based on the pre-computed affinity matrix; 2) calculation of contact strength (inner products of RWR-smooth columns of input gene-sample matrix); 3) estimation of the contact signficance by a randomalisation procedure. Parallel computing is also supported for Linux or Mac operating systems.
 #'
-#' @param data an input gene-sample data matrix used for seeds
+#' @param data an input gene-sample data matrix used for seeds. Each value in input gene-sample matrix does not necessarily have to be binary (non-zeros will be used as a weight, but should be non-negative for easy interpretation). 
 #' @param g an object of class "igraph" or "graphNEL"
 #' @param Amatrix an affinity matrix pre-computed from the input graph. Notes: columns for starting nodes walking from, and rows for ending nodes walking to
 #' @param permutation how to do permutation. It can be 'degree' for degree-preserving permutation, 'random' for permutation purely in random

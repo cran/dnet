@@ -206,6 +206,13 @@ list(
                 "CLL",
                 "TCGA_mutations"
             )
+        ),
+        sd_section("Domain-centric databases in Eukaryotes",
+            "These databases are used for domain-centric analysis.",
+            c(
+                "Ancestral_domainome",
+                "eTOL"
+            )
         )
     ),
     

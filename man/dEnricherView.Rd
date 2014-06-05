@@ -49,11 +49,7 @@ enrichment analysis by dEnricher.
 none
 }
 \examples{
-\dontrun{
-dEnricherView(eTerm, top_num=10, sortBy="adjp", decreasing=FALSE,
-details=TRUE)
-dEnricherView(eTerm, top_num=NULL, sortBy="none")
-}
+#dEnricherView(eTerm, top_num=10, sortBy="adjp", decreasing=FALSE, details=TRUE)
 }
 \seealso{
 \code{\link{dEnricher}}

@@ -9,7 +9,10 @@ multicores = NULL, verbose = T)
 }
 \arguments{
 \item{data}{an input gene-sample data matrix used for
-seeds}
+seeds. Each value in input gene-sample matrix does not
+necessarily have to be binary (non-zeros will be used as
+a weight, but should be non-negative for easy
+interpretation).}
 
 \item{g}{an object of class "igraph" or "graphNEL"}
 

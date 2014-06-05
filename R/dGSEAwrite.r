@@ -23,9 +23,7 @@
 #' @seealso \code{\link{dGSEA}}
 #' @include dGSEAwrite.r
 #' @examples
-#' \dontrun{
-#' output <- dGSEAwrite(eTerm, which_content="gadjp", which_score="gadjp", filename="eTerm.txt")
-#' }
+#' #output <- dGSEAwrite(eTerm, which_content="gadjp", which_score="gadjp", filename="eTerm.txt")
 
 dGSEAwrite <- function(eTerm, which_content=c("gadjp","adjp","pvalue","FWER","FDR","qvalue","nES","ES"), which_score=c("gadjp","adjp","FWER","FDR","qvalue","nES"), cutoff=0.1, filename=NULL, keep.significance=T) 
 {

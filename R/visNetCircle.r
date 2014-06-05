@@ -3,7 +3,7 @@
 #' \code{visNetCircle} is supposed to visualise a graph object of class "igraph" via circle diagram. For better visualisation, ordering of vertices is determined according to communities and degrees.
 #'
 #' @param g an object of class "igraph"
-#' @param com an object of class "communities" (see \url{http://igraph.sourceforge.net/doc/R/communities.html})
+#' @param com an object of class "communities" (see \url{http://igraph.org/r/doc/communities.html})
 #' @param circles how circles are drawn in the plot. It can be either "single" for all communities being drawn in a single circle (by default) or "multiple" for communities being drawn in the different circles (i.e. one circle per community)
 #' @param newpage logical to indicate whether to open a new page. By default, it sets to true for opening a new page
 #' @param ordering a numeric vector about the ordering of vertices. It is optional. It is highly recommend to order vertices according to communities and degrees
@@ -13,14 +13,14 @@
 #' @param vertex.label.color the color of vertex labels
 #' @param vertex.label.cex the font size of vertex labels
 #' @param vertex.label.dist the distance of the label from the center of the vertex. If it is 0 then the label is centered on the vertex. If it is 1 then the label is displayed beside the vertex.
-#' @param vertex.shape the shape of each vertex. It can be one of "circle", "square", "csquare", "rectangle", "crectangle", "vrectangle", "pie" (\url{http://igraph.sourceforge.net/doc/R/vertex.shape.pie.html}), "sphere", and "none". If it sets to NULL, these vertices with negative will be "csquare" and the rest "circle". 
+#' @param vertex.shape the shape of each vertex. It can be one of "circle", "square", "csquare", "rectangle", "crectangle", "vrectangle", "pie" (\url{http://igraph.org/r/doc/vertex.shape.pie.html}), "sphere", and "none". If it sets to NULL, these vertices with negative will be "csquare" and the rest "circle". 
 #' @param edge.width line width for the edges (default 1)
 #' @param edge.lty line type for the edges (default 1)
 #' @param edge.color.within the color for edges within a community (default "grey")
 #' @param edge.color.crossing the color for edges between communities (default "black")
 #' @param mark.shape a numeric scalar or vector controlling the smoothness of the vertex group marking polygons. Its possible values are between -1 (fully polygons) and 1 (fully smoothness)
 #' @param mark.expand a numeric scalar or vector, the size of the border around the marked vertex groups
-#' @param ... additional graphic parameters. See \url{http://igraph.sourceforge.net/doc/R/plot.graph.html} for the complete list.
+#' @param ... additional graphic parameters. See \url{http://igraph.org/r/doc/plot.common.html} for the complete list.
 #' @return
 #' invisible
 #' @note none
@@ -50,11 +50,10 @@
 #'
 #' # 6) visualise graph using circle diagram
 #' # 6a) drawn into a single circle 
-#' visNetCircle(g=g, colormap="bwr", com=com, ordering=ordering, vertex.label=V(g)$name)
+#' visNetCircle(g=g, colormap="bwr", com=com, ordering=ordering)
 #'
 #' # 6b) drawn into multlpe circles (one circle per community) 
-#' visNetCircle(g=g, colormap="bwr", com=com, circles="multiple", ordering=ordering, 
-#' vertex.label=V(g)$name)
+#' visNetCircle(g=g, colormap="bwr", com=com, circles="multiple", ordering=ordering)
 #'
 #' # 7) as comparison, also visualise graph on 2-dimensional layout 
 #' mark.groups <- communities(com)

@@ -41,9 +41,7 @@ negative).
 none
 }
 \examples{
-\dontrun{
-visGSEA(eTerm, which_sample=1, which_term=1)
-}
+#visGSEA(eTerm, which_sample=1, which_term=1)
 }
 \seealso{
 \code{\link{dGSEA}}, \code{\link{dGSEAview}}

@@ -54,10 +54,7 @@ enrichment analysis but for a specific sample.
 none
 }
 \examples{
-\dontrun{
-dGSEAview(eTerm, which_sample=1, top_num=10, sortBy="adjp",
-decreasing=FALSE, details=TRUE)
-}
+#dGSEAview(eTerm, which_sample=1, top_num=10, sortBy="adjp", decreasing=FALSE, details=TRUE)
 }
 \seealso{
 \code{\link{dGSEA}}

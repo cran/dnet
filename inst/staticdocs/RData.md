@@ -1,11 +1,9 @@
 ## Introduction
-As part of the package, the built-in RData (with `.RData` extension; available at 
-[http://dnet.r-forge.r-project.org/data](http://dnet.r-forge.r-project.org/data) or 
-[http://supfam.org/dnet/data.tar](http://supfam.org/dnet/data.tar)) contain curated/compiled data, which can be broadly grouped into the following categories:
+As part of the package, the built-in RData (with `.RData` extension; available at [http://supfam.org/dnet/data.tar](http://supfam.org/dnet/data.tar) or [http://dnet.r-forge.r-project.org/data](http://dnet.r-forge.r-project.org/data)) contain curated/compiled data, which can be broadly grouped into the following categories:
 
 * `Ontologies`
 
-Ontologies include Gene Ontology (GO) and its three subontologies (BP: Biological Process; MF: Molecular Function; CC: Cellular Component), Human Phenotype (HP) and its three subontologies (PA: Phenotypic Abnormality; ON: ONset and clinical course; MI: Mode of Inheritance), Disease Ontology (DO), and Mammalian Phenotype (MP). Terms in an ontology are organised as a direct acyclic graph (DAG), which is further stored as an object of the class [igraph](http://igraph.sourceforge.net/doc/R/aaa-igraph-package.html).
+Ontologies include Gene Ontology (GO) and its three subontologies (BP: Biological Process; MF: Molecular Function; CC: Cellular Component), Human Phenotype (HP) and its three subontologies (PA: Phenotypic Abnormality; ON: ONset and clinical course; MI: Mode of Inheritance), Disease Ontology (DO), and Mammalian Phenotype (MP). Terms in an ontology are organised as a direct acyclic graph (DAG), which is further stored as an object of the class [igraph](http://igraph.org/r/doc/aaa-igraph-package.html).
 
 * `Organism-specific databases`
 
@@ -17,9 +15,9 @@ These genesets are derived from the molecular signatures database.
 
 * `Datasets as demos`
 
-They are used in [Demos](http://dnet.r-forge.r-project.org/demos.html)
+They are used in [Demos](http://supfam.org/dnet/demos.html)
 
 ## Documentations
 
-For details, please refer to [Documentations](http://dnet.r-forge.r-project.org/docs.html).
+For details, please refer to [Documentations](http://supfam.org/dnet/docs.html).
 

@@ -65,7 +65,7 @@ actual coordinates. This function can be one of
 "layout.fruchterman.reingold.grid", "layout.lgl",
 "layout.graphopt", "layout.svd" and "layout.norm". A full
 explanation of these layouts can be found in
-\url{http://igraph.sourceforge.net/doc/R/layout.html}}
+\url{http://igraph.org/r/doc/layout.html}}
 
 \item{vertex.frame.color}{the color of the frame of the
 vertices. If it is NA, then there is no frame}
@@ -80,7 +80,7 @@ given, this setup will be ignored}
 \item{vertex.shape}{the shape of each vertex. It can be
 one of "circle", "square", "csquare", "rectangle",
 "crectangle", "vrectangle", "pie"
-(\url{http://igraph.sourceforge.net/doc/R/vertex.shape.pie.html}),
+(\url{http://igraph.org/r/doc/vertex.shape.pie.html}),
 "sphere", and "none". If it sets to NULL, these vertices
 with negative will be "csquare" and the rest "circle".}
 
@@ -98,8 +98,8 @@ displayed beside the vertex.}
 \item{vertex.label.color}{the color of vertex labels.}
 
 \item{...}{additional graphic parameters. See
-\url{http://igraph.sourceforge.net/doc/R/plot.graph.html}
-for the complete list.}
+\url{http://igraph.org/r/doc/plot.common.html} for the
+complete list.}
 }
 \value{
 invisible

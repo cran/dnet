@@ -75,7 +75,7 @@ actual coordinates. This function can be one of
 "layout.fruchterman.reingold.grid", "layout.lgl",
 "layout.graphopt", "layout.svd" and "layout.norm". A full
 explanation of these layouts can be found in
-\url{http://igraph.sourceforge.net/doc/R/layout.html}}
+\url{http://igraph.org/r/doc/layout.html}}
 
 \item{mtext.side}{on which side of the mtext plot
 (1=bottom, 2=left, 3=top, 4=right)}
@@ -91,8 +91,8 @@ alignment)}
 \item{mtext.col}{the color of mtext labels}
 
 \item{...}{additional graphic parameters. See
-\url{http://igraph.sourceforge.net/doc/R/plot.graph.html}
-for the complete list.}
+\url{http://igraph.org/r/doc/plot.common.html} for the
+complete list.}
 }
 \value{
 invisible

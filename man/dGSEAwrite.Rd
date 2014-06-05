@@ -52,10 +52,7 @@ If "filename" is not NULL, a tab-delimited text file will
 be also written out.
 }
 \examples{
-\dontrun{
-output <- dGSEAwrite(eTerm, which_content="gadjp", which_score="gadjp",
-filename="eTerm.txt")
-}
+#output <- dGSEAwrite(eTerm, which_content="gadjp", which_score="gadjp", filename="eTerm.txt")
 }
 \seealso{
 \code{\link{dGSEA}}

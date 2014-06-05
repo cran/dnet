@@ -2,7 +2,7 @@
 #'
 #' \code{dRWRpipeline} is supposed to estimate sample relationships (ie. contact strength between samples) from an input gene-sample matrix and an input graph. The pipeline includes: 1) random walk restart (RWR) of the input graph using the input matrix as seeds; 2) calculation of contact strength (inner products of RWR-smoothed columns of input matrix); 3) estimation of the contact signficance by a randomalisation procedure. It supports two methods how to use RWR: 'direct' for directly applying RWR in the given seeds; 'indirectly' for first pre-computing affinity matrix of the input graph, and then deriving the affinity score. Parallel computing is also supported for Linux or Mac operating systems.
 #'
-#' @param data an input gene-sample data matrix used for seeds
+#' @param data an input gene-sample data matrix used for seeds. Each value in input gene-sample matrix does not necessarily have to be binary (non-zeros will be used as a weight, but should be non-negative for easy interpretation). 
 #' @param g an object of class "igraph" or "graphNEL"
 #' @param method the method used to calculate RWR. It can be 'direct' for directly applying RWR, 'indirect' for indirectly applying RWR (first pre-compute affinity matrix and then derive the affinity score)
 #' @param normalise the way to normalise the adjacency matrix of the input graph. It can be 'laplacian' for laplacian normalisation, 'row' for row-wise normalisation, 'column' for column-wise normalisation, or 'none'
@@ -52,7 +52,7 @@
 #' dContact
 #' }
 
-dRWRpipeline <- function(data, g, method=c("direct","indirect"), normalise=c("laplacian","row","column","none"), restart=0.5, normalise.affinity.matrix=c("none","quantile"), permutation=c("random","degree"), num.permutation=10, p.adjust.method=c("BH","BY","bonferroni","holm","hochberg","hommel"), adjp.cutoff=0.05, parallel=TRUE, multicores=NULL, verbose=T)
+dRWRpipeline <- function(data, g, method=c("direct","indirect"), normalise=c("laplacian","row","column","none"), restart=0.75, normalise.affinity.matrix=c("none","quantile"), permutation=c("random","degree"), num.permutation=10, p.adjust.method=c("BH","BY","bonferroni","holm","hochberg","hommel"), adjp.cutoff=0.05, parallel=TRUE, multicores=NULL, verbose=T)
 {
 
     startT <- Sys.time()

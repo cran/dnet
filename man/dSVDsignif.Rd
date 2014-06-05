@@ -72,6 +72,7 @@ the gene significance.
 none
 }
 \examples{
+\dontrun{
 # 1) generate data with an iid matrix of 1000 x 9
 data <- cbind(matrix(rnorm(1000*3,mean=0,sd=1), nrow=1000, ncol=3),
 matrix(rnorm(1000*3,mean=0.5,sd=1), nrow=1000, ncol=3),
@@ -80,7 +81,6 @@ matrix(rnorm(1000*3,mean=-0.5,sd=1), nrow=1000, ncol=3))
 # 2) calculate the significance according to SVD
 # using "fdr" significance
 fdr <- dSVDsignif(data, signif="fdr", num.permutation=10)
-\dontrun{
 # using "pval" significance
 pval <- dSVDsignif(data, signif="pval", num.permutation=10)
 }
