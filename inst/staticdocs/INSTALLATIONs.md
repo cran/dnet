@@ -48,7 +48,8 @@ Notes: to install the package `dnet` under [latest development version](https://
     source("http://bioconductor.org/biocLite.R")
     biocLite("devtools")
     library(devtools)
-    install_github(c("dnet","supraHex"), username="hfang-bristol")
+    remove.packages("dnet")
+    install_github(c("dnet"), username="hfang-bristol")
 
 ## 3. Workflow of the package
 

@@ -16,8 +16,8 @@ retained.
 
 \value{
 an object of class "igraph" (see
-\url{http://igraph.sourceforge.net/doc/R/aaa-igraph-package.html}). It
-has attributes for both vertices and edges.
+\url{http://igraph.org/r/doc/aaa-igraph-package.html}). It has
+attributes for both vertices and edges.
 Below are attributes for the vertices:
 \itemize{
 \item{\code{name}: unique id for the vertices}
