@@ -43,12 +43,12 @@ Second, install the package `dnet` under [stable release version](http://cran.r-
 
     install.packages("dnet",repos="http://cran.r-project.org",type="source")
 
-Notes: to install the package `dnet` under [latest development version](https://github.com/hfang-bristol/dnet), please run:
+Notes: to install the package `dnet` under [latest development version](https://github.com/hfang-bristol/dnet), please run (`highly recommended`):
 
     source("http://bioconductor.org/biocLite.R")
     biocLite("devtools")
     library(devtools)
-    remove.packages("dnet")
+    if(!("dnet" %in% rownames(installed.packages()))) remove.packages("dnet")
     install_github(c("dnet"), username="hfang-bristol")
 
 ## 3. Workflow of the package

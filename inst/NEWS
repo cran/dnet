@@ -1,9 +1,19 @@
+CHANGES IN VERSION 1.0.6
+-----------------------
+
+NEW FEATURES
+
+    o Bug fixes
+
+    o Change two packages 'foreach' and 'doMC' from the suggested to the imported
+
+
 CHANGES IN VERSION 1.0.5
 -----------------------
 
 NEW FEATURES
 
-    o Bug fixes occurred in 'visDAG'
+    o Bug fixes (such as in 'visDAG') for accommodating an incoming package 'dcGOR'
 
     o Application in emerging research on cancer patient survival (submitted to Genome Medicine)
 

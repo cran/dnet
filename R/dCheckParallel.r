@@ -8,6 +8,8 @@
 #' @note
 #' Whether parallel computation with multicores is used is system-specific (now only Linux or Mac OS). Also, it will depend on whether these two packages "foreach" and "doMC" have been installed. It can be installed via: \code{source("http://bioconductor.org/biocLite.R"); biocLite(c("foreach","doMC"))}.
 #' @export
+#' @import doMC
+#' @import foreach
 #' @seealso \code{\link{dRWR}}, \code{\link{dRWRcontact}}, \code{\link{dRWRpipeline}}, \code{\link{dDAGtermSim}}, \code{\link{dDAGgeneSim}}
 #' @include dCheckParallel.r
 #' @examples
