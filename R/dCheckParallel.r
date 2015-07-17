@@ -8,8 +8,6 @@
 #' @note
 #' Whether parallel computation with multicores is used is system-specific (now only Linux or Mac OS). Also, it will depend on whether these two packages "foreach" and "doMC" have been installed. It can be installed via: \code{source("http://bioconductor.org/biocLite.R"); biocLite(c("foreach","doMC"))}.
 #' @export
-#' @import doMC
-#' @import foreach
 #' @seealso \code{\link{dRWR}}, \code{\link{dRWRcontact}}, \code{\link{dRWRpipeline}}, \code{\link{dDAGtermSim}}, \code{\link{dDAGgeneSim}}
 #' @include dCheckParallel.r
 #' @examples
@@ -17,32 +15,39 @@
 
 dCheckParallel <- function (multicores=NULL, verbose=T)
 {
-
+    
+    # @import doMC
+    # @import foreach
+    
     flag_parallel <- F
     pkgs <- c("doMC","foreach")
-    if(any(pkgs %in% rownames(installed.packages()))){
+    if(all(pkgs %in% rownames(utils::installed.packages()))){
         tmp <- sapply(pkgs, function(pkg) {
-            suppressPackageStartupMessages(require(pkg, character.only=T))
+            #suppressPackageStartupMessages(require(pkg, character.only=T))
+            requireNamespace(pkg, quietly=T)
         })
+        
         if(all(tmp)){
-            registerDoMC()
-            cores <- getDoParWorkers()
+            doMC::registerDoMC()
+            cores <- foreach::getDoParWorkers()
             if(is.null(multicores)){
-                multicores <- max(1, ceiling(cores*0.5))
+                multicores <- max(1, ceiling(cores))
             }else if(is.na(multicores)){
-                multicores <- max(1, ceiling(cores*0.5))
-            }else if(multicores < 1 | multicores > cores){
-                multicores <- max(1, ceiling(cores*0.5))
+                multicores <- max(1, ceiling(cores))
+            }else if(multicores < 1 | multicores > 2*cores){
+                multicores <- max(1, ceiling(cores))
             }else{
                 multicores <- as.integer(multicores)
             }
-            registerDoMC(multicores) # register the multicore parallel backend with the 'foreach' package
+            doMC::registerDoMC(multicores) # register the multicore parallel backend with the 'foreach' package
             
             if(verbose){
                 message(sprintf("\tdo parallel computation using %d cores ...", multicores, as.character(Sys.time())), appendLF=T)
             }
             flag_parallel <- T
         }
+        
     }
+    
     return(flag_parallel)
 }

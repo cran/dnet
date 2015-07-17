@@ -110,7 +110,7 @@ dRWRpipeline <- function(data, g, method=c("direct","indirect"), normalise=c("la
     ## A function to degree-preserving randomisation
     dp_randomisation <- function(ig, data){
         dg <- igraph::degree(ig)
-        at <- unique(quantile(dg, seq(from=0,to=1,by=0.1)))
+        at <- unique(stats::quantile(dg, seq(from=0,to=1,by=0.1)))
         groups <- sapply(dg, function(x){
             if(length(which(x>at))==0){
                 at[1]
@@ -160,7 +160,7 @@ dRWRpipeline <- function(data, g, method=c("direct","indirect"), normalise=c("la
         PTmatrix <- sAmatrix %*% Matrix::Matrix(P0matrix, sparse=T)
         
         ## make sure the sum of elements in each steady probability vector is one
-        PTmatrix <- sum2one(PTmatrix)
+        PTmatrix <- sum2one(as.matrix(PTmatrix))
         
     }else if(method=='direct'){
     
@@ -189,9 +189,11 @@ dRWRpipeline <- function(data, g, method=c("direct","indirect"), normalise=c("la
     ###### parallel computing
     flag_parallel <- F
     if(parallel==TRUE){
+    
         flag_parallel <- dCheckParallel(multicores=multicores, verbose=verbose)
         if(flag_parallel){
-            exp_b <- foreach(b=1:B, .inorder=T) %dopar% {
+            b <- 1
+            exp_b <- foreach::`%dopar%` (foreach::foreach(b=1:B, .inorder=T), {
                 progress_indicate(b, B, 10, flag=T)
                 if(permutation=="degree"){
                     seeds_random <- dp_randomisation(ig, P0matrix)
@@ -202,20 +204,21 @@ dRWRpipeline <- function(data, g, method=c("direct","indirect"), normalise=c("la
                 if(method=='indirect'){
                     PT_random <- sAmatrix %*% Matrix::Matrix(seeds_random, sparse=T)
                     ## make sure the sum of elements in each steady probability vector is one
-                    PT_random <- sum2one(PT_random)
+                    PT_random <- sum2one(as.matrix(PT_random))
                 }else if(method=='direct'){
                     PT_random <- suppressWarnings(suppressMessages(dRWR(g=ig, normalise=normalise, setSeeds=seeds_random, restart=restart, normalise.affinity.matrix=normalise.affinity.matrix, parallel=parallel, multicores=multicores)))
                     PTmatrix <- Matrix::Matrix(PTmatrix, sparse=T)
                 }
                 as.matrix(t(as.matrix(PT_random)) %*% PT_random)
-            }
+            })
         }
     }
     
     ###### non-parallel computing
-    if(flag_parallel==F){
-        exp_b <- list()
-        for (b in 1:B){
+    if(flag_parallel==F){        
+        #exp_b <- list()
+        exp_b <- lapply(1:B, function(b){
+        
             progress_indicate(b, B, 10, flag=T)
             if(permutation=="degree"){
                 seeds_random <- dp_randomisation(ig, P0matrix)
@@ -227,13 +230,14 @@ dRWRpipeline <- function(data, g, method=c("direct","indirect"), normalise=c("la
             if(method=='indirect'){
                 PT_random <- sAmatrix %*% Matrix::Matrix(seeds_random, sparse=T)
                 ## make sure the sum of elements in each steady probability vector is one
-                PT_random <- sum2one(PT_random)
+                PT_random <- sum2one(as.matrix(PT_random))
             }else if(method=='direct'){
                 PT_random <- suppressWarnings(suppressMessages(dRWR(g=ig, normalise=normalise, setSeeds=seeds_random, restart=restart, normalise.affinity.matrix=normalise.affinity.matrix)))
                 PTmatrix <- Matrix::Matrix(PTmatrix, sparse=T)
             }
-            exp_b[[b]] <- as.matrix(t(as.matrix(PT_random)) %*% PT_random)
-        }
+            #exp_b[[b]] <- as.matrix(t(as.matrix(PT_random)) %*% PT_random)
+            as.matrix(t(as.matrix(PT_random)) %*% PT_random)
+        })
     }
 
     if(verbose){

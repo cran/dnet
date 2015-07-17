@@ -14,8 +14,9 @@
 #' @seealso \code{\link{dDAGroot}}
 #' @include dDAGinduce.r
 #' @examples
+#' \dontrun{
 #' # 1) load HPPA as igraph object
-#' data(ig.HPPA)
+#' ig.HPPA <-dRDataLoader(RData='ig.HPPA')
 #' g <- ig.HPPA
 #'
 #' # 2) randomly select vertices as the query nodes
@@ -29,6 +30,7 @@
 #' subg <- dDAGinduce(g, nodes_query, path.mode="all_paths")
 #' # 3b) based on shortest paths (i.e. the most concise subgraph induced)
 #' subg <- dDAGinduce(g, nodes_query, path.mode="shortest_paths")
+#' }
 
 dDAGinduce <- function (g, nodes_query, path.mode=c("all_paths","shortest_paths","all_shortest_paths"))
 {

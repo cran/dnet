@@ -75,8 +75,14 @@ dRWR <- function(g, normalise=c("laplacian","row","column","none"), setSeeds=NUL
     
     if ("weight" %in% list.edge.attributes(ig)){
         adjM <- get.adjacency(ig, type="both", attr="weight", edges=F, names=T, sparse=getIgraphOpt("sparsematrices"))
+        if(verbose){
+            message(sprintf("\tNotes: using weighted graph!"), appendLF=T)
+        }
     }else{
         adjM <- get.adjacency(ig, type="both", attr=NULL, edges=F, names=T, sparse=getIgraphOpt("sparsematrices"))
+        if(verbose){
+            message(sprintf("\tNotes: using unweighted graph!"), appendLF=T)
+        }
     }
     
     if(verbose){
@@ -132,10 +138,55 @@ dRWR <- function(g, normalise=c("laplacian","row","column","none"), setSeeds=NUL
     ## A function to make sure the sum of elements in each steady probability vector is one
     sum2one <- function(PTmatrix){
         col_sum <- apply(PTmatrix, 2, sum)
+        #col_sum <- Matrix::colSums(PTmatrix, sparseResult=F)
         col_sum_matrix <- matrix(rep(col_sum, nrow(PTmatrix)), ncol=ncol(PTmatrix), nrow=nrow(PTmatrix), byrow =T)
-        res <- PTmatrix/col_sum_matrix
+        res <- as.matrix(PTmatrix)/col_sum_matrix
         res[is.na(res)] <- 0
         return(res)
+    }
+    
+    ## a function to normalize columns of a matrix to have the same Quantiles
+    normalizeQuantiles <- function (A, ties=TRUE) {
+        n <- dim(A)
+        if(is.null(n)) return(A)
+        if(n[2] == 1) return(A)
+        O <- S <- array(, n)
+        nobs <- rep(n[1], n[2])
+        i <- (0:(n[1] - 1))/(n[1] - 1)
+        for(j in 1:n[2]){
+            Si <- sort(A[, j], method = "quick", index.return = TRUE)
+            nobsj <- length(Si$x)
+            if (nobsj < n[1]){
+                nobs[j] <- nobsj
+                isna <- is.na(A[, j])
+                S[, j] <- stats::approx((0:(nobsj - 1))/(nobsj - 1), Si$x, 
+                    i, ties = "ordered")$y
+                O[!isna, j] <- ((1:n[1])[!isna])[Si$ix]
+            }else{
+                S[, j] <- Si$x
+                O[, j] <- Si$ix
+            }
+        }
+        m <- rowMeans(S)
+        for (j in 1:n[2]){
+            if(ties) r<-rank(A[, j])
+            if(nobs[j] < n[1]){
+                isna <- is.na(A[, j])
+                if(ties){ 
+                    A[!isna, j] <- stats::approx(i, m, (r[!isna] - 1)/(nobs[j] - 1), ties = "ordered")$y
+                }else{ 
+                    A[O[!isna, j], j] <- stats::approx(i, m, (0:(nobs[j] - 1))/(nobs[j] - 1), ties = "ordered")$y
+                }
+            }else{
+                if(ties){
+                    A[, j] <- stats::approx(i, m, (r - 1)/(n[1] - 1), ties = "ordered")$y
+                }else{
+                    A[O[, j], j] <- m
+                }
+            }
+        }
+    
+        return(A)
     }
     
     ####################################################
@@ -219,11 +270,12 @@ dRWR <- function(g, normalise=c("laplacian","row","column","none"), setSeeds=NUL
         ###### parallel computing
         flag_parallel <- F
         if(parallel==TRUE){
+
             flag_parallel <- dCheckParallel(multicores=multicores, verbose=verbose)
             if(flag_parallel){
-                    
-                PTmatrix <- foreach(j=1:ncol(P0matrix), .inorder=T, .combine='cbind') %dopar% {
-                    progress_indicate(j, ncol(P0matrix), 100, flag=T)
+                j <- 1
+                PTmatrix <- foreach::`%dopar%` (foreach::foreach(j=1:ncol(P0matrix), .inorder=T, .combine='cbind'), {
+                    progress_indicate(j, ncol(P0matrix), 10, flag=T)
                     P0 <- P0matrix[,j]
                     ## Initializing variables
                     step <- 0
@@ -238,10 +290,10 @@ dRWR <- function(g, normalise=c("laplacian","row","column","none"), setSeeds=NUL
                         step <- step+1
                     }
                     as.matrix(PT)
-                }
+                })
                     
                 PTmatrix[PTmatrix<1e-6] <- 0
-                PTmatrix <- Matrix::Matrix(PTmatrix, sparse=T)
+                #PTmatrix <- Matrix::Matrix(PTmatrix, sparse=T)
             }
         }
         
@@ -269,79 +321,39 @@ dRWR <- function(g, normalise=c("laplacian","row","column","none"), setSeeds=NUL
                 }
                 #PTmatrix[,j] <- as.matrix(PT, ncol=1)
                 PT[PT<1e-6] <- 0
-                PTmatrix[,j] <- Matrix::Matrix(PT, sparse=T)
+                #PTmatrix[,j] <- Matrix::Matrix(PT, sparse=T)
+                PTmatrix[,j] <- PT
             
-                progress_indicate(j, ncol(P0matrix), 100, flag=T)
+                progress_indicate(j, ncol(P0matrix), 10, flag=T)
         
             }
         }
     }
     
     ## make sure the sum of elements in each steady probability vector is one
-    PTmatrix <- sum2one(PTmatrix)
+    if(verbose){
+        now <- Sys.time()
+        message(sprintf("Fourth, rescale steady probability vector (%s) ...", as.character(now)), appendLF=T)
+    }
+    PTmatrix <- sum2one(PTmatrix) # input/output: full matrix
     
     if(0){
-    ## make sure the sum of elements in each steady probability vector is one
-    PTmatrix <- sapply(1:ncol(PTmatrix), function(i){
-        if(sum(PTmatrix[,i])!=0){
-            PTmatrix[,i]/sum(PTmatrix[,i])
-        }else{
-            PTmatrix[,i]
-        }
-    })
-    rownames(PTmatrix) <- rownames(P0matrix)
-    colnames(PTmatrix) <- colnames(P0matrix)
-    }
-    ####################################################################################
-    ## a function to normalize columns of a matrix to have the same Quantiles
-    normalizeQuantiles <- function (A, ties=TRUE) {
-        n <- dim(A)
-        if(is.null(n)) return(A)
-        if(n[2] == 1) return(A)
-        O <- S <- array(, n)
-        nobs <- rep(n[1], n[2])
-        i <- (0:(n[1] - 1))/(n[1] - 1)
-        for(j in 1:n[2]){
-            Si <- sort(A[, j], method = "quick", index.return = TRUE)
-            nobsj <- length(Si$x)
-            if (nobsj < n[1]){
-                nobs[j] <- nobsj
-                isna <- is.na(A[, j])
-                S[, j] <- approx((0:(nobsj - 1))/(nobsj - 1), Si$x, 
-                    i, ties = "ordered")$y
-                O[!isna, j] <- ((1:n[1])[!isna])[Si$ix]
+        ## make sure the sum of elements in each steady probability vector is one
+        PTmatrix <- sapply(1:ncol(PTmatrix), function(i){
+            if(sum(PTmatrix[,i])!=0){
+                PTmatrix[,i]/sum(PTmatrix[,i])
             }else{
-                S[, j] <- Si$x
-                O[, j] <- Si$ix
+                PTmatrix[,i]
             }
-        }
-        m <- rowMeans(S)
-        for (j in 1:n[2]){
-            if(ties) r<-rank(A[, j])
-            if(nobs[j] < n[1]){
-                isna <- is.na(A[, j])
-                if(ties){ 
-                    A[!isna, j] <- stats::approx(i, m, (r[!isna] - 1)/(nobs[j] - 1), ties = "ordered")$y
-                }else{ 
-                    A[O[!isna, j], j] <- stats::approx(i, m, (0:(nobs[j] - 1))/(nobs[j] - 1), ties = "ordered")$y
-                }
-            }else{
-                if(ties){
-                    A[, j] <- stats::approx(i, m, (r - 1)/(n[1] - 1), ties = "ordered")$y
-                }else{
-                    A[O[, j], j] <- m
-                }
-            }
-        }
-    
-        return(A)
+        })
+        rownames(PTmatrix) <- rownames(P0matrix)
+        colnames(PTmatrix) <- colnames(P0matrix)
     }
     
     ####################################################################################
     if(ncol(PTmatrix) == 1){
         normalise.affinity.matrix <- "none"
     }
-    
     if(normalise.affinity.matrix=="quantile"){
         PTmatrix <- normalizeQuantiles(PTmatrix)
     }
@@ -352,6 +364,7 @@ dRWR <- function(g, normalise=c("laplacian","row","column","none"), setSeeds=NUL
     }
     
     PTmatrix[PTmatrix<1e-6] <- 0
+    #PTmatrix <- signif(PTmatrix, digits=7)
     PTmatrix <- Matrix::Matrix(PTmatrix, sparse=T)
     rownames(PTmatrix) <- rownames(P0matrix)
     colnames(PTmatrix) <- colnames(P0matrix)

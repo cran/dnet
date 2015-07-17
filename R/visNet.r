@@ -9,7 +9,7 @@
 #' @param zlim the minimum and maximum z/patttern values for which colors should be plotted, defaulting to the range of the finite values of z. Each of the given colors will be used to color an equispaced interval of this range. The midpoints of the intervals cover the range, so that values just outside the range will be plotted
 #' @param colorbar logical to indicate whether to append a colorbar. If pattern is null, it always sets to false
 #' @param newpage logical to indicate whether to open a new page. By default, it sets to true for opening a new page
-#' @param glayout either a function or a numeric matrix configuring how the vertices will be placed on the plot. If layout is a function, this function will be called with the graph as the single parameter to determine the actual coordinates. This function can be one of "layout.auto", "layout.random", "layout.circle", "layout.sphere", "layout.fruchterman.reingold", "layout.kamada.kawai", "layout.spring", "layout.reingold.tilford", "layout.fruchterman.reingold.grid", "layout.lgl", "layout.graphopt", "layout.svd" and "layout.norm". A full explanation of these layouts can be found in \url{http://igraph.org/r/doc/layout.html}
+#' @param glayout either a function or a numeric matrix configuring how the vertices will be placed on the plot. If layout is a function, this function will be called with the graph as the single parameter to determine the actual coordinates. This function can be one of "layout.auto", "layout.random", "layout.circle", "layout.sphere", "layout.fruchterman.reingold", "layout.kamada.kawai", "layout.spring", "layout.reingold.tilford", "layout.fruchterman.reingold.grid", "layout.lgl", "layout.graphopt", "layout.svd" and "layout.norm". A full explanation of these layouts can be found in \url{http://igraph.org/r/doc/layout_nicely.html}
 #' @param vertex.frame.color the color of the frame of the vertices. If it is NA, then there is no frame
 #' @param vertex.size the size of each vertex. If it is a vector, each vertex may differ in size
 #' @param vertex.color the fill color of the vertices. If it is NA, then there is no fill color. If the pattern is given, this setup will be ignored
@@ -82,8 +82,8 @@ visNet <- function(g, pattern=NULL, colormap=c("bwr","jet","gbr","wyr","br","yr"
                 
         if(flag==1){
             if(is.null(zlim)){
-                vmin <- floor(quantile(pattern, 0.05))
-                vmax <- ceiling(quantile(pattern, 0.95))
+                vmin <- floor(stats::quantile(pattern, 0.05))
+                vmax <- ceiling(stats::quantile(pattern, 0.95))
                 if(vmin < 0 & vmax > 0){
                     vsym <- abs(min(vmin, vmax))
                     vmin <- -1*vsym
@@ -155,7 +155,7 @@ visNet <- function(g, pattern=NULL, colormap=c("bwr","jet","gbr","wyr","br","yr"
     ######################################################################################
     ## Visualisation
     if (newpage){
-        dev.new()
+        grDevices::dev.new()
     }
     
     plot.igraph(ig, layout=glayout, 
@@ -173,7 +173,7 @@ visNet <- function(g, pattern=NULL, colormap=c("bwr","jet","gbr","wyr","br","yr"
     ## colorbar
     if (!is.null(pattern) && length(pattern)==nsize){
         if(colorbar){
-            par(fig=c(0,0.1,0.5,1), new=TRUE)
+            graphics::par(fig=c(0,0.1,0.5,1), new=TRUE)
             palette.name <- visColormap(colormap=colormap)
             colors <- palette.name(ncolors)
             lab.scale <- length(colors)/(zlim[2]-zlim[1])
@@ -188,14 +188,14 @@ visNet <- function(g, pattern=NULL, colormap=c("bwr","jet","gbr","wyr","br","yr"
                 ybottom <- yValue
                 xright <- xValue+wValue
                 ytop <- yValue+hValue
-                rect(xleft,ybottom,xright,ytop, col=colors[i], border="transparent")
+                graphics::rect(xleft,ybottom,xright,ytop, col=colors[i], border="transparent")
         
                 if(i == 1 | i == 1+length(colors)/2){
                     tx <- (i-1)/lab.scale + zlim[1]
-                    text(x=xright*2, y=ybottom, labels=tx, cex=0.6)
+                    graphics::text(x=xright*2, y=ybottom, labels=tx, cex=0.6)
                 }else if(i==length(colors)){
                     tx <- i/lab.scale + zlim[1]
-                    text(x=xright*2, y=ytop, labels=tx, cex=0.6)
+                    graphics::text(x=xright*2, y=ytop, labels=tx, cex=0.6)
                 }
             }
         }

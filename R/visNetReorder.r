@@ -3,7 +3,7 @@
 #' \code{visNetReorder} is supposed to visualise the multiple graph colorings reorded within a sheet-shape rectangle grid
 #'
 #' @param g an object of class "igraph" or "graphNEL"
-#' @param data an input data matrix used to color-code vertices/nodes. One column corresponds to one graph node coloring. The input matrix must have row names, and these names should include all node names of input graph, i.e. V(g)$name, since there is a mapping operation. After mapping, the length of the patern vector should be the same as the number of nodes of input graph. The way of how to color-code is to map values in the pattern onto the whole colormap (see the next arguments: colormap, ncolors, zlim and colorbar)
+#' @param data an input data matrix used to color-code vertices/nodes. One column corresponds to one graph node coloring. The input matrix must have row names, and these names should include all node names of input graph, i.e. V(g)$name, since there is a mapping operation. After mapping, the length of the pattern vector should be the same as the number of nodes of input graph. The way of how to color-code is to map values in the pattern onto the whole colormap (see the next arguments: colormap, ncolors, zlim and colorbar)
 #' @param height a numeric value specifying the height of device
 #' @param sReorder an object of class "sReorder"
 #' @param margin margins as units of length 4 or 1
@@ -14,7 +14,7 @@
 #' @param colorbar logical to indicate whether to append a colorbar. If pattern is null, it always sets to false
 #' @param colorbar.fraction the relative fraction of colorbar block against the figure block
 #' @param newpage logical to indicate whether to open a new page. By default, it sets to true for opening a new page
-#' @param glayout either a function or a numeric matrix configuring how the vertices will be placed on the plot. If layout is a function, this function will be called with the graph as the single parameter to determine the actual coordinates. This function can be one of "layout.auto", "layout.random", "layout.circle", "layout.sphere", "layout.fruchterman.reingold", "layout.kamada.kawai", "layout.spring", "layout.reingold.tilford", "layout.fruchterman.reingold.grid", "layout.lgl", "layout.graphopt", "layout.svd" and "layout.norm". A full explanation of these layouts can be found in \url{http://igraph.org/r/doc/layout.html}
+#' @param glayout either a function or a numeric matrix configuring how the vertices will be placed on the plot. If layout is a function, this function will be called with the graph as the single parameter to determine the actual coordinates. This function can be one of "layout.auto", "layout.random", "layout.circle", "layout.sphere", "layout.fruchterman.reingold", "layout.kamada.kawai", "layout.spring", "layout.reingold.tilford", "layout.fruchterman.reingold.grid", "layout.lgl", "layout.graphopt", "layout.svd" and "layout.norm". A full explanation of these layouts can be found in \url{http://igraph.org/r/doc/layout_nicely.html}
 #' @param mtext.side on which side of the mtext plot (1=bottom, 2=left, 3=top, 4=right)
 #' @param mtext.adj the adjustment for mtext alignment (0 for left or bottom alignment, 1 for right or top alignment)
 #' @param mtext.cex the font size of mtext labels
@@ -87,8 +87,8 @@ visNetReorder <- function (g, data, sReorder, height=7, margin=rep(0.1,4), borde
     data <- as.matrix(data[nodes_mapped,])
     
     ## determine the color range
-    vmin <- floor(quantile(data, 0.05))
-    vmax <- ceiling(quantile(data, 0.95))
+    vmin <- floor(stats::quantile(data, 0.05))
+    vmax <- ceiling(stats::quantile(data, 0.95))
     if(vmin < 0 & vmax > 0){
         vsym <- abs(min(vmin, vmax))
         vmin <- -1*vsym
@@ -153,10 +153,10 @@ visNetReorder <- function (g, data, sReorder, height=7, margin=rep(0.1,4), borde
     
     ######################################################################################
     if (newpage){
-        dev.new(width=height*colNum/rowNum, height=height)
+        grDevices::dev.new(width=height*colNum/rowNum, height=height)
     }
-    par(mfrow=c(rowNum,colNum), mar=margin)
-    layout(layout_matrix, widths=layout_widths, heights=layout_heights)
+    graphics::par(mfrow=c(rowNum,colNum), mar=margin)
+    graphics::layout(layout_matrix, widths=layout_widths, heights=layout_heights)
     if(is.function(glayout)){
         glayout_fix <- glayout(ig)
     }else{
@@ -164,10 +164,10 @@ visNetReorder <- function (g, data, sReorder, height=7, margin=rep(0.1,4), borde
     }
     for(k in 1:length(cnames)){
         visNet(ig, glayout=glayout_fix, pattern=data[,k], colormap=colormap, ncolors=ncolors, zlim=zlim, colorbar=F, newpage=F, ...)
-        mtext(sprintf("%s",cnames[k]), line=-1, side=mtext.side, adj=mtext.adj, cex=mtext.cex, font=mtext.font, col=mtext.col)
-        box("figure",col=border.color)
+        graphics::mtext(sprintf("%s",cnames[k]), line=-1, side=mtext.side, adj=mtext.adj, cex=mtext.cex, font=mtext.font, col=mtext.col)
+        graphics::box("figure",col=border.color)
     }
-    #box("outer", col="black", lwd=4)
+    #graphics::box("outer", col="black", lwd=4)
     
     ######################################################################################
     ## colorbar
@@ -190,21 +190,21 @@ visNetReorder <- function (g, data, sReorder, height=7, margin=rep(0.1,4), borde
             ybottom <- yValue
             xright <- xValue+wValue
             ytop <- yValue+hValue
-            rect(xleft,ybottom,xright,ytop, col=colors[i], border="transparent")
+            graphics::rect(xleft,ybottom,xright,ytop, col=colors[i], border="transparent")
         
             if(i == 1 | i == 1+length(colors)/2){
                 tx <- (i-1)/lab.scale + zlim[1]
-                text(x=xright+0.25, y=ybottom, labels=tx, cex=1)
+                graphics::text(x=xright+0.25, y=ybottom, labels=tx, cex=1)
             }else if(i==length(colors)){
                 tx <- i/lab.scale + zlim[1]
-                text(x=xright+0.25, y=ytop, labels=tx, cex=1)
+                graphics::text(x=xright+0.25, y=ytop, labels=tx, cex=1)
             }
         }
         
         ## for the rest of blocks
         for(k in seq(from=length(cnames)+2, to=tolNum-rowNum-colNum+2, by=1)){
             plot(c(0,1),c(0,1),xlab="", ylab="", axes=F, type="n")
-            box("figure",col=border.color)
+            graphics::box("figure",col=border.color)
         }
         
     }

@@ -4,7 +4,7 @@
 #'
 #' @param g an object of class "igraph" or "graphNEL". It must contain a vertex attribute called 'annotations' for storing annotation data (see example for howto)
 #' @param terms the terms/nodes between which pair-wise semantic similarity is calculated. If NULL, all terms in the input DAG will be used for calcluation, which is very prohibitively expensive!
-#' @param method the method used to measure semantic similarity between input terms. It can be "Resnik" for information content (IC) of most informative information ancestor (MICA) (see \url{http://arxiv.org/pdf/cmp-lg/9511007.pdf}), "Lin" for 2*IC at MICA divided by the sum of IC at pairs of terms (see \url{http://webdocs.cs.ualberta.ca/~lindek/papers/sim.pdf}), "Schlicker" for weighted version of 'Lin' by the 1-prob(MICA) (see \url{http://www.ncbi.nlm.nih.gov/pubmed/16776819}), "Jiang" for 1 - difference between the sum of IC at pairs of terms and 2*IC at MICA (see \url{http://arxiv.org/pdf/cmp-lg/9709008.pdf}), "Pesquita" for graph information content similarity related to Tanimoto-Jacard index (ie. summed information content of common ancestors divided by summed information content of all ancestors of term1 and term2 (see \url{http://www.ncbi.nlm.nih.gov/pubmed/18460186})). By default, it uses "Schlicker" method
+#' @param method the method used to measure semantic similarity between input terms. It can be "Resnik" for information content (IC) of most informative common ancestor (MICA) (see \url{http://arxiv.org/pdf/cmp-lg/9511007.pdf}), "Lin" for 2*IC at MICA divided by the sum of IC at pairs of terms (see \url{http://webdocs.cs.ualberta.ca/~lindek/papers/sim.pdf}), "Schlicker" for weighted version of 'Lin' by the 1-prob(MICA) (see \url{http://www.ncbi.nlm.nih.gov/pubmed/16776819}), "Jiang" for 1 - difference between the sum of IC at pairs of terms and 2*IC at MICA (see \url{http://arxiv.org/pdf/cmp-lg/9709008.pdf}), "Pesquita" for graph information content similarity related to Tanimoto-Jacard index (ie. summed information content of common ancestors divided by summed information content of all ancestors of term1 and term2 (see \url{http://www.ncbi.nlm.nih.gov/pubmed/18460186})). By default, it uses "Schlicker" method
 #' @param fast logical to indicate whether a vectorised fast computation is used. By default, it sets to true. It is always advisable to use this vectorised fast computation; since the conventional computation is just used for understanding scripts
 #' @param parallel logical to indicate whether parallel computation with multicores is used. By default, it sets to true, but not necessarily does so. Partly because parallel backends available will be system-specific (now only Linux or Mac OS). Also, it will depend on whether these two packages "foreach" and "doMC" have been installed. It can be installed via: \code{source("http://bioconductor.org/biocLite.R"); biocLite(c("foreach","doMC"))}. If not yet installed, this option will be disabled
 #' @param multicores an integer to specify how many cores will be registered as the multicore parallel backend to the 'foreach' package. If NULL, it will use a half of cores available in a user's computer. This option only works when parallel computation is enabled
@@ -18,11 +18,11 @@
 #' @examples
 #' \dontrun{
 #' # 1) load HPPA as igraph object
-#' data(ig.HPPA)
+#' ig.HPPA <-dRDataLoader(RData='ig.HPPA')
 #' g <- ig.HPPA
 #'
 #' # 2) load human genes annotated by HPPA
-#' data(org.Hs.egHPPA)
+#' org.Hs.egHPPA <- dRDataLoader(RData='org.Hs.egHPPA')
 #'
 #' # 3) prepare for ontology and its annotation information 
 #' dag <- dDAGannotate(g, annotations=org.Hs.egHPPA, path.mode="all_paths", verbose=TRUE)
@@ -102,7 +102,8 @@ dDAGtermSim <- function (g, terms=NULL, method=c("Resnik","Lin","Schlicker","Jia
         if(flag_parallel){
                 
             if(method=="Resnik"){
-                sim <- foreach(i=1:num_terms, .inorder=T, .combine=rbind) %dopar% {
+                i <- 1
+                sim <- foreach::`%dopar%` (foreach::foreach(i=1:num_terms, .inorder=T, .combine=rbind), {
                     ancestor_i <- which(sCP[i,]==1)
                     progress_indicate(i, num_terms, 10, flag=T)
                     fast <- T
@@ -121,9 +122,10 @@ dDAGtermSim <- function (g, terms=NULL, method=c("Resnik","Lin","Schlicker","Jia
                         x[js] <- res
                         x
                     }
-                }
+                })
             }else if(method=="Lin"){
-                sim <- foreach(i=1:num_terms, .inorder=T, .combine=rbind) %dopar% {
+                i <- 1
+                sim <- foreach::`%dopar%` (foreach::foreach(i=1:num_terms, .inorder=T, .combine=rbind), {
                     ancestor_i <- which(sCP[i,]==1)
                     progress_indicate(i, num_terms, 10, flag=T)
                     fast <- T
@@ -142,9 +144,10 @@ dDAGtermSim <- function (g, terms=NULL, method=c("Resnik","Lin","Schlicker","Jia
                         x[js] <- res
                         x
                     }
-                }
+                })
             }else if(method=="Schlicker"){
-                sim <- foreach(i=1:num_terms, .inorder=T, .combine=rbind) %dopar% {
+                i <- 1
+                sim <- foreach::`%dopar%` (foreach::foreach(i=1:num_terms, .inorder=T, .combine=rbind), {
                     ancestor_i <- which(sCP[i,]==1)
                     progress_indicate(i, num_terms, 10, flag=T)
                     fast <- T
@@ -163,9 +166,10 @@ dDAGtermSim <- function (g, terms=NULL, method=c("Resnik","Lin","Schlicker","Jia
                         x[js] <- res
                         x
                     }
-                }
+                })
             }else if(method=="Jiang"){
-                sim <- foreach(i=1:num_terms, .inorder=T, .combine=rbind) %dopar% {
+                i <- 1
+                sim <- foreach::`%dopar%` (foreach::foreach(i=1:num_terms, .inorder=T, .combine=rbind), {
                     ancestor_i <- which(sCP[i,]==1)
                     progress_indicate(i, num_terms, 10, flag=T)
                     fast <- T
@@ -186,9 +190,10 @@ dDAGtermSim <- function (g, terms=NULL, method=c("Resnik","Lin","Schlicker","Jia
                         x[js] <- res
                         x
                     }
-                }
+                })
             }else if(method=="Pesquita"){
-                sim <- foreach(i=1:num_terms, .inorder=T, .combine=rbind) %dopar% {
+                i <- 1
+                sim <- foreach::`%dopar%` (foreach::foreach(i=1:num_terms, .inorder=T, .combine=rbind), {
                     ancestor_i <- which(sCP[i,]==1)
                     progress_indicate(i, num_terms, 10, flag=T)
                     fast <- T
@@ -220,7 +225,7 @@ dDAGtermSim <- function (g, terms=NULL, method=c("Resnik","Lin","Schlicker","Jia
                         x[js] <- res
                         x
                     }
-                }
+                })
     
             }
 
