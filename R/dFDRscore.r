@@ -1,6 +1,6 @@
 #' Function to transform fdr into scores according to log-likelihood ratio between the true positives and the false positivies and/or after controlling false discovery rate
 #'
-#' \code{dFDRscore} is supposed to take as input a vector of fdr, which are transformed into scores according to according to log-likelihood ratio between the true positives and the false positivies. Also if the FDR threshold is given, it is used to make sure that fdr below threshold are considered significant and thus scored positively. Instead, those fdr above the given threshold are considered insigificant and thus scored negatively. 
+#' \code{dFDRscore} is supposed to take as input a vector of fdr, which are transformed into scores according to log-likelihood ratio between the true positives and the false positivies. Also if the FDR threshold is given, it is used to make sure that fdr below threshold are considered significant and thus scored positively. Instead, those fdr above the given threshold are considered insigificant and thus scored negatively. 
 #'
 #' @param fdr a vector containing a list of input fdr
 #' @param fdr.threshold the given FDR threshold. By default, it is set to NULL, meaning there is no constraint. If given, those fdr with the FDR below threshold are considered significant and thus scored positively. Instead, those fdr with the FDR above given threshold are considered insigificant and thus scored negatively
@@ -40,7 +40,8 @@ dFDRscore <- function(fdr, fdr.threshold=NULL, scatter=F)
         scores <- log2((1-fdr)/fdr)
     }else{
         if (fdr.threshold >0.5 | fdr.threshold<=0){
-            stop("The funciton requires that the given fdr threshold falling into (0, 0.5].\n")
+            warning("The function requires that the given fdr threshold falling into (0, 0.5].\n")
+            return(NULL)
         }else{
             scores <- log2((1-fdr)/fdr) - log2((1-fdr.threshold)/fdr.threshold)
         }

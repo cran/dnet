@@ -38,7 +38,6 @@ Genet}, 83:610-615.
 \keyword{datasets}
 
 \examples{
-#ig.HPPA <- dRDataLoader(RData='ig.HPPA')
-data(ig.HPPA)
+ig.HPPA <- dRDataLoader(RData='ig.HPPA')
 ig.HPPA
 }

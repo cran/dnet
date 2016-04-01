@@ -54,6 +54,11 @@ dNetPipeline <- function(g, pval, method=c("pdf","cdf","customised"), significan
     ####################################################################################
     
     method <- match.arg(method)
+    
+    # force those zeros to be miminum of non-zeros
+    tmp <- as.numeric(format(.Machine)['double.xmin'])
+    pval[pval < tmp] <- tmp
+    
     ####################
     
     if(method!="customised"){
@@ -92,13 +97,28 @@ dNetPipeline <- function(g, pval, method=c("pdf","cdf","customised"), significan
         ## at rough phase
         fdr_rough <- NULL
         nsize_rough <- 0
-        for(i in seq(from=floor(log10(min(pval[pval!=0]))),to=0)){
-            fdr_test <- 10^i
+        
+        st <- ceiling(log10(min(pval[pval!=0])))
+        if(st < -300){
+        	all_i <- c(st, seq(from=-300,to=-250,by=50), seq(from=-200,to=-120,by=20), seq(from=-100,to=-20,by=10), seq(from=-10,to=0,by=1))
+        }else if(st < -200){
+        	all_i <- c(st, seq(from=-200,to=-120,by=20), seq(from=-100,to=-20,by=10), seq(from=-10,to=0,by=1))
+        }else if(st < -100){
+        	all_i <- c(st, seq(from=-100,to=-20,by=10), seq(from=-10,to=0,by=1))
+        }else{
+        	all_i <- seq(from=st,to=0)
+        }
+        
+        for(i in 1:length(all_i)){
+            fdr_test <- 10^all_i[i]
             
             if(method!="customised"){
                 scores_test <- dBUMscore(fit=fit, method=method, fdr=fdr_test, scatter.bum=F)
             }else if(method=="customised"){
                 scores_test <- dFDRscore(pval, fdr.threshold=fdr_test, scatter=F)
+                if(is.null(scores_test)){
+                	break
+                }
             }
     
             module_test <- suppressWarnings(dNetFind(g, scores_test))
@@ -108,9 +128,9 @@ dNetPipeline <- function(g, pval, method=c("pdf","cdf","customised"), significan
                 message(sprintf("\t\tsignificance threshold: %1.2e, corresponding to the network size (%d nodes)", fdr_test, nsize_test), appendLF=T)
             }
             
-            if(nsize_test >= nsize){
-                fdr_rough <- fdr_test
-                nsize_rough <- nsize_test
+            fdr_rough <- fdr_test
+            nsize_rough <- nsize_test
+            if(nsize_test >= nsize){    
                 break
             }
         }
@@ -119,7 +139,7 @@ dNetPipeline <- function(g, pval, method=c("pdf","cdf","customised"), significan
             fdr_final <- fdr_rough
         }else{
             if(verbose){
-                message(sprintf("\tScanning significance threshold at finetune stage..."), appendLF=T)
+                message(sprintf("\tScanning significance threshold at finetuning stage..."), appendLF=T)
             }
             ## at finetune phase
             fdr_final <- NULL
@@ -135,11 +155,11 @@ dNetPipeline <- function(g, pval, method=c("pdf","cdf","customised"), significan
                 nsize_test <- vcount(module_test)
             
                 if(verbose){
-                    message(sprintf("\t\tsignificance threshold : %1.2e, corresponding to the network size (%d nodes)", fdr_test, nsize_test), appendLF=T)
+                    message(sprintf("\t\tsignificance threshold: %1.2e, corresponding to the network size (%d nodes)", fdr_test, nsize_test), appendLF=T)
                 }
-            
+            	
+            	fdr_final <- fdr_test
                 if(nsize_test >= nsize){
-                    fdr_final <- fdr_test
                     break
                 }
             }
