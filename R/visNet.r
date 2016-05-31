@@ -84,9 +84,12 @@ visNet <- function(g, pattern=NULL, colormap=c("bwr","jet","gbr","wyr","br","yr"
         	
         	pattern <- as.numeric(pattern)
         	
+        	pattern_nona <- pattern[!is.na(pattern)]
+        	pattern_nona <- as.numeric(pattern_nona)
+        	
             if(is.null(zlim)){
-                vmin <- floor(stats::quantile(pattern, 0.05))
-                vmax <- ceiling(stats::quantile(pattern, 0.95))
+                vmin <- floor(stats::quantile(pattern_nona, 0.05))
+                vmax <- ceiling(stats::quantile(pattern_nona, 0.95))
                 if(vmin < 0 & vmax > 0){
                     vsym <- abs(min(vmin, vmax))
                     vmin <- -1*vsym
@@ -101,11 +104,17 @@ visNet <- function(g, pattern=NULL, colormap=c("bwr","jet","gbr","wyr","br","yr"
                 colors <- palette.name(ncolors)
                 scale <- length(colors)/(max(zlim)-min(zlim))
                 sapply(1:length(vec), function(x){
-                    ind <- floor(1+(vec[x]-min(zlim))*scale)
-                    colors[max(1,min(ncolors,ind))]
+                	if(is.na(vec[x])){
+                		'transparent'
+                	}else{
+						ind <- floor(1+(vec[x]-min(zlim))*scale)
+						colors[max(1,min(ncolors,ind))]
+					}
                 })
             }
             vertex.color <- vec2color(pattern, colormap=colormap, ncolors=ncolors, zlim=zlim)
+            vertex.frame.color <- vec2color(pattern, colormap=colormap, ncolors=ncolors, zlim=zlim)
+            vertex.frame.color[vertex.frame.color=="transparent"] <- "grey"
         }else{
             warning("The input 'pattern' is ignored. Please check the help for enabling your input")
             pattern <- NULL
@@ -176,6 +185,7 @@ visNet <- function(g, pattern=NULL, colormap=c("bwr","jet","gbr","wyr","br","yr"
     ## colorbar
     if (!is.null(pattern) && length(pattern)==nsize){
         if(colorbar){
+        	par_old <- graphics::par()
             graphics::par(fig=c(0,0.1,0.5,1), new=TRUE)
             palette.name <- visColormap(colormap=colormap)
             colors <- palette.name(ncolors)
@@ -201,6 +211,8 @@ visNet <- function(g, pattern=NULL, colormap=c("bwr","jet","gbr","wyr","br","yr"
                     graphics::text(x=xright*2, y=ytop, labels=tx, cex=0.6)
                 }
             }
+            
+            suppressWarnings(graphics::par(par_old))
         }
     }
     

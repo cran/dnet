@@ -63,7 +63,8 @@ dNetPipeline <- function(g, pval, method=c("pdf","cdf","customised"), significan
     
     if(method!="customised"){
         if(verbose){
-            message(sprintf("First, fit the input p-value distribution under beta-uniform mixture model..."), appendLF=T)
+        	now <- Sys.time()
+            message(sprintf("First, fit the input p-value distribution under beta-uniform mixture model (%s)...", as.character(now)), appendLF=T)
         }
         ## fit a p-value distribution under beta-uniform mixture model
         if(plot){
@@ -73,12 +74,14 @@ dNetPipeline <- function(g, pval, method=c("pdf","cdf","customised"), significan
         }
     }else if(method=="customised"){
         if(verbose){
-            message(sprintf("First, consider the input fdr (or p-value) distribution"), appendLF=T)
+        	now <- Sys.time()
+            message(sprintf("First, consider the input fdr (or p-value) distribution (%s)...", as.character(now)), appendLF=T)
         }
     }
     
     if(verbose){
-        message(sprintf("Second, determine the significance threshold..."), appendLF=T)
+    	now <- Sys.time()
+        message(sprintf("Second, determine the significance threshold (%s)...", as.character(now)), appendLF=T)
     }
     ## Determine the final fdr threshold
     if(is.null(nsize)){
@@ -92,7 +95,8 @@ dNetPipeline <- function(g, pval, method=c("pdf","cdf","customised"), significan
         ## Constraint on the network size
         
         if(verbose){
-            message(sprintf("\tScanning significance threshold at rough stage..."), appendLF=T)
+        	now <- Sys.time()
+            message(sprintf("\tScanning significance threshold at rough stage (%s)...", as.character(now)), appendLF=T)
         }
         ## at rough phase
         fdr_rough <- NULL
@@ -105,6 +109,8 @@ dNetPipeline <- function(g, pval, method=c("pdf","cdf","customised"), significan
         	all_i <- c(st, seq(from=-200,to=-120,by=20), seq(from=-100,to=-20,by=10), seq(from=-10,to=0,by=1))
         }else if(st < -100){
         	all_i <- c(st, seq(from=-100,to=-20,by=10), seq(from=-10,to=0,by=1))
+        }else if(st < -20){
+        	all_i <- c(st, seq(from=as.integer(st/10)*10,to=-20,by=10), seq(from=-10,to=0,by=1))
         }else{
         	all_i <- seq(from=st,to=0)
         }
@@ -125,25 +131,44 @@ dNetPipeline <- function(g, pval, method=c("pdf","cdf","customised"), significan
             nsize_test <- vcount(module_test)
             
             if(verbose){
-                message(sprintf("\t\tsignificance threshold: %1.2e, corresponding to the network size (%d nodes)", fdr_test, nsize_test), appendLF=T)
+            	now <- Sys.time()
+                message(sprintf("\t\tsignificance threshold: %1.2e, corresponding to the network size (%d nodes) (%s)", fdr_test, nsize_test, as.character(now)), appendLF=T)
             }
             
             fdr_rough <- fdr_test
             nsize_rough <- nsize_test
-            if(nsize_test >= nsize){    
+            if(nsize_test >= nsize){
                 break
             }
+            fdr_pre <- fdr_rough
         }
         
         if(nsize_rough==nsize){
             fdr_final <- fdr_rough
         }else{
             if(verbose){
-                message(sprintf("\tScanning significance threshold at finetuning stage..."), appendLF=T)
+            	now <- Sys.time()
+                message(sprintf("\tScanning significance threshold at finetuning stage (%s)...", as.character(now)), appendLF=T)
             }
             ## at finetune phase
             fdr_final <- NULL
-            for(fdr_test in seq(from=fdr_rough/10+fdr_rough/20,to=fdr_rough-fdr_rough/20,by=fdr_rough/20)){
+            
+			st <- log10(fdr_pre)
+			ed <- log10(fdr_rough)
+			if(st < -200){
+				all_i <- seq(from=st,to=ed,by=5)
+			}else if(st < -100){
+				all_i <- seq(from=st,to=ed,by=2)
+			}else if(st < -10){
+				all_i <- seq(from=st,to=ed,by=1)
+			}else{
+				all_i <- seq(from=fdr_rough/10+fdr_rough/20,to=fdr_rough-fdr_rough/20,by=fdr_rough/20)
+				all_i <- log10(all_i)
+			}
+            
+            #for(fdr_test in seq(from=fdr_rough/10+fdr_rough/20,to=fdr_rough-fdr_rough/20,by=fdr_rough/20)){
+        	for(i in 1:length(all_i)){
+            	fdr_test <- 10^all_i[i]
             
                 if(method!="customised"){
                     scores_test <- dBUMscore(fit=fit, method=method, fdr=fdr_test, scatter.bum=F)
@@ -155,7 +180,8 @@ dNetPipeline <- function(g, pval, method=c("pdf","cdf","customised"), significan
                 nsize_test <- vcount(module_test)
             
                 if(verbose){
-                    message(sprintf("\t\tsignificance threshold: %1.2e, corresponding to the network size (%d nodes)", fdr_test, nsize_test), appendLF=T)
+                	now <- Sys.time()
+                    message(sprintf("\t\tsignificance threshold: %1.2e, corresponding to the network size (%d nodes) (%s)", fdr_test, nsize_test, as.character(now)), appendLF=T)
                 }
             	
             	fdr_final <- fdr_test
@@ -179,7 +205,8 @@ dNetPipeline <- function(g, pval, method=c("pdf","cdf","customised"), significan
     
     if(method!="customised"){
         if(verbose){
-            message(sprintf("Third, calculate the scores according to the fitted BUM and FDR threshold (if any)..."), appendLF=T)
+        	now <- Sys.time()
+            message(sprintf("Third, calculate the scores according to the fitted BUM and FDR threshold (if any) (%s)...", as.character(now)), appendLF=T)
         }
         ## calculate the scores according to the fitted BUM and fdr threshold (fdr_final) 
         if(plot){
@@ -189,7 +216,8 @@ dNetPipeline <- function(g, pval, method=c("pdf","cdf","customised"), significan
         }
     }else if(method=="customised"){
         if(verbose){
-            message(sprintf("Third, calculate the scores according to the input fdr (or p-value) and the threshold (if any)..."), appendLF=T)
+        	now <- Sys.time()
+            message(sprintf("Third, calculate the scores according to the input fdr (or p-value) and the threshold (if any) (%s)...", as.character(now)), appendLF=T)
         }
         ## calculate the scores according to the input fdr (or p-value) and the threshold (fdr_final) 
         if(plot){
@@ -202,7 +230,8 @@ dNetPipeline <- function(g, pval, method=c("pdf","cdf","customised"), significan
     
     if(verbose){
         message(sprintf("\tAmongst %d scores, there are %d positives.", length(scores), sum(scores>0)), appendLF=T)
-        message(sprintf("Finally, find the subgraph from the input graph with %d nodes and %d edges...", vcount(g), ecount(g)), appendLF=T)
+        now <- Sys.time()
+        message(sprintf("Finally, find the subgraph from the input graph with %d nodes and %d edges (%s)...", vcount(g), ecount(g), as.character(now)), appendLF=T)
     }
     ## find the subgraph with the maximum score
     subgraph <- dNetFind(g, scores)
