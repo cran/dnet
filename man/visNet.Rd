@@ -10,7 +10,8 @@ visNet(g, pattern = NULL, colormap = c("bwr", "jet", "gbr", "wyr",
 newpage = T, glayout = layout.fruchterman.reingold,
 vertex.frame.color = NA, vertex.size = NULL, vertex.color = NULL,
 vertex.shape = NULL, vertex.label = NULL, vertex.label.cex = NULL,
-vertex.label.dist = NULL, vertex.label.color = "black", ...)
+vertex.label.dist = NULL, vertex.label.color = "black",
+vertex.label.family = "sans", ...)
 }
 \arguments{
 \item{g}{an object of class "igraph" or "graphNEL"}
@@ -88,6 +89,8 @@ is 1 then the label is displayed beside the vertex.}
 
 \item{vertex.label.color}{the color of vertex labels.}
 
+\item{vertex.label.family}{the font family of vertex labels}
+
 \item{...}{additional graphic parameters. See
 \url{http://igraph.org/r/doc/plot.common.html} for the complete list.}
 }
@@ -117,4 +120,3 @@ visNet(g=subg, pattern=pattern, colormap="bwr", vertex.shape="sphere")
 \seealso{
 \code{\link{dNetFind}}
 }
-

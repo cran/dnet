@@ -10,7 +10,7 @@
 #' @param customised.genesets an input vector/matrix/list which only works when the user chooses "Customised" in the previous parameter "ontology". It contains either Entrez Gene ID or Symbol
 #' @param sizeRange the minimum and maximum size of members of each gene set in consideration. By default, it sets to a minimum of 10 but no more than 1000
 #' @param which_distance which distance of terms in the ontology is used to restrict terms in consideration. By default, it sets to 'NULL' to consider all distances
-#' @param weight type of score weigth. It can be "0" for unweighted (an equivalent to Kolmogorov-Smirnov, only considering the rank), "1" for weighted by input gene score (by default), and "2" for over-weighted, and so on
+#' @param weight type of score weight. It can be "0" for unweighted (an equivalent to Kolmogorov-Smirnov, only considering the rank), "1" for weighted by input gene score (by default), and "2" for over-weighted, and so on
 #' @param nperm the number of random permutations. For each permutation, gene-score associations will be permutated so that permutation of gene-term associations is realised
 #' @param fast logical to indicate whether to fast calculate expected results from permutated data. By default, it sets to true
 #' @param sigTail the tail used to calculate the statistical significance. It can be either "two-tails" for the significance based on two-tails  or "one-tail" for the significance based on one tail
@@ -30,6 +30,7 @@
 #'  \item{\code{gadjp}: a matrix of nSet X nSample containing globally adjusted p value in terms of all samples}
 #'  \item{\code{fdr}: a matrix of nSet X nSample containing false discovery rate (FDR). It is the estimated probability that the normalised enrichment score represents a false positive finding}
 #'  \item{\code{qvalue}: a matrix of nSet X nSample containing q value. It is the monotunically increasing FDR}
+#' \item{\code{weight}: the input type of score weight}
 #'  \item{\code{call}: the call that produced this result}
 #' }
 #' @note The interpretation of returned components:
@@ -247,7 +248,7 @@ dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FAL
         }
         
         ## construct GS given the customised genesets
-        set_info <- data.frame(setID=names(customised.genesets), name=names(customised.genesets), namespace=names(customised.genesets), distance=rep(1, length(customised.genesets)))
+        set_info <- data.frame(setID=names(customised.genesets), name=names(customised.genesets), namespace=names(customised.genesets), distance=rep(1, length(customised.genesets)), stringsAsFactors=F)
         rownames(set_info) <- names(customised.genesets)
         gs <- lapply(customised.genesets, function(x){
             if(identity == "symbol"){
@@ -312,7 +313,8 @@ dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FAL
     geneid <- rownames(data) ## only those genes in question are considered
     
     if(nGene==0){
-        stop("There is no gene being used.\n")
+        warnings("There is no gene being used.\n")
+        return(NULL)
     }
     
     ## filter based on "which_distance"
@@ -351,7 +353,8 @@ dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FAL
     nSet <- length(gs)
     
     if(nSet==0){
-        stop("There is no gene set being used.\n")
+        warnings("There is no gene set being used.\n")
+        return(NULL)
     }
     
     ## Enrichment score for the gene set; that is, the degree to which this gene set is overrepresented at the top or bottom of the ranked list of genes in the expression dataset
@@ -386,7 +389,7 @@ dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FAL
     
     if(verbose){
         now <- Sys.time()
-        message(sprintf("Third, perform GSEA analysis (%s) ...", as.character(now)), appendLF=T)
+        message(sprintf("Third, perform GSEA analysis based on %d permutations for %d gene sets (%s) ...", nperm, length(gs), as.character(now)), appendLF=T)
     }
     
     for(j in 1:nSample){
@@ -415,8 +418,9 @@ dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FAL
         for(k in 1:nSet){
             
             if(verbose){
-                if(k %% 100==0 | k==nSet){
-                    message(sprintf("\t\t %d of %d gene sets have been processed", k, nSet), appendLF=T)
+                if(k %% 10==0 | k==nSet){
+                	now <- Sys.time()
+                    message(sprintf("\t%d of %d gene sets have been processed (%s) ...", k, nSet, as.character(now)), appendLF=T)
                 }
             }
             
@@ -551,7 +555,13 @@ dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FAL
                 }
             })
         }
-
+		
+		##############
+		##############
+		# min p-value: 1/(1+nperm)
+		pES[pES==0] <- 1/(1+nperm)
+		##############
+		##############
         ## adjusted p-value
         adjP <- stats::p.adjust(pES, method=p.adjust.method)
         
@@ -679,7 +689,6 @@ dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FAL
         # put back to the origin
         qES <- qES.sorted[Orig.index]
 
-        ############################
         SS.es[,j] <- es.observed
         SS.nes[,j] <- nES.observed
         SS.pvalue[,j] <- pES
@@ -692,10 +701,16 @@ dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FAL
     ## globally adjusted p value for Multiple Comparisons
     vec <- c(SS.pvalue)
     gadjp <- stats::p.adjust(vec, method="BH")
+	gadjp <- sapply(gadjp, function(x){
+		if(x < 0.1 & x!=0){
+			as.numeric(format(x,scientific=T))
+		}else{
+			x
+		}
+	})
     SS.gadjp <- matrix(gadjp, nrow=nSet, ncol=nSample)
     colnames(SS.gadjp) <- colnames(data)
     rownames(SS.gadjp) <- names(gs)
-
     
     ####################################################################################
     endT <- Sys.time()
@@ -715,6 +730,7 @@ dGSEA <- function(data, identity=c("symbol","entrez"), check.symbol.identity=FAL
                   fwer     = SS.fwer,
                   fdr      = SS.fdr,
                   qvalue   = SS.qvalue,
+                  weight   = weight,
                   call     = match.call()
                  )
     class(eTerm) <- "eTerm"
