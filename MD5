@@ -1,4 +1,4 @@
-9d4285abb50fe78f90f98816e2c0edc4 *DESCRIPTION
+19965f515a54bde07007b982d0a64520 *DESCRIPTION
 58a1c30d48ae7eac24ad565182817cc9 *NAMESPACE
 434a819f49b3fe3d62504f63d53f61b6 *R/dBUMfit.r
 ab4f2c6c925a11e69c9df80a575c5ef0 *R/dBUMscore.r
@@ -8,11 +8,11 @@ e0aeb00e7f253182fef8f72dc8b630c1 *R/dCheckParallel.r
 49b44beaa89a18269ca950541b5a72cf *R/dDAGancestor.r
 13ff87f063a3b5bead80fdbf404323e7 *R/dDAGannotate.r
 d763032619f5338d7e70a26788045a31 *R/dDAGgeneSim.r
-c36ae2ee78eb60a4f769252ca444f942 *R/dDAGinduce.r
+83755a272e2f8e8e6b1276d77bfedec7 *R/dDAGinduce.r
 07d998f01a8d7d4857c6a2fa0b79e805 *R/dDAGlevel.r
 ad34a711267782d4996778449e9668e1 *R/dDAGreverse.r
 7bf9818502cd8e4aae04eb459d26481e *R/dDAGroot.r
-d4018dcab0b22447f8462849f465e7f8 *R/dDAGtermSim.r
+b2b08ccfd92afc91c8d2bd404c057a73 *R/dDAGtermSim.r
 37c00b1826deebdf57f9afde4b2aae85 *R/dDAGtip.r
 dfaee723386d2b32bfdb714f95f62c02 *R/dEnricher.r
 74372833f5102b1be23015077021918a *R/dEnricherView.r
@@ -23,7 +23,7 @@ e8ac349a420bdd8e9575314c25d898aa *R/dGSEAview.r
 5f2debe364730a68b9afa07138318f3d *R/dGSEAwrite.r
 38377c6b5a20542601b5200749252e51 *R/dNetConfidence.r
 97463df1d8a360ad0012e0cd1dd22eb0 *R/dNetFind.r
-027b874b7245d188347503b9f8c4f909 *R/dNetInduce.r
+23495b5b1f6e7ba5327e22bb17ee0b15 *R/dNetInduce.r
 0d619bd5b64289fc04ca403301e7541a *R/dNetPipeline.r
 cc6fc4d513c229ddbae2a1a405c05a95 *R/dNetReorder.r
 3d523c6828b86d77e49a18f2d5d495f7 *R/dPvalAggregate.r
@@ -41,12 +41,12 @@ dabf351ab6e3320db5e60855cd9b0db3 *R/visBoxplotAdv.r
 c80a2661fee82c04a444bdd2de60a53d *R/visNetCircle.r
 d68bc4468c1516353876ac5cf9825ce9 *R/visNetMul.r
 e4ed40293a8790fa0a9250ae6885038d *R/visNetReorder.r
-e63d04ed82b122f441340bb626c1fb88 *data/TCGA_mutations.RData
+d35d06c710abef9f9efe1592cf11488a *data/TCGA_mutations.RData
 1a0c73baa73549997cc547ae574699ae *data/datalist
-f2068c1a368edbdb2357902d048310af *data/ig.HPPA.RData
-5e3a68f8d71df6c09368a14fdf3c7033 *data/org.Hs.egHPPA.RData
+136b777b64cdb367cf17592281dc0902 *data/ig.HPPA.RData
+2ab5ef03a4a7b8582e351fa6c68e5642 *data/org.Hs.egHPPA.RData
 a03e634c2b5ac348b55b1cd88e6bd80a *inst/CITATION
-d16775868e477d6de457b215fbb2361a *inst/NEWS
+3320ada9a434313bbf9da3708f6fc801 *inst/NEWS
 8ffda754415c2ecdfc175c608c6bb434 *inst/staticdocs/CITATIONs.md
 5bf9ac4a16fa11c0e15f13707419d337 *inst/staticdocs/INSTALLATIONs.md
 82d11a75fd17ab2a7439e27cddac290d *inst/staticdocs/INSTALLATIONs_tmp.md
@@ -101,7 +101,7 @@ f11d4675b07764d1780805541c75bba9 *man/dFunArgs.Rd
 9d2489224ec27a04986a4b8659f200ad *man/dGSEAwrite.Rd
 af6c69c0331f3c4fd5d09bc65adf5bfd *man/dNetConfidence.Rd
 66fc758ecebe6f618566bae80d1d0887 *man/dNetFind.Rd
-ba8b812b9d4da2cf21e81dc8635cacc8 *man/dNetInduce.Rd
+26b56e186cbbce47e08403cf2e4bf47c *man/dNetInduce.Rd
 ac4a75eaa07fbe18f733566cb6941ac3 *man/dNetPipeline.Rd
 e8528296ac831acbba380087a79e1f19 *man/dNetReorder.Rd
 d1dccd5fb0c21cb4b3be6640bedd74f2 *man/dPvalAggregate.Rd
