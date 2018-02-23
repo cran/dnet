@@ -1,4 +1,4 @@
-19965f515a54bde07007b982d0a64520 *DESCRIPTION
+a59fbd41fff327f6054f0d302f752011 *DESCRIPTION
 58a1c30d48ae7eac24ad565182817cc9 *NAMESPACE
 434a819f49b3fe3d62504f63d53f61b6 *R/dBUMfit.r
 ab4f2c6c925a11e69c9df80a575c5ef0 *R/dBUMscore.r
@@ -22,9 +22,9 @@ dd6f10640eb2b29b44ca3ae81e1eaca2 *R/dFDRscore.r
 e8ac349a420bdd8e9575314c25d898aa *R/dGSEAview.r
 5f2debe364730a68b9afa07138318f3d *R/dGSEAwrite.r
 38377c6b5a20542601b5200749252e51 *R/dNetConfidence.r
-97463df1d8a360ad0012e0cd1dd22eb0 *R/dNetFind.r
+da1e65fd31600674523bc47972d8bcc6 *R/dNetFind.r
 23495b5b1f6e7ba5327e22bb17ee0b15 *R/dNetInduce.r
-0d619bd5b64289fc04ca403301e7541a *R/dNetPipeline.r
+16171f4cfe33e5be239b37b73b92fd04 *R/dNetPipeline.r
 cc6fc4d513c229ddbae2a1a405c05a95 *R/dNetReorder.r
 3d523c6828b86d77e49a18f2d5d495f7 *R/dPvalAggregate.r
 de326f040965fc75c11fcb2df34e331b *R/dRDataLoader.r
@@ -46,7 +46,7 @@ d35d06c710abef9f9efe1592cf11488a *data/TCGA_mutations.RData
 136b777b64cdb367cf17592281dc0902 *data/ig.HPPA.RData
 2ab5ef03a4a7b8582e351fa6c68e5642 *data/org.Hs.egHPPA.RData
 a03e634c2b5ac348b55b1cd88e6bd80a *inst/CITATION
-3320ada9a434313bbf9da3708f6fc801 *inst/NEWS
+b8723788e472694c5c2272c06eafeb83 *inst/NEWS
 8ffda754415c2ecdfc175c608c6bb434 *inst/staticdocs/CITATIONs.md
 5bf9ac4a16fa11c0e15f13707419d337 *inst/staticdocs/INSTALLATIONs.md
 82d11a75fd17ab2a7439e27cddac290d *inst/staticdocs/INSTALLATIONs_tmp.md
@@ -100,9 +100,9 @@ f11d4675b07764d1780805541c75bba9 *man/dFunArgs.Rd
 1d79d4354c5a685b65936ca4516d0cd9 *man/dGSEAview.Rd
 9d2489224ec27a04986a4b8659f200ad *man/dGSEAwrite.Rd
 af6c69c0331f3c4fd5d09bc65adf5bfd *man/dNetConfidence.Rd
-66fc758ecebe6f618566bae80d1d0887 *man/dNetFind.Rd
+ae76f21645fafef6c429312e50bf2074 *man/dNetFind.Rd
 26b56e186cbbce47e08403cf2e4bf47c *man/dNetInduce.Rd
-ac4a75eaa07fbe18f733566cb6941ac3 *man/dNetPipeline.Rd
+f55dd507408ff8b4123fe01fb8a48ec8 *man/dNetPipeline.Rd
 e8528296ac831acbba380087a79e1f19 *man/dNetReorder.Rd
 d1dccd5fb0c21cb4b3be6640bedd74f2 *man/dPvalAggregate.Rd
 483666decb6e205d3df84959680d2617 *man/dRDataLoader.Rd
