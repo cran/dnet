@@ -1,4 +1,4 @@
-a59fbd41fff327f6054f0d302f752011 *DESCRIPTION
+2a14ac0bb431720227bc8e4b7d6bb5a9 *DESCRIPTION
 58a1c30d48ae7eac24ad565182817cc9 *NAMESPACE
 434a819f49b3fe3d62504f63d53f61b6 *R/dBUMfit.r
 ab4f2c6c925a11e69c9df80a575c5ef0 *R/dBUMscore.r
@@ -21,7 +21,7 @@ dd6f10640eb2b29b44ca3ae81e1eaca2 *R/dFDRscore.r
 60dbf6ed87c4b3e8664f12a16fc65aea *R/dGSEA.r
 e8ac349a420bdd8e9575314c25d898aa *R/dGSEAview.r
 5f2debe364730a68b9afa07138318f3d *R/dGSEAwrite.r
-38377c6b5a20542601b5200749252e51 *R/dNetConfidence.r
+f087bbe81863de75d7da81cf4f32c48d *R/dNetConfidence.r
 da1e65fd31600674523bc47972d8bcc6 *R/dNetFind.r
 23495b5b1f6e7ba5327e22bb17ee0b15 *R/dNetInduce.r
 16171f4cfe33e5be239b37b73b92fd04 *R/dNetPipeline.r
@@ -46,13 +46,13 @@ d35d06c710abef9f9efe1592cf11488a *data/TCGA_mutations.RData
 136b777b64cdb367cf17592281dc0902 *data/ig.HPPA.RData
 2ab5ef03a4a7b8582e351fa6c68e5642 *data/org.Hs.egHPPA.RData
 a03e634c2b5ac348b55b1cd88e6bd80a *inst/CITATION
-b8723788e472694c5c2272c06eafeb83 *inst/NEWS
+8b03a6c0c6a1f945c10103b7a9c10dc7 *inst/NEWS
 8ffda754415c2ecdfc175c608c6bb434 *inst/staticdocs/CITATIONs.md
 5bf9ac4a16fa11c0e15f13707419d337 *inst/staticdocs/INSTALLATIONs.md
 82d11a75fd17ab2a7439e27cddac290d *inst/staticdocs/INSTALLATIONs_tmp.md
 8efe5ffa276ae757563ae34c617a365b *inst/staticdocs/RData.md
 8a45afb09248d7f458b132911df8b7b4 *inst/staticdocs/RData_tmp.md
-cf439d40808d80d9b6881043a8b94f55 *inst/staticdocs/README.md
+04382079a1802071f4929b0c7b41e4d8 *inst/staticdocs/README.md
 c72c320d435d77e71c398cde878c207f *inst/staticdocs/README_tmp.md
 4a80136aa3fe1a699758697b6972910e *inst/staticdocs/demo/ALL.r
 8f73bc278fb92c4ef5090270fdfd2a56 *inst/staticdocs/demo/CLL.r
@@ -99,7 +99,7 @@ f11d4675b07764d1780805541c75bba9 *man/dFunArgs.Rd
 93284a6225ef25dd99ec4188707ac7c6 *man/dGSEA.Rd
 1d79d4354c5a685b65936ca4516d0cd9 *man/dGSEAview.Rd
 9d2489224ec27a04986a4b8659f200ad *man/dGSEAwrite.Rd
-af6c69c0331f3c4fd5d09bc65adf5bfd *man/dNetConfidence.Rd
+3d97e1dd0c61808603330176283c4aff *man/dNetConfidence.Rd
 ae76f21645fafef6c429312e50bf2074 *man/dNetFind.Rd
 26b56e186cbbce47e08403cf2e4bf47c *man/dNetInduce.Rd
 f55dd507408ff8b4123fe01fb8a48ec8 *man/dNetPipeline.Rd
