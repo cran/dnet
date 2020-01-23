@@ -50,12 +50,15 @@ major cancer types. \emph{Nature}, 502(7471):333-9.
 \examples{
 #TCGA_mutations <- dRDataLoader(RData='TCGA_mutations')
 data(TCGA_mutations)
-TCGA_mutations
-library(Biobase)
+#TCGA_mutations
+#library(Biobase)
+
 # extract information about the first 5 samples
-pData(TCGA_mutations)[1:5,]
+#pData(TCGA_mutations)[1:5,]
+
 # extract information about the first 5 features
-fData(TCGA_mutations)[1:5,]
+#fData(TCGA_mutations)[1:5,]
+
 # number of samples for each cancer type
-table(pData(TCGA_mutations)$TCGA_tumor_type)
+#table(pData(TCGA_mutations)$TCGA_tumor_type)
 }
