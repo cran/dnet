@@ -1,4 +1,4 @@
-93a1af54ed03734a4d2fad0e5c30dd9f *DESCRIPTION
+89a745cee8f852e25b9e87b22cc26f4a *DESCRIPTION
 58a1c30d48ae7eac24ad565182817cc9 *NAMESPACE
 434a819f49b3fe3d62504f63d53f61b6 *R/dBUMfit.r
 ab4f2c6c925a11e69c9df80a575c5ef0 *R/dBUMscore.r
@@ -14,11 +14,11 @@ ad34a711267782d4996778449e9668e1 *R/dDAGreverse.r
 7bf9818502cd8e4aae04eb459d26481e *R/dDAGroot.r
 b2b08ccfd92afc91c8d2bd404c057a73 *R/dDAGtermSim.r
 37c00b1826deebdf57f9afde4b2aae85 *R/dDAGtip.r
-dfaee723386d2b32bfdb714f95f62c02 *R/dEnricher.r
+b99846970c725fa974ddea05570f0dab *R/dEnricher.r
 74372833f5102b1be23015077021918a *R/dEnricherView.r
 dd6f10640eb2b29b44ca3ae81e1eaca2 *R/dFDRscore.r
 03600d7da70f850ddc7f1ed1d7843059 *R/dFunArgs.r
-60dbf6ed87c4b3e8664f12a16fc65aea *R/dGSEA.r
+d10eb6d3878ad9d0e01d512fe8a3b31f *R/dGSEA.r
 e8ac349a420bdd8e9575314c25d898aa *R/dGSEAview.r
 5f2debe364730a68b9afa07138318f3d *R/dGSEAwrite.r
 f087bbe81863de75d7da81cf4f32c48d *R/dNetConfidence.r
@@ -32,7 +32,7 @@ de326f040965fc75c11fcb2df34e331b *R/dRDataLoader.r
 894b421414334af4c0e3a5c30d9acfae *R/dRWRcontact.r
 8ae48225dea7371855839516af163677 *R/dRWRpipeline.r
 27d52870455005b5c543af76dc30421e *R/dSVDsignif.r
-eb97007ddea64af5272181d4a44761be *R/visBoxplotAdv.r
+46c3dfcec81cda2003cdbb7397645cc0 *R/visBoxplotAdv.r
 568db522b70cbaa147ca9392e4634f3d *R/visDAG.r
 9eafe6d6565821473c3b9a8275a59689 *R/visGSEA.r
 7ee163f819759254b36a9375dd97bf38 *R/visNet.r
@@ -41,8 +41,7 @@ eb97007ddea64af5272181d4a44761be *R/visBoxplotAdv.r
 c80a2661fee82c04a444bdd2de60a53d *R/visNetCircle.r
 d68bc4468c1516353876ac5cf9825ce9 *R/visNetMul.r
 e4ed40293a8790fa0a9250ae6885038d *R/visNetReorder.r
-40a55ec56def0e16d9c66bbffafd45bc *data/TCGA_mutations.RData
-1a0c73baa73549997cc547ae574699ae *data/datalist
+27da70ac8308a22166cf6370e822e077 *data/datalist
 9e0b8022ca25c1104ef48feac7b5eced *data/ig.HPPA.RData
 933eec2e17e655d15d0c26b579fec84e *data/org.Hs.egHPPA.RData
 a03e634c2b5ac348b55b1cd88e6bd80a *inst/CITATION
@@ -77,7 +76,6 @@ f2d60e5ee22199773e4aab4e5bedc293 *inst/staticdocs/images/dnet_userIO.png
 f054e0d75efaee62439d920ddfcade92 *inst/staticdocs/images/dnet_workflow.png
 2a386a10160e55e4dc59d9bb3cad48ea *inst/staticdocs/templates/footer.html
 f2332a3e0da7d19f81b782000267772d *inst/staticdocs/templates/navbar.html
-d08e420b171527ff728b8911e93386c8 *man/TCGA_mutations.Rd
 8b9f5a25a8e3b39cd1cb40fd641d8450 *man/dBUMfit.Rd
 ec3df166e44de47edc41c3eedaba0fa9 *man/dBUMscore.Rd
 be1ef8c3d157926544fb96c38e594bc2 *man/dCheckParallel.Rd
@@ -92,11 +90,11 @@ c6508e0d09edf2ee2a4a2ec665dfecb1 *man/dDAGinduce.Rd
 d9ef007f93f603a4e7ae3f6a83132eb3 *man/dDAGroot.Rd
 29394b31d244e648075cb51ca8f92858 *man/dDAGtermSim.Rd
 a287cfa95b9217072fdbdb8d1ac3689a *man/dDAGtip.Rd
-c54e63c0b5053f1e66452c0045de2e44 *man/dEnricher.Rd
+374d280715a39968742df509a0375714 *man/dEnricher.Rd
 fc492fc3383bf5e953150bdf766add60 *man/dEnricherView.Rd
 bba9914ceb0994fac33c4b34209c2749 *man/dFDRscore.Rd
 f11d4675b07764d1780805541c75bba9 *man/dFunArgs.Rd
-b15cb44e9cfd1d9f97e82df66db2efff *man/dGSEA.Rd
+d76104fe4de4578b23be2dee143ce27c *man/dGSEA.Rd
 401206c1085ea6485b5ee903e9219e5c *man/dGSEAview.Rd
 32ddb3d12023d19f76e6034991590124 *man/dGSEAwrite.Rd
 3d97e1dd0c61808603330176283c4aff *man/dNetConfidence.Rd
@@ -112,7 +110,7 @@ b2eda37186ea8c0ecf61d9f8ac6ce2be *man/dRWRpipeline.Rd
 0ffc47c4766bc6cb12e0d5ed2d098d6f *man/dSVDsignif.Rd
 b627232f2c14a88205c7977f425096c9 *man/ig.HPPA.Rd
 d690b6280b82d7411332f658d049deff *man/org.Hs.egHPPA.Rd
-278662e511d4ceaf8fad0dfd2c7bba4d *man/visBoxplotAdv.Rd
+e5bce80f8c7b5961821f0a15465ef18d *man/visBoxplotAdv.Rd
 cc413420f5debc09e1be77fe092bc3af *man/visDAG.Rd
 225318d491363899e4c5f62aaf54b916 *man/visGSEA.Rd
 3d4d572ca496a31b07c5a4f4e4119972 *man/visNet.Rd
